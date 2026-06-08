@@ -292,7 +292,8 @@
       <div class="verse-ref">Mateus 19:6</div>
     </div>
 
-    <div style="height:40px;width:100%;margin-top:30px;" id="admin-trigger" onclick="adminTap()"></div>
+    <!-- Toque 5x nesta área para abrir o painel, ou acesse: seulink/?admin -->
+    <div style="height:40px;width:100%;margin-top:30px;cursor:default;" id="admin-trigger" onclick="adminTap()"></div>
   </div>
 </div>
 
@@ -308,7 +309,7 @@
   <div id="admin-list-wrap">
     <div class="admin-stats" id="admin-stats"></div>
     <div class="admin-scroll" id="admin-scroll"></div>
-    <button class="admin-clear" onclick="if(confirm('Apagar tudo?')){localStorage.removeItem('rsvp_list');renderAdmin();}">Limpar lista</button>
+    <button class="admin-clear" onclick="if(confirm('Apagar tudo?')){if(firebaseOk&&db)firebase.database().ref('confirmacoes').remove();localStorage.removeItem('rsvp_list');renderAdmin();}">Limpar lista</button>
   </div>
 </div>
 
@@ -477,17 +478,48 @@ function checkAdmin(){
     document.getElementById('admin-login').style.display='none';
     document.getElementById('admin-list-wrap').style.display='block';
     renderAdmin();
+    // atualiza em tempo real se Firebase configurado
+    if(firebaseOk && db){
+      firebase.database().ref('confirmacoes').on('value', function(){
+        if(document.getElementById('admin-list-wrap').style.display!=='none') renderAdmin();
+      });
+    }
   }else{document.getElementById('admin-err').style.display='block';}
 }
 function renderAdmin(){
-  var lista=JSON.parse(localStorage.getItem('rsvp_list')||'[]');
+  // Se Firebase configurado, lê de lá (dados de todos os dispositivos)
+  if (firebaseOk && db) {
+    document.getElementById('admin-scroll').innerHTML='<div class="admin-empty">Carregando...</div>';
+    firebase.database().ref('confirmacoes').orderByChild('data').once('value', function(snap){
+      var lista=[];
+      snap.forEach(function(c){ lista.push(c.val()); });
+      lista.reverse();
+      _renderLista(lista);
+    });
+  } else {
+    // Fallback: localStorage
+    var lista=JSON.parse(localStorage.getItem('rsvp_list')||'[]');
+    lista=lista.slice().reverse();
+    _renderLista(lista);
+  }
+}
+
+function _renderLista(lista){
   var sim=lista.filter(function(r){return r.presenca==='Sim';}).length;
   var nao=lista.filter(function(r){return r.presenca==='Nao';}).length;
-  document.getElementById('admin-stats').textContent=lista.length+' total · '+sim+' confirmados · '+nao+' não vão';
-  if(!lista.length){document.getElementById('admin-scroll').innerHTML='<div class="admin-empty">Nenhuma confirmação ainda.</div>';return;}
-  document.getElementById('admin-scroll').innerHTML=lista.slice().reverse().map(function(r){
+  document.getElementById('admin-stats').textContent=
+    lista.length+' total · '+sim+' confirmados · '+nao+' não vão';
+  if(!lista.length){
+    document.getElementById('admin-scroll').innerHTML='<div class="admin-empty">Nenhuma confirmação ainda.</div>';
+    return;
+  }
+  document.getElementById('admin-scroll').innerHTML=lista.map(function(r){
     var cls=r.presenca==='Sim'?'ai-sim':'ai-nao';
-    return '<div class="admin-item"><span class="ai-name">'+r.nome+'</span><span class="ai-info"><span class="'+cls+'">'+r.presenca+'</span> &mdash; '+r.data+'</span></div>';
+    var icone=r.presenca==='Sim'?'✓':'✗';
+    return '<div class="admin-item">'+
+      '<span class="ai-name">'+escHtml(r.nome)+'</span>'+
+      '<span class="ai-info"><span class="'+cls+'">'+icone+' '+r.presenca+'</span> &mdash; '+r.data+'</span>'+
+      '</div>';
   }).join('');
 }
 </script>
