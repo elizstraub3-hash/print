@@ -446,12 +446,17 @@ function submitRSVP() {
   if (!nome) { document.getElementById('rsvp-nome').focus(); return; }
   if (!pres) { document.getElementById('rsvp-pres').focus(); return; }
   var ts = new Date().toLocaleString('pt-BR');
+
+  // salva localmente (painel admin)
   var lista = JSON.parse(localStorage.getItem('rsvp_list')||'[]');
   lista.push({nome:nome,presenca:pres,data:ts});
   localStorage.setItem('rsvp_list',JSON.stringify(lista));
-  var sub  = encodeURIComponent('Confirmacao Cha de Panela - '+nome);
-  var body = encodeURIComponent('Nome: '+nome+'\nPresenca: '+pres+'\nData: '+ts);
-  window.open('mailto:elizstraub3@gmail.com?subject='+sub+'&body='+body,'_blank');
+
+  // salva no Firebase também (se configurado) para acesso de qualquer dispositivo
+  if (firebaseOk && db) {
+    firebase.database().ref('confirmacoes').push({nome:nome,presenca:pres,data:ts});
+  }
+
   document.getElementById('rsvp-form').style.display='none';
   document.getElementById('rsvp-ok').style.display='block';
 }
