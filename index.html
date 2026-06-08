@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Chá de Panela · Lucas & Elizandra</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@200;300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     :root{--gold:#c9a84c;}
@@ -30,60 +35,38 @@
 
     .tag{font-size:8px;letter-spacing:8px;color:var(--gold);text-transform:uppercase;}
 
-    /* título + botão de música lado a lado */
     .title-row{display:flex;align-items:center;justify-content:center;gap:14px;}
     .main-title{font-family:'Great Vibes',cursive;font-size:clamp(60px,15vw,84px);color:#fff;line-height:1;text-align:center;text-shadow:0 2px 24px rgba(0,0,0,.8);margin:4px 0;}
 
-    /* botão de música inline */
-    .music-inline{
-      width:40px;height:40px;border-radius:50%;
-      border:1px solid rgba(201,168,76,.45);
-      background:rgba(0,0,0,.5);
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;flex-shrink:0;
-      -webkit-tap-highlight-color:transparent;
-      transition:border-color .3s, background .3s;
-    }
+    .music-inline{width:40px;height:40px;border-radius:50%;border:1px solid rgba(201,168,76,.45);background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:border-color .3s,background .3s;}
     .music-inline:active{background:rgba(201,168,76,.15);}
     .music-inline svg{width:18px;height:18px;fill:var(--gold);transition:opacity .3s;}
     .music-inline.muted svg{opacity:.3;}
-    /* hint "toque" aparece só uma vez */
-    .music-hint{
-      font-size:8px;letter-spacing:2px;color:rgba(201,168,76,.55);
-      text-transform:uppercase;margin-top:-14px;
-      animation:fade-hint 4s ease 2s forwards;
-    }
+    .music-hint{font-size:8px;letter-spacing:2px;color:rgba(201,168,76,.55);text-transform:uppercase;margin-top:-14px;animation:fade-hint 4s ease 2s forwards;}
     @keyframes fade-hint{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}
 
     .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-align:center;}
     .couple{font-size:10px;letter-spacing:9px;color:var(--gold);text-transform:uppercase;}
-
     .date-block{text-align:center;line-height:1;}
     .date-day{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(80px,20vw,120px);color:#fff;display:block;letter-spacing:-3px;}
     .date-month{font-size:8px;letter-spacing:12px;color:var(--gold);text-transform:uppercase;display:block;margin-top:-8px;}
     .date-year{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:22px;color:rgba(255,255,255,.4);letter-spacing:8px;display:block;margin-top:6px;}
-
     .sec{text-align:center;width:100%;max-width:300px;}
     .sec-lbl{font-size:7.5px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:7px;}
     .sec-val{font-family:'Cormorant Garamond',serif;font-size:18px;color:#fff;font-weight:300;line-height:1.6;}
     .sec-val a{color:rgba(255,255,255,.6);font-size:13px;letter-spacing:2px;text-decoration:underline;text-underline-offset:4px;}
     .sec-val a:hover{color:var(--gold);}
-
     .box{border:1px solid rgba(201,168,76,.2);padding:22px 28px;max-width:280px;width:100%;text-align:center;position:relative;}
     .box::before,.box::after{content:'';position:absolute;width:6px;height:6px;background:var(--gold);}
     .box::before{top:-1px;left:-1px;} .box::after{bottom:-1px;right:-1px;}
     .box-lbl{font-size:7.5px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
     .box-name{font-family:'Cormorant Garamond',serif;font-size:24px;color:#fff;font-weight:300;letter-spacing:4px;margin-bottom:6px;}
     .box-sub{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase;}
-
-    /* mural */
     .mural-wrap{width:100%;max-width:340px;}
     .mural-label{font-size:7.5px;letter-spacing:7px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:14px;}
     .mural-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
     .mural-img{width:100%;aspect-ratio:3/4;object-fit:cover;filter:grayscale(20%) brightness(.88);transition:filter .4s;}
     .mural-img:hover,.mural-img:active{filter:none;}
-
-    /* RSVP */
     .rsvp-wrap{width:100%;max-width:300px;text-align:center;}
     .rsvp-form input,.rsvp-form select{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(201,168,76,.3);color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:200;letter-spacing:1px;padding:13px 4px;margin-bottom:16px;outline:none;-webkit-appearance:none;appearance:none;}
     .rsvp-form select option{background:#111;color:#fff;}
@@ -95,18 +78,78 @@
     .rsvp-ok{display:none;text-align:center;padding:20px 0;}
     .rsvp-ok-title{font-family:'Great Vibes',cursive;font-size:36px;color:var(--gold);margin-bottom:6px;}
     .rsvp-ok-sub{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase;}
-
     .verse{border:1px solid rgba(201,168,76,.18);padding:22px 26px;max-width:280px;width:100%;text-align:center;position:relative;}
     .verse::before,.verse::after{content:'';position:absolute;width:6px;height:6px;background:var(--gold);}
     .verse::before{top:-1px;left:-1px;} .verse::after{bottom:-1px;right:-1px;}
     .verse-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:8px;}
     .verse-ref{font-size:8px;letter-spacing:3px;color:var(--gold);}
 
-    /* player oculto mas no DOM e fora da tela */
+    /* ─── MENSAGENS ─── */
+    .msg-section{width:100%;max-width:320px;}
+    .msg-section .sec-lbl{text-align:center;margin-bottom:6px;}
+    .msg-section-sub{font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:22px;}
+
+    .msg-form input,
+    .msg-form textarea{
+      width:100%;background:transparent;
+      border:0;border-bottom:1px solid rgba(201,168,76,.3);
+      color:#fff;font-family:'Montserrat',sans-serif;
+      font-size:13px;font-weight:200;letter-spacing:1px;
+      padding:12px 4px;margin-bottom:14px;
+      outline:none;resize:none;
+      -webkit-appearance:none;appearance:none;
+    }
+    .msg-form textarea{border:1px solid rgba(201,168,76,.2);padding:12px;border-radius:0;margin-top:4px;line-height:1.6;}
+    .msg-form input::placeholder,
+    .msg-form textarea::placeholder{color:rgba(255,255,255,.22);}
+    .msg-form input:focus{border-bottom-color:var(--gold);}
+    .msg-form textarea:focus{border-color:rgba(201,168,76,.5);outline:none;}
+    .msg-btn{
+      width:100%;border:1px solid var(--gold);color:var(--gold);
+      background:transparent;font-family:'Montserrat',sans-serif;
+      font-weight:300;font-size:10px;letter-spacing:5px;
+      text-transform:uppercase;padding:14px;cursor:pointer;
+      transition:all .3s;margin-bottom:28px;
+    }
+    .msg-btn:hover,.msg-btn:active{background:var(--gold);color:#000;}
+    .msg-btn:disabled{opacity:.4;cursor:default;}
+
+    /* lista de mensagens */
+    .msg-list{display:flex;flex-direction:column;gap:14px;width:100%;}
+    .msg-card{
+      border:1px solid rgba(201,168,76,.15);
+      padding:16px 18px;position:relative;
+      animation:msg-in .5s ease both;
+    }
+    @keyframes msg-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .msg-card::before{content:'\201C';font-family:'Cormorant Garamond',serif;font-size:40px;color:rgba(201,168,76,.2);position:absolute;top:4px;left:10px;line-height:1;}
+    .msg-nome{
+      font-family:'Cormorant Garamond',serif;font-size:15px;
+      color:var(--gold);font-weight:400;margin-bottom:6px;
+      padding-left:20px;
+    }
+    .msg-texto{
+      font-family:'Cormorant Garamond',serif;font-style:italic;
+      font-size:14px;color:rgba(255,255,255,.75);
+      line-height:1.7;padding-left:20px;
+    }
+    .msg-data{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-top:8px;padding-left:20px;}
+
+    .msg-loading{font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.3);text-align:center;padding:20px 0;text-transform:uppercase;}
+    .msg-empty{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.3);text-align:center;padding:16px 0;}
+
+    /* firebase não configurado */
+    .msg-no-firebase{
+      font-size:10px;letter-spacing:1px;color:rgba(255,255,255,.3);
+      text-align:center;padding:16px;border:1px dashed rgba(255,255,255,.1);
+      line-height:1.8;
+    }
+
+    /* player YouTube oculto */
     #yt-wrap{position:fixed;top:-800px;left:-800px;width:640px;height:480px;pointer-events:none;}
 
     /* admin */
-    #admin-panel{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.96);flex-direction:column;align-items:center;justify-content:center;padding:32px;}
+    #admin-panel{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.96);flex-direction:column;align-items:center;justify-content:center;padding:32px;overflow-y:auto;}
     #admin-panel.open{display:flex;}
     .admin-close{position:absolute;top:20px;right:24px;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;background:none;border:none;}
     .admin-title{font-family:'Great Vibes',cursive;font-size:32px;color:var(--gold);margin-bottom:24px;}
@@ -127,7 +170,6 @@
 </head>
 <body>
 
-<!-- Player YouTube: fora do viewport mas presente no DOM -->
 <div id="yt-wrap"><div id="yt-container"></div></div>
 
 <!-- SPLASH -->
@@ -147,17 +189,12 @@
     <div class="tag">Save the Date</div>
     <div class="dv"><div class="dv-line"></div><div class="dv-gem"></div><div class="dv-line"></div></div>
 
-    <!-- título + botão de música ao lado -->
     <div class="title-row">
       <h1 class="main-title">Chá de Panela</h1>
       <button class="music-inline muted" id="music-btn" onclick="toggleMusic()" title="Tocar música" aria-label="Tocar música">
-        <!-- ícone de nota musical SVG -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-        </svg>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
       </button>
     </div>
-    <!-- hint que some após alguns segundos -->
     <p class="music-hint" id="music-hint" style="display:none;">toque &#9833; para ouvir</p>
 
     <p class="subtitle">Venha celebrar esse momento tão especial conosco</p>
@@ -206,6 +243,7 @@
 
     <div class="dv"><div class="dv-line"></div><div class="dv-gem"></div><div class="dv-line"></div></div>
 
+    <!-- RSVP -->
     <div class="rsvp-wrap">
       <div class="sec-lbl" style="margin-bottom:20px;">Confirme sua Presença</div>
       <div id="rsvp-form" class="rsvp-form">
@@ -221,6 +259,24 @@
       <div class="rsvp-ok" id="rsvp-ok">
         <div class="rsvp-ok-title">Obrigada!</div>
         <div class="rsvp-ok-sub">Sua presença foi confirmada</div>
+      </div>
+    </div>
+
+    <div class="dv"><div class="dv-line"></div><div class="dv-gem"></div><div class="dv-line"></div></div>
+
+    <!-- MENSAGENS AO CASAL -->
+    <div class="msg-section">
+      <div class="sec-lbl">Mensagens ao casal</div>
+      <p class="msg-section-sub">Deixe um recado — todos os convidados podem ler</p>
+
+      <div class="msg-form" id="msg-form">
+        <input id="msg-nome" type="text" placeholder="Seu nome" maxlength="40">
+        <textarea id="msg-texto" placeholder="Sua mensagem para Lucas e Elizandra..." maxlength="300" rows="3"></textarea>
+        <button class="msg-btn" id="msg-btn" onclick="submitMsg()">Enviar mensagem</button>
+      </div>
+
+      <div id="msg-list">
+        <p class="msg-loading" id="msg-loading">Carregando mensagens...</p>
       </div>
     </div>
 
@@ -252,84 +308,135 @@
 </div>
 
 <script>
-/*
-  ESTRATÉGIA DE MÚSICA — por que o mobile bloqueava:
-  ─────────────────────────────────────────────────
-  Browsers mobile (iOS/Android) bloqueiam autoplay com áudio em iframes.
-  A solução: carregar o player com MUTE=1 + AUTOPLAY=1 (muted autoplay é
-  permitido em todos os browsers). O botão ao lado do título DESMUTA o
-  player dentro do handler do clique — o que os browsers permitem.
-*/
+/* ══════════════════════════════════════════
+   FIREBASE CONFIG
+   Substitua os valores abaixo pelos do seu
+   projeto Firebase (veja instruções no README)
+══════════════════════════════════════════ */
+var FIREBASE_CONFIG = {
+  apiKey            : "COLE_AQUI_SEU_apiKey",
+  authDomain        : "COLE_AQUI_SEU_authDomain",
+  databaseURL       : "COLE_AQUI_SEU_databaseURL",
+  projectId         : "COLE_AQUI_SEU_projectId",
+  storageBucket     : "COLE_AQUI_SEU_storageBucket",
+  messagingSenderId : "COLE_AQUI_SEU_messagingSenderId",
+  appId             : "COLE_AQUI_SEU_appId"
+};
 
-var yt       = null;
-var ytReady  = false;
-var playing  = false; // com som?
+/* detecta se o Firebase foi configurado */
+var firebaseOk = FIREBASE_CONFIG.apiKey !== "COLE_AQUI_SEU_apiKey";
+var db = null;
 
-// Injeta a API do YouTube o mais cedo possível
+if (firebaseOk) {
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database().ref('mensagens');
+    iniciarMensagens();
+  } catch(e) { firebaseOk = false; }
+}
+
+if (!firebaseOk) {
+  document.getElementById('msg-loading').innerHTML =
+    '<div class="msg-no-firebase">Configure o Firebase para ativar as mensagens em tempo real.<br>' +
+    'Veja as instruções no rodapé deste arquivo.</div>';
+}
+
+/* ── MENSAGENS ── */
+function iniciarMensagens() {
+  document.getElementById('msg-loading').textContent = 'Carregando...';
+
+  // ouve mensagens em tempo real, ordenadas por data
+  db.orderByChild('ts').on('value', function(snap) {
+    var msgs = [];
+    snap.forEach(function(c) { msgs.push(c.val()); });
+    msgs.reverse(); // mais recente primeiro
+
+    var loading = document.getElementById('msg-loading');
+    if (loading) loading.style.display = 'none';
+
+    var list = document.getElementById('msg-list');
+    if (!msgs.length) {
+      list.innerHTML = '<p class="msg-empty">Seja o primeiro a deixar uma mensagem!</p>';
+      return;
+    }
+    list.innerHTML = msgs.map(function(m) {
+      var dt = m.ts ? new Date(m.ts).toLocaleDateString('pt-BR', {day:'2-digit',month:'short'}) : '';
+      return '<div class="msg-card">' +
+        '<div class="msg-nome">' + escHtml(m.nome) + '</div>' +
+        '<div class="msg-texto">' + escHtml(m.texto) + '</div>' +
+        (dt ? '<div class="msg-data">' + dt + '</div>' : '') +
+        '</div>';
+    }).join('');
+  });
+}
+
+function submitMsg() {
+  if (!firebaseOk) return;
+  var nome  = document.getElementById('msg-nome').value.trim();
+  var texto = document.getElementById('msg-texto').value.trim();
+  if (!nome)  { document.getElementById('msg-nome').focus();  return; }
+  if (!texto) { document.getElementById('msg-texto').focus(); return; }
+
+  var btn = document.getElementById('msg-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  db.push({
+    nome  : nome,
+    texto : texto,
+    ts    : firebase.database.ServerValue.TIMESTAMP
+  }).then(function() {
+    document.getElementById('msg-nome').value  = '';
+    document.getElementById('msg-texto').value = '';
+    btn.disabled = false;
+    btn.textContent = 'Enviar mensagem';
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Enviar mensagem';
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── MÚSICA ── */
 (function() {
   var s = document.createElement('script');
   s.src = 'https://www.youtube.com/iframe_api';
   document.head.insertBefore(s, document.head.firstChild);
 })();
 
+var yt = null, ytReady = false, playing = false;
+
 window.onYouTubeIframeAPIReady = function() {
   yt = new YT.Player('yt-container', {
-    videoId   : 'Tjp_EaVEdZY',
-    width     : '640',
-    height    : '480',
-    playerVars: {
-      autoplay       : 1,   // começa a tocar automaticamente...
-      mute           : 1,   // ...mas em silêncio (permitido no mobile!)
-      controls       : 0,
-      loop           : 1,
-      playlist       : 'Tjp_EaVEdZY',
-      rel            : 0,
-      iv_load_policy : 3,
-      modestbranding : 1,
-      origin         : window.location.origin || 'https://elizstraub3-hash.github.io'
-    },
-    events: {
-      onReady: function() { ytReady = true; }
-    }
+    videoId: 'Tjp_EaVEdZY', width:'640', height:'480',
+    playerVars:{autoplay:1,mute:1,controls:0,loop:1,playlist:'Tjp_EaVEdZY',rel:0,iv_load_policy:3,modestbranding:1,origin:window.location.origin||'https://elizstraub3-hash.github.io'},
+    events:{onReady:function(){ytReady=true;}}
   });
 };
 
-/* ── ABRIR CONVITE ── */
 function openInvite() {
   var btn = document.getElementById('splash-btn');
   if (btn) btn.disabled = true;
   document.getElementById('splash').classList.add('hide');
   setTimeout(function() {
     document.getElementById('invite').classList.add('show');
-    // mostra o hint do botão de música após a transição
     setTimeout(function() {
       var h = document.getElementById('music-hint');
-      if (h) { h.style.display = 'block'; }
+      if (h) h.style.display = 'block';
     }, 800);
   }, 450);
 }
 
-/* ── BOTÃO DE MÚSICA (ao lado do título) ──
-   toggleMusic() é chamado diretamente no onclick → gesto do usuário →
-   unMute() é aceito pelo iOS porque é síncrono com o toque.
-*/
 function toggleMusic() {
   if (!ytReady || !yt) return;
-  var btn  = document.getElementById('music-btn');
+  var btn = document.getElementById('music-btn');
   var hint = document.getElementById('music-hint');
   if (hint) hint.style.display = 'none';
-
-  if (playing) {
-    yt.mute();
-    playing = false;
-    btn.classList.add('muted');
-  } else {
-    yt.unMute();
-    yt.setVolume(100);
-    yt.playVideo(); // garante que está rodando
-    playing = true;
-    btn.classList.remove('muted');
-  }
+  if (playing) { yt.mute(); playing=false; btn.classList.add('muted'); }
+  else { yt.unMute(); yt.setVolume(100); yt.playVideo(); playing=true; btn.classList.remove('muted'); }
 }
 
 /* ── RSVP ── */
@@ -339,57 +446,38 @@ function submitRSVP() {
   if (!nome) { document.getElementById('rsvp-nome').focus(); return; }
   if (!pres) { document.getElementById('rsvp-pres').focus(); return; }
   var ts = new Date().toLocaleString('pt-BR');
-  var lista = JSON.parse(localStorage.getItem('rsvp_list') || '[]');
-  lista.push({ nome: nome, presenca: pres, data: ts });
-  localStorage.setItem('rsvp_list', JSON.stringify(lista));
-  var sub  = encodeURIComponent('Confirmacao Cha de Panela - ' + nome);
-  var body = encodeURIComponent('Nome: ' + nome + '\nPresenca: ' + pres + '\nData: ' + ts);
-  window.open('mailto:elizstraub3@gmail.com?subject=' + sub + '&body=' + body, '_blank');
-  document.getElementById('rsvp-form').style.display = 'none';
-  document.getElementById('rsvp-ok').style.display   = 'block';
+  var lista = JSON.parse(localStorage.getItem('rsvp_list')||'[]');
+  lista.push({nome:nome,presenca:pres,data:ts});
+  localStorage.setItem('rsvp_list',JSON.stringify(lista));
+  var sub  = encodeURIComponent('Confirmacao Cha de Panela - '+nome);
+  var body = encodeURIComponent('Nome: '+nome+'\nPresenca: '+pres+'\nData: '+ts);
+  window.open('mailto:elizstraub3@gmail.com?subject='+sub+'&body='+body,'_blank');
+  document.getElementById('rsvp-form').style.display='none';
+  document.getElementById('rsvp-ok').style.display='block';
 }
 
 /* ── ADMIN ── */
-var tapCount = 0, tapTimer;
-function adminTap() {
-  clearTimeout(tapTimer);
-  if (++tapCount >= 5) { tapCount = 0; openAdmin(); }
-  tapTimer = setTimeout(function(){ tapCount = 0; }, 1500);
-}
-if (location.search.includes('admin') || location.hash === '#admin') {
-  window.addEventListener('load', openAdmin);
-}
-function openAdmin()  { document.getElementById('admin-panel').classList.add('open'); }
-function closeAdmin() {
-  document.getElementById('admin-panel').classList.remove('open');
-  document.getElementById('admin-login').style.display = '';
-  document.getElementById('admin-list-wrap').style.display = 'none';
-  document.getElementById('admin-pass').value = '';
-  document.getElementById('admin-err').style.display = 'none';
-}
-function checkAdmin() {
-  if (document.getElementById('admin-pass').value === 'cha2026') {
-    document.getElementById('admin-login').style.display = 'none';
-    document.getElementById('admin-list-wrap').style.display = 'block';
+var tapCount=0,tapTimer;
+function adminTap(){clearTimeout(tapTimer);if(++tapCount>=5){tapCount=0;openAdmin();}tapTimer=setTimeout(function(){tapCount=0;},1500);}
+if(location.search.includes('admin')||location.hash==='#admin')window.addEventListener('load',openAdmin);
+function openAdmin(){document.getElementById('admin-panel').classList.add('open');}
+function closeAdmin(){document.getElementById('admin-panel').classList.remove('open');document.getElementById('admin-login').style.display='';document.getElementById('admin-list-wrap').style.display='none';document.getElementById('admin-pass').value='';document.getElementById('admin-err').style.display='none';}
+function checkAdmin(){
+  if(document.getElementById('admin-pass').value==='cha2026'){
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-list-wrap').style.display='block';
     renderAdmin();
-  } else {
-    document.getElementById('admin-err').style.display = 'block';
-  }
+  }else{document.getElementById('admin-err').style.display='block';}
 }
-function renderAdmin() {
-  var lista = JSON.parse(localStorage.getItem('rsvp_list') || '[]');
-  var sim = lista.filter(function(r){ return r.presenca==='Sim'; }).length;
-  var nao = lista.filter(function(r){ return r.presenca==='Nao'; }).length;
-  document.getElementById('admin-stats').textContent =
-    lista.length + ' total · ' + sim + ' confirmados · ' + nao + ' não vão';
-  if (!lista.length) {
-    document.getElementById('admin-scroll').innerHTML = '<div class="admin-empty">Nenhuma confirmação ainda.</div>';
-    return;
-  }
-  document.getElementById('admin-scroll').innerHTML = lista.slice().reverse().map(function(r) {
-    var cls = r.presenca==='Sim' ? 'ai-sim' : 'ai-nao';
-    return '<div class="admin-item"><span class="ai-name">' + r.nome + '</span>' +
-      '<span class="ai-info"><span class="' + cls + '">' + r.presenca + '</span> &mdash; ' + r.data + '</span></div>';
+function renderAdmin(){
+  var lista=JSON.parse(localStorage.getItem('rsvp_list')||'[]');
+  var sim=lista.filter(function(r){return r.presenca==='Sim';}).length;
+  var nao=lista.filter(function(r){return r.presenca==='Nao';}).length;
+  document.getElementById('admin-stats').textContent=lista.length+' total · '+sim+' confirmados · '+nao+' não vão';
+  if(!lista.length){document.getElementById('admin-scroll').innerHTML='<div class="admin-empty">Nenhuma confirmação ainda.</div>';return;}
+  document.getElementById('admin-scroll').innerHTML=lista.slice().reverse().map(function(r){
+    var cls=r.presenca==='Sim'?'ai-sim':'ai-nao';
+    return '<div class="admin-item"><span class="ai-name">'+r.nome+'</span><span class="ai-info"><span class="'+cls+'">'+r.presenca+'</span> &mdash; '+r.data+'</span></div>';
   }).join('');
 }
 </script>
