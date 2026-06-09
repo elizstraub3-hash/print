@@ -38,14 +38,14 @@
     .title-row{display:flex;align-items:center;justify-content:center;gap:14px;}
     .main-title{font-family:'Great Vibes',cursive;font-size:clamp(60px,15vw,84px);color:#fff;line-height:1;text-align:center;text-shadow:0 2px 24px rgba(0,0,0,.8);margin:4px 0;}
 
-    .music-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
-    .music-inline{width:44px;height:44px;border-radius:50%;border:1px solid rgba(201,168,76,.55);background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .3s,background .3s;}
-    .music-inline:active{background:rgba(201,168,76,.2);}
-    .music-inline svg{width:20px;height:20px;fill:var(--gold);transition:opacity .3s;}
-    .music-inline.muted svg{opacity:.3;}
-    .music-label{font-size:7px;letter-spacing:1.5px;color:rgba(201,168,76,.6);text-transform:uppercase;text-align:center;line-height:1.5;max-width:80px;cursor:pointer;}
-    .music-inline.muted ~ .music-label{opacity:.4;}
-    .music-hint{font-size:8px;letter-spacing:2px;color:rgba(201,168,76,.55);text-transform:uppercase;margin-top:-14px;animation:fade-hint 4s ease 2s forwards;}
+    .music-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:6px;}
+    .music-inline{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .3s;}
+    .music-inline:active{background:rgba(255,255,255,.25);}
+    .music-inline svg{width:22px;height:22px;fill:#fff;transition:opacity .3s;}
+    .music-inline.muted svg{opacity:.45;}
+    .music-label{font-size:7.5px;letter-spacing:2px;color:rgba(255,255,255,.7);text-transform:uppercase;text-align:center;line-height:1.6;max-width:100px;cursor:pointer;}
+    .music-inline.muted ~ .music-label{opacity:.45;}
+    .music-hint{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-top:-14px;animation:fade-hint 4s ease 2s forwards;}
     @keyframes fade-hint{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}
 
     .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-align:center;}
@@ -191,17 +191,19 @@
   <div class="bg"></div>
   <div class="content">
 
+    <!-- BOTÃO DE MÚSICA — acima do Save the Date -->
+    <div class="music-wrap" onclick="toggleMusic()">
+      <button class="music-inline muted" id="music-btn" title="Tocar música" aria-label="Tocar música">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
+      </button>
+      <span class="music-label">Clique na música e entre no clima</span>
+    </div>
+
     <div class="tag">Save the Date</div>
     <div class="dv"><div class="dv-line"></div><div class="dv-gem"></div><div class="dv-line"></div></div>
 
     <div class="title-row">
       <h1 class="main-title">Chá de Panela</h1>
-      <div class="music-wrap" onclick="toggleMusic()">
-        <button class="music-inline muted" id="music-btn" title="Tocar música" aria-label="Tocar música">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
-        </button>
-        <span class="music-label">Clique na música e entre no clima</span>
-      </div>
     </div>
 
     <p class="subtitle">Venha celebrar esse momento tão especial conosco</p>
