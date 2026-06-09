@@ -168,7 +168,9 @@
     .admin-item .ai-info{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase;}
     .ai-sim{color:var(--gold);} .ai-nao{color:#e55;}
     .admin-empty{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.3);text-align:center;margin-top:20px;}
-    .admin-clear{margin-top:14px;width:100%;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.25);background:transparent;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;padding:10px;cursor:pointer;}
+    .admin-clear{margin-top:8px;width:100%;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.25);background:transparent;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;padding:10px;cursor:pointer;}
+    .admin-export{margin-top:12px;width:100%;border:1px solid var(--gold);color:var(--gold);background:transparent;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;padding:12px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .admin-export:hover,.admin-export:active{background:var(--gold);color:#000;}
   </style>
 </head>
 <body>
@@ -309,6 +311,9 @@
   <div id="admin-list-wrap">
     <div class="admin-stats" id="admin-stats"></div>
     <div class="admin-scroll" id="admin-scroll"></div>
+    <button class="admin-export" onclick="exportarLista()">
+      &#8659; Exportar lista (.csv)
+    </button>
     <button class="admin-clear" onclick="if(confirm('Apagar tudo?')){if(firebaseOk&&db)firebase.database().ref('confirmacoes').remove();localStorage.removeItem('rsvp_list');renderAdmin();}">Limpar lista</button>
   </div>
 </div>
@@ -404,6 +409,52 @@ function submitMsg() {
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function exportarLista() {
+  function gerarCSV(lista) {
+    if (!lista.length) { alert('Nenhuma confirmação para exportar.'); return; }
+
+    var sim = lista.filter(function(r){ return r.presenca==='Sim'; }).length;
+    var nao = lista.filter(function(r){ return r.presenca==='Nao'; }).length;
+
+    var linhas = [
+      '﻿' + 'Chá de Panela — Lucas & Elizandra',
+      'Exportado em: ' + new Date().toLocaleString('pt-BR'),
+      'Total: ' + lista.length + ' | Confirmados: ' + sim + ' | Não vão: ' + nao,
+      '',
+      'Nome,Presença,Data'
+    ];
+
+    lista.forEach(function(r) {
+      var nome  = '"' + (r.nome   ||'').replace(/"/g,'""') + '"';
+      var pres  = '"' + (r.presenca||'').replace(/"/g,'""') + '"';
+      var data  = '"' + (r.data   ||'').replace(/"/g,'""') + '"';
+      linhas.push(nome + ',' + pres + ',' + data);
+    });
+
+    var csv  = linhas.join('\r\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'convidados-cha-de-panela.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Lê do Firebase se disponível, senão localStorage
+  if (firebaseOk && db) {
+    firebase.database().ref('confirmacoes').orderByChild('data').once('value', function(snap) {
+      var lista = [];
+      snap.forEach(function(c){ lista.push(c.val()); });
+      lista.reverse();
+      gerarCSV(lista);
+    });
+  } else {
+    var lista = JSON.parse(localStorage.getItem('rsvp_list') || '[]').slice().reverse();
+    gerarCSV(lista);
+  }
 }
 
 /* ── MÚSICA ── */
