@@ -48,12 +48,12 @@
     .music-hint{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-top:-14px;animation:fade-hint 4s ease 2s forwards;}
     @keyframes fade-hint{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}
 
-    .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-align:center;}
+    .subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.9);letter-spacing:.5px;text-align:center;}
     .couple{font-size:12px;letter-spacing:9px;color:var(--gold);text-transform:uppercase;}
     .date-block{text-align:center;line-height:1;}
     .date-day{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(80px,20vw,120px);color:#fff;display:block;letter-spacing:-3px;}
     .date-month{font-size:11px;letter-spacing:12px;color:var(--gold);text-transform:uppercase;display:block;margin-top:-8px;}
-    .date-year{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:22px;color:rgba(255,255,255,.4);letter-spacing:8px;display:block;margin-top:6px;}
+    .date-year{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:22px;color:#fff;letter-spacing:8px;display:block;margin-top:6px;}
     .sec{text-align:center;width:100%;max-width:300px;}
     .sec-lbl{font-size:10px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:7px;}
     .sec-val{font-family:'Cormorant Garamond',serif;font-size:18px;color:#fff;font-weight:300;line-height:1.6;}
@@ -75,12 +75,12 @@
     .rsvp-form select option{background:#111;color:#fff;}
     .rsvp-form input::placeholder{color:rgba(255,255,255,.55);}
     .rsvp-form input:focus,.rsvp-form select:focus{border-bottom-color:var(--gold);}
-    .rsvp-note{font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.6);text-align:center;margin-bottom:20px;line-height:1.8;}
+    .rsvp-note{font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.85);text-align:center;margin-bottom:20px;line-height:1.8;}
     .rsvp-btn{width:100%;border:1px solid var(--gold);color:var(--gold);background:transparent;font-family:'Montserrat',sans-serif;font-weight:300;font-size:10px;letter-spacing:5px;text-transform:uppercase;padding:15px;cursor:pointer;transition:all .3s;}
     .rsvp-btn:hover,.rsvp-btn:active{background:var(--gold);color:#000;}
     .rsvp-ok{display:none;text-align:center;padding:20px 0;}
     .rsvp-ok-title{font-family:'Great Vibes',cursive;font-size:36px;color:var(--gold);margin-bottom:6px;}
-    .rsvp-ok-sub{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase;}
+    .rsvp-ok-sub{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.8);text-transform:uppercase;}
     .verse{border:1px solid rgba(201,168,76,.18);padding:22px 26px;max-width:280px;width:100%;text-align:center;position:relative;}
     .verse::before,.verse::after{content:'';position:absolute;width:6px;height:6px;background:var(--gold);}
     .verse::before{top:-1px;left:-1px;} .verse::after{bottom:-1px;right:-1px;}
@@ -256,7 +256,7 @@
          style="display:inline-block;border:1px solid var(--gold);color:var(--gold);font-family:'Montserrat',sans-serif;font-weight:300;font-size:9px;letter-spacing:4px;text-transform:uppercase;padding:12px 24px;text-decoration:none;transition:all .3s;margin-bottom:16px;">
         Ver lista de presentes
       </a>
-      <p style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.45);line-height:1.9;margin:0 0 10px;text-transform:uppercase;">
+      <p style="font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.85);line-height:1.9;margin:0 0 10px;text-transform:uppercase;">
         Caso precise buscar manualmente:<br>
         <span style="color:rgba(201,168,76,.8);">Código&nbsp;&nbsp;20999312-2 &nbsp;·&nbsp; 26/09/2026</span>
       </p>
@@ -272,7 +272,11 @@
 
     <!-- RSVP -->
     <div class="rsvp-wrap">
-      <div class="sec-lbl" style="margin-bottom:20px;">Confirme sua Presença</div>
+      <div class="sec-lbl" style="margin-bottom:12px;">Confirme sua Presença</div>
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.9);line-height:1.9;text-align:center;margin:0 0 20px;">
+        É muito importante que você nos informe<br>se poderá ou não estar presente.<br>
+        <span style="font-size:12px;color:rgba(201,168,76,.9);letter-spacing:1px;">Sua resposta nos ajuda muito na organização.</span>
+      </p>
       <div id="rsvp-form" class="rsvp-form">
         <input id="rsvp-nome" type="text" placeholder="Seu nome completo" required maxlength="60">
         <select id="rsvp-pres">
