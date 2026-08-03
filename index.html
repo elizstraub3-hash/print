@@ -261,10 +261,11 @@
         <span style="color:rgba(201,168,76,.8);">Código&nbsp;&nbsp;20999312-2 &nbsp;·&nbsp; 26/09/2026</span>
       </p>
       <div style="height:1px;background:rgba(201,168,76,.15);margin:14px 0;"></div>
-      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.6);line-height:1.8;margin:0;">
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.85);line-height:1.8;margin:0;">
         Caso prefira presentear com um valor em dinheiro,<br>
         aceitamos Pix com todo o carinho — qualquer valor<br>
-        é muito bem-vindo até um dia antes do Chá.
+        é muito bem-vindo até um dia antes do Chá.<br><br>
+        <span style="font-family:'Montserrat',sans-serif;font-style:normal;font-size:10px;letter-spacing:2px;color:rgba(201,168,76,.9);">Chave Pix &nbsp;·&nbsp; (41) 99911-7651</span>
       </p>
     </div>
 
@@ -384,11 +385,10 @@ if (!firebaseOk) {
 function iniciarMensagens() {
   document.getElementById('msg-loading').textContent = 'Carregando...';
 
-  // ouve mensagens em tempo real, ordenadas por data
   db.orderByChild('ts').on('value', function(snap) {
     var msgs = [];
     snap.forEach(function(c) { msgs.push(c.val()); });
-    msgs.reverse(); // mais recente primeiro
+    msgs.reverse();
 
     var loading = document.getElementById('msg-loading');
     if (loading) loading.style.display = 'none';
@@ -406,6 +406,11 @@ function iniciarMensagens() {
         (dt ? '<div class="msg-data">' + dt + '</div>' : '') +
         '</div>';
     }).join('');
+  }, function(err) {
+    var loading = document.getElementById('msg-loading');
+    if (loading) loading.style.display = 'none';
+    var list = document.getElementById('msg-list');
+    if (list) list.innerHTML = '<p class="msg-empty">Mensagens indisponíveis no momento.</p>';
   });
 }
 
