@@ -269,6 +269,23 @@
 
     <div class="dv"><div class="dv-line"></div><div class="dv-gem"></div><div class="dv-line"></div></div>
 
+    <!-- PIX -->
+    <div style="width:100%;max-width:300px;text-align:center;">
+      <div class="sec-lbl" style="margin-bottom:14px;">Presente via Pix</div>
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,.9);line-height:1.9;margin:0 0 20px;">
+        Se desejar nos presentear com um valor,<br>qualquer contribuição será muito bem-vinda. 💛
+      </p>
+      <div onclick="copiarPix()" id="pix-box"
+        style="border:1px solid rgba(201,168,76,.5);padding:18px 20px;cursor:pointer;transition:all .3s;position:relative;">
+        <div style="font-size:8px;letter-spacing:3px;color:rgba(201,168,76,.8);text-transform:uppercase;margin-bottom:8px;">Chave CPF</div>
+        <div id="pix-chave" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;letter-spacing:3px;">105.957.359-83</div>
+        <div id="pix-hint" style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:10px;">Toque para copiar</div>
+      </div>
+      <div id="pix-ok" style="display:none;font-size:9px;letter-spacing:3px;color:rgba(201,168,76,.9);text-transform:uppercase;margin-top:10px;">✓ Chave copiada!</div>
+    </div>
+
+    <div class="dv"><div class="dv-line"></div><div class="dv-gem"></div><div class="dv-line"></div></div>
+
     <!-- RSVP -->
     <div class="rsvp-wrap">
       <div class="sec-lbl" style="margin-bottom:12px;">Confirme sua Presença</div>
@@ -550,6 +567,35 @@ function toggleMusic() {
   if (hint) hint.style.display = 'none';
   if (playing) { yt.mute(); playing=false; btn.classList.add('muted'); }
   else { yt.unMute(); yt.setVolume(100); yt.playVideo(); playing=true; btn.classList.remove('muted'); }
+}
+
+/* ── PIX ── */
+function copiarPix() {
+  var chave = '105.957.359-83';
+  var box = document.getElementById('pix-box');
+  var ok  = document.getElementById('pix-ok');
+  var hint = document.getElementById('pix-hint');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(chave).then(function() { mostrarCopiado(); });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = chave;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    mostrarCopiado();
+  }
+  function mostrarCopiado() {
+    box.style.borderColor = 'rgba(201,168,76,1)';
+    hint.style.display = 'none';
+    ok.style.display = 'block';
+    setTimeout(function() {
+      box.style.borderColor = 'rgba(201,168,76,.5)';
+      hint.style.display = 'block';
+      ok.style.display = 'none';
+    }, 2500);
+  }
 }
 
 /* ── RSVP ── */
