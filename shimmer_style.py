@@ -64,13 +64,18 @@ def _with_shadow(fill, m, offset, blur, alpha, color):
 
 
 def gold_text(text, fnt, tracking=0):
-    """Text filled with the brand gold texture, softened toward champagne, with a discreet drop shadow."""
+    """Text clipped inside the brand gold texture, like a PowerClip: the whole texture spans the
+    lettering, so each part of the word catches a different band (highlight, mid gold, darker gold)."""
     m = _mask(text, fnt, tracking)
     w, h = m.size
-    sc = max(w / GOLD_TEX.width, h / GOLD_TEX.height)
-    tex = GOLD_TEX.resize((int(GOLD_TEX.width * sc) + 1, int(GOLD_TEX.height * sc) + 1), Image.LANCZOS)
-    tex = tex.crop(((tex.width - w) // 2, (tex.height - h) // 2, (tex.width - w) // 2 + w, (tex.height - h) // 2 + h))
-    fill = tex.convert('RGBA')  # the brand's gold texture, used exactly as supplied
+    x0, y0, x1, y1 = m.getbbox()
+    iw, ih = x1 - x0, y1 - y0
+    # the ink box covers ~0.15-0.85 of the texture height and its full width
+    th = int(ih / 0.70) + 1
+    tex = GOLD_TEX.resize((iw, th), Image.LANCZOS)
+    top = int(th * 0.15)
+    fill = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    fill.paste(tex.crop((0, top, iw, top + ih)).convert('RGBA'), (x0, y0))
     fill.putalpha(m)
     off = (max(2, int(fnt.size * 0.025)), max(2, int(fnt.size * 0.035)))
     return _with_shadow(fill, m, off, max(1.5, fnt.size * 0.02), 0.45, (55, 45, 35))
