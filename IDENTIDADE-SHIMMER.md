@@ -6,7 +6,7 @@ Implementado em `shimmer_style.py`.
 ## Logo (regra fixa)
 - Usar **sempre a logo original** enviada pela cliente: **nunca** recolorir, preencher com textura, distorcer ou redesenhar.
 - **Sub-logo** (o monograma com o diamante): recortada diretamente da logo original, sem alteração.
-- **Capa dos destaques:** igual à foto do perfil, com fundo bege (232, 225, 213), aro na textura dourada e a sub-logo original no centro (`destaques/capa-destaque-sublogo*.png`).
+- **Capa dos destaques:** igual à foto do perfil, com fundo bege (232, 225, 213), aro na textura dourada e a sub-logo original no centro. Versão escolhida: **lisa** (`destaques/capa-destaque-sublogo.png`).
 - É permitida apenas uma sombra suave **atrás** da logo, quando o fundo for claro demais.
 
 ## Tipografia
