@@ -159,3 +159,14 @@ def gold_fill(mask):
     out.paste(tex.crop((0, top, iw, top + ih)).convert('RGBA'), (x0, y0))
     out.putalpha(mask)
     return out
+
+
+def bottom_fade(img, start, color=(250, 248, 244), strength=0.96):
+    """Light fade rising from the bottom (approved on the Clássico post), for dark text below the piece.
+    `start` is where the fade begins, as a fraction of the height."""
+    W, H = img.size
+    y = np.arange(H, dtype=np.float32)[:, None]
+    a = np.clip((y - H * start) / (H * (1 - start)), 0, 1) ** 1.15 * strength
+    lay = Image.new('RGBA', (W, H), color + (0,))
+    lay.putalpha(Image.fromarray((np.broadcast_to(a, (H, W)) * 255).astype(np.uint8)))
+    img.alpha_composite(lay)

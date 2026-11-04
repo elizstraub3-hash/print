@@ -29,6 +29,12 @@ Implementado em `shimmer_style.py`.
 - **Versão produto:** frase curta em caixa alta embaixo à esquerda, preço ou "Condições especiais" em dourado, detalhes pequenos e logo embaixo à direita.
 - **Versão editorial:** parágrafo curto em caixa alta abaixo do título e logo embaixo, no centro.
 
+## Variação com degradê (aprovada, ref. post do Solitário Clássico)
+- Degradê **claro** (marfim quase branco) subindo da base, cobrindo só o terço de baixo, sem tocar na joia.
+- Sobre o degradê, os textos ficam **escuros**: frase em Cinzel marrom ("Peça exclusiva. Feita para durar."), detalhes em caixa alta pequena em marrom dourado, preço em destaque e parcelamento em letra simples.
+- O topo segue o padrão: título em Cinzel branca e nome da peça em Parisienne com a textura dourada.
+- Usar em **alguns posts**, alternando com a versão sem degradê.
+
 ## Fotos e vídeos da cliente
 - **Usar 100% como vieram:** sem ampliar, sem nitidez extra, sem mudar cor, sem desfocar e sem zoom.
 - Só recortar quando o formato exigir (4:5 no feed, 9:16 em Reels e Stories), sem redimensionar.
