@@ -1,7 +1,7 @@
 """Shimmer visual identity.
 
 Rules from the brand owner:
-- caps: narrow high-contrast serif (Cormorant Garamond), tight spacing, white, subtle shadow
+- caps: Cinzel, tight spacing, white, subtle shadow
 - highlight word: Parisienne filled with the brand gold texture, soft champagne tone, discreet shadow
 - caps sit left-aligned on top of the script word, forming one block
 - no sparkles, shines or other artificial effects
@@ -22,7 +22,8 @@ def script_font(size):
 
 
 def caps_font(size, wght=500):
-    f = ImageFont.truetype(S + 'fonts/Cormorant.ttf', size)
+    # Cinzel is part of the brand identity (owner's call)
+    f = ImageFont.truetype(S + 'fonts/Cinzel.ttf', size)
     f.set_variation_by_axes([wght])
     return f
 
