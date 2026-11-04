@@ -145,3 +145,17 @@ def save_hq(img, path):
         img.save(path, optimize=True)
     else:
         img.save(path, quality=100, subsampling=0)
+
+
+def gold_fill(mask):
+    """Fill any L mask (icon, shape) with the gold texture spanning its ink box, PowerClip style."""
+    w, h = mask.size
+    x0, y0, x1, y1 = mask.getbbox()
+    iw, ih = x1 - x0, y1 - y0
+    th = int(ih / 0.70) + 1
+    tex = GOLD_TEX.resize((iw, th), Image.LANCZOS)
+    top = int(th * 0.15)
+    out = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    out.paste(tex.crop((0, top, iw, top + ih)).convert('RGBA'), (x0, y0))
+    out.putalpha(mask)
+    return out
