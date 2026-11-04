@@ -15,7 +15,12 @@ Implementado em `shimmer_style.py`.
   - Exemplos: "ANEL SOLITÁRIO", "PAR DE".
   - A sombra é mínima, só para separar do fundo.
 - **Palavra de destaque (nome da peça):** Parisienne, preenchida com a textura dourada da marca.
-- **Preço:** Cinzel com a textura dourada. Nunca em cursiva, porque números precisam ser lidos rápido.
+- **Bloco de preço (padrão do feed, ref. post do Clássico):**
+  - "À VISTA NO PIX": letra sem serifa (Montserrat), grossa, pequena, cor (104, 93, 80).
+  - **"R$ 1.440"**: Montserrat semibold, cor sólida marrom-dourada (132, 101, 46), sem textura.
+  - "ou 10x de R$ 160,00 sem juros": Montserrat, minúsculas, cor (112, 103, 93).
+  - Linha de detalhes em Cinzel pequena, bege-dourada (164, 140, 104); mais escura (132, 101, 46) quando não houver degradê atrás.
+  - Nunca em cursiva. Conferir sempre as contas (PIX = valor − 10%; parcela = valor ÷ 10).
 - **Números:** sempre retos (algarismos alinhados).
 
 ## Textura dourada

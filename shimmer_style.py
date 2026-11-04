@@ -170,3 +170,41 @@ def bottom_fade(img, start, color=(250, 248, 244), strength=0.96):
     lay = Image.new('RGBA', (W, H), color + (0,))
     lay.putalpha(Image.fromarray((np.broadcast_to(a, (H, W)) * 255).astype(np.uint8)))
     img.alpha_composite(lay)
+
+
+# ---- price block, as on the feed (Solitário Clássico post) ----
+PRICE_COLOR = (132, 101, 46)     # solid brown-gold of "R$ 1.350"
+LABEL_COLOR = (104, 93, 80)      # "À VISTA NO PIX"
+PARCEL_COLOR = (112, 103, 93)    # "ou 10x de ... sem juros"
+SPEC_COLOR = (164, 140, 104)     # spec line in Cinzel
+
+
+def sans(size, wght):
+    f = ImageFont.truetype(S + 'fonts/Montserrat.ttf', size)
+    f.set_variation_by_axes([wght])
+    return f
+
+
+def solid_text(text, fnt, color, tracking=0):
+    m = _mask(text, fnt, tracking)
+    f = Image.new('RGBA', m.size, color + (0,)); f.putalpha(m)
+    return f, m.getbbox()
+
+
+def spec_line(img, text, x, y, size, anchor='left'):
+    lay = solid_text(text, caps_font(size, 600), SPEC_COLOR, 2)
+    paste(img, lay, x, y, anchor=anchor)
+    return y + ink_size(lay)[1]
+
+
+def price_block(img, x, y, price, parcel, size=68, anchor='left', label='À VISTA NO PIX'):
+    """À VISTA NO PIX (small bold sans) / R$ price (sans semibold, solid brown-gold) / ou 10x ... (sans)."""
+    lab = solid_text(label, sans(round(size * 0.29), 700), LABEL_COLOR, 1)
+    paste(img, lab, x, y, anchor=anchor)
+    y += ink_size(lab)[1] + round(size * 0.30)
+    pr = solid_text(price, sans(size, 600), PRICE_COLOR)
+    paste(img, pr, x + (round(size * 0.02) if anchor == 'left' else 0), y, anchor=anchor)
+    y += ink_size(pr)[1] + round(size * 0.36)
+    pc = solid_text(parcel, sans(round(size * 0.40), 500), PARCEL_COLOR)
+    paste(img, pc, x + (round(size * 0.03) if anchor == 'left' else 0), y, anchor=anchor)
+    return y + ink_size(pc)[1]
