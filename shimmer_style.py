@@ -2,7 +2,7 @@
 
 Rules from the brand owner:
 - caps: Cinzel, tight spacing, white, subtle shadow
-- highlight word: Parisienne filled with the brand gold texture, soft champagne tone, discreet shadow
+- highlight word: Parisienne filled with the brand gold texture (pure, unaltered), discreet shadow
 - caps sit left-aligned on top of the script word, forming one block
 - no sparkles, shines or other artificial effects
 - photos arrive already edited: no sharpening, no colour changes, no heavy crops; export at top quality
@@ -67,11 +67,10 @@ def gold_text(text, fnt, tracking=0):
     """Text filled with the brand gold texture, softened toward champagne, with a discreet drop shadow."""
     m = _mask(text, fnt, tracking)
     w, h = m.size
-    sc = max(w / GOLD_TEX.width, h / GOLD_TEX.height) * 1.15
+    sc = max(w / GOLD_TEX.width, h / GOLD_TEX.height)
     tex = GOLD_TEX.resize((int(GOLD_TEX.width * sc) + 1, int(GOLD_TEX.height * sc) + 1), Image.LANCZOS)
     tex = tex.crop(((tex.width - w) // 2, (tex.height - h) // 2, (tex.width - w) // 2 + w, (tex.height - h) // 2 + h))
-    arr = np.asarray(tex, np.float32) * 0.68 + CHAMPAGNE * 0.32  # keep the grain, lose the harsh contrast
-    fill = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).convert('RGBA')
+    fill = tex.convert('RGBA')  # the brand's gold texture, used exactly as supplied
     fill.putalpha(m)
     off = (max(2, int(fnt.size * 0.025)), max(2, int(fnt.size * 0.035)))
     return _with_shadow(fill, m, off, max(1.5, fnt.size * 0.02), 0.45, (55, 45, 35))
