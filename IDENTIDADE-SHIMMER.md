@@ -9,6 +9,7 @@ Implementado em `shimmer_style.py`.
 - **Sub-logo** (o monograma com o diamante): recortada do arquivo oficial (colunas 178 a 356), sem alteração.
 - **Capa dos destaques:** igual à foto do perfil, com fundo bege (232, 225, 213), aro na textura dourada e a sub-logo original no centro. Versão escolhida: **lisa** (`destaques/capa-destaque-sublogo.png`).
 - É permitida apenas uma sombra suave **atrás** da logo, quando o fundo for claro demais.
+- **Perguntar sempre à cliente se o post leva logo ou não** antes de entregar. O padrão é sem logo até ela confirmar.
 
 ## Tipografia
 - **Caixa alta (títulos e detalhes):** Cinzel, branca, com letras próximas.
