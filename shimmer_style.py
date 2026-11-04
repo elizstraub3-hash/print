@@ -81,8 +81,9 @@ def white_text(text, fnt, tracking=0, color=WHITE):
     m = _mask(text, fnt, tracking)
     fill = Image.new('RGBA', m.size, color + (0,))
     fill.putalpha(m)
-    off = (max(1, int(fnt.size * 0.02)), max(1, int(fnt.size * 0.03)))
-    return _with_shadow(fill, m, off, max(1.2, fnt.size * 0.03), 0.4, (40, 32, 24))
+    # tight, faint shadow: a wide one reads as haze over the client's photo
+    off = (1, max(1, int(fnt.size * 0.02)))
+    return _with_shadow(fill, m, off, max(0.8, fnt.size * 0.012), 0.28, (40, 32, 24))
 
 
 def paste(base, layer_bb, x, y, alpha=1.0, anchor='left'):
@@ -124,6 +125,14 @@ def cover(src, W, H, focus, ty, zoom=1.0):
         if zoom != 1.0 else src.resize((int(iw * z + 0.5), int(ih * z + 0.5)), Image.LANCZOS).crop(
             (int(ox * z), int(oy * z), int(ox * z) + W, int(oy * z) + H))
     return fr
+
+
+def crop_native(src, W, H, oy=None, ox=None):
+    """Crop to W x H at the photo's own resolution: no resampling at all."""
+    iw, ih = src.size
+    ox = (iw - W) // 2 if ox is None else ox
+    oy = (ih - H) // 2 if oy is None else oy
+    return src.crop((ox, oy, ox + W, oy + H))
 
 
 def save_hq(img, path):
