@@ -4,8 +4,9 @@ Aprovado pela cliente em 04/11/2026, com o post do Solitário Ariel (`ariel-feed
 Implementado em `shimmer_style.py`.
 
 ## Logo (regra fixa)
+- **Arquivo oficial:** `marca/logo-oficial.png` (o mesmo do site, com fundo transparente). Não usar prints ou versões com fundo branco: ao remover o fundo, os reflexos claros da textura somem.
 - Usar **sempre a logo original** enviada pela cliente: **nunca** recolorir, preencher com textura, distorcer ou redesenhar.
-- **Sub-logo** (o monograma com o diamante): recortada diretamente da logo original, sem alteração.
+- **Sub-logo** (o monograma com o diamante): recortada do arquivo oficial (colunas 178 a 356), sem alteração.
 - **Capa dos destaques:** igual à foto do perfil, com fundo bege (232, 225, 213), aro na textura dourada e a sub-logo original no centro. Versão escolhida: **lisa** (`destaques/capa-destaque-sublogo.png`).
 - É permitida apenas uma sombra suave **atrás** da logo, quando o fundo for claro demais.
 
