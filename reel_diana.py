@@ -7,6 +7,8 @@ S = '/tmp/claude-0/-home-user-print/081c4020-c9a3-5394-8b04-d630e012eb6b/scratch
 SRC, OUT = sys.argv[1], sys.argv[2]
 TEXT = sys.argv[3].split('|')
 NAME = sys.argv[4]
+BOTTOM = sys.argv[5] if len(sys.argv) > 5 and sys.argv[5] != '-' else None
+PREV = sys.argv[6:]
 W, H, FPS = 720, 1280, 30
 T_OUT, T_IN = 10.2, 10.6   # hook leaves, product card enters
 
@@ -40,17 +42,33 @@ def card():
     print('card bottom', yy)
     return o
 
-HK, CD = [np.asarray(x, np.float32) for x in (hook(), card())]
+def bottom():
+    from story_nativo_lib import emoji
+    o = Image.new('RGBA', (W, H), (0,0,0,0))
+    if not BOTTOM: return o
+    F = ImageFont.truetype(S + 'fonts/Montserrat.ttf', 48); F.set_variation_by_axes([900])
+    e = emoji('✨', 50); tw = F.getlength(BOTTOM); tot = tw + 12 + e.width
+    x0, y0 = (W - tot) / 2, 1040
+    lay = Image.new('RGBA', (W, H), (0,0,0,0))
+    ImageDraw.Draw(lay).text((x0, y0), BOTTOM, font=F, fill=(255,255,255,255), stroke_width=5, stroke_fill=(15,15,15,255))
+    sh = Image.new('RGBA', (W, H), (0,0,0,0))
+    sh.putalpha(lay.split()[3].filter(ImageFilter.GaussianBlur(7)).point(lambda v: int(v*0.55)))
+    o.alpha_composite(sh, (0,5)); o.alpha_composite(lay)
+    asc, desc = F.getmetrics()
+    o.alpha_composite(e, (int(x0 + tw + 12), int(y0 + (asc + 5) / 2 - e.height / 2 + 4)))
+    return o
+
+HK, CD, BT = [np.asarray(x, np.float32) for x in (hook(), card(), bottom())]
 def ease(x): x = min(max(x,0),1); return x*x*(3-2*x)
 def comp(f, L, k):
     al = L[..., 3:4] / 255 * k
     return f*(1-al) + L[..., :3]*al
 
-if len(sys.argv) > 5:  # preview frames
-    for t in map(float, sys.argv[5:]):
+if PREV:  # preview frames
+    for t in map(float, PREV):
         subprocess.run(['ffmpeg','-loglevel','error','-y','-ss',str(t),'-i',SRC,'-frames:v','1','-f','rawvideo','-pix_fmt','rgb24',S+'_f.raw'])
         f = np.fromfile(S+'_f.raw', np.uint8).reshape(H,W,3).astype(np.float32)
-        f = comp(f, HK, 1-ease((t-T_OUT)/0.35)); f = comp(f, CD, ease((t-T_IN)/0.6))
+        f = comp(f, HK, 1-ease((t-T_OUT)/0.35)); f = comp(f, CD, ease((t-T_IN)/0.6)); f = comp(f, BT, 1)
         Image.fromarray(f.astype(np.uint8)).save(S+f'pd_{t}.jpg', quality=90)
     sys.exit()
 dec = subprocess.Popen(['ffmpeg','-loglevel','error','-i',SRC,'-vf','fps=30','-f','rawvideo','-pix_fmt','rgb24','-'], stdout=subprocess.PIPE)
@@ -66,5 +84,6 @@ while True:
     k1 = 1 - ease((t - T_OUT) / 0.35); k2 = ease((t - T_IN) / 0.6)
     if k1 > 0: f = comp(f, HK, k1)
     if k2 > 0: f = comp(f, CD, k2)
+    f = comp(f, BT, 1)
     enc.stdin.write(f.astype(np.uint8).tobytes()); n += 1
 enc.stdin.close(); enc.wait(); print('frames', n)
