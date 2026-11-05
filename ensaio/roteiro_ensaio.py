@@ -27,64 +27,72 @@ SL = [
       secs=[('', ['Luz natural e suave, de janela. Nada de flash direto.',
                   'Tons bege, off-white e dourado: linho, veludo e madeira clara.',
                   'Sem filtros e sem brilhos aplicados: a joia como ela é.',
-                  'Fundo limpo, poucos objetos. A joia é a estrela.'])]),
+                  'Fundo limpo, poucos objetos. A joia é a estrela.',
+                  'Fundo neutro: parede clara, tecido, madeira ou a própria loja. NUNCA fundo de cidade, prédios ou rua.'])]),
  dict(kind='info', dur=11, kick='ANTES DE COMEÇAR', title='Regras técnicas', ref=('vid', UP + 'f2dff104-VID-20261105-WA0014.mp4', 0), guide=True,
       secs=[('', ['Vídeos na vertical (9:16), em 4K, a 30 ou 60 fps.',
                   'Fotos na vertical (4:5 e 9:16) e algumas na horizontal.',
                   'Deixe o terço de cima livre: é onde entra o texto do post.',
                   'Foco sempre na pedra. Use macro nos detalhes.',
                   'Limpe a joia com flanela antes de cada take.',
-                  'Planos de 10 a 15 segundos, sem cortes, com a câmera firme.'])]),
+                  'Planos de 10 a 15 segundos, sem cortes, com a câmera firme.',
+                  'Sem fundo de cidade, prédios ou rua em nenhuma cena.'])], city=True),
  dict(kind='scene', dur=14, kick='CENA 1 · CENÁRIO BEGE · PRIORIDADE', title='Still dos solitários', pieces='Maria, Clássico, Infinito, Serena, Ariel, Diana, Céu da Noite, Amélia e Jardim de Rosas', ref=('img', SITE + 'SH-1061.jpg'),
       secs=[('FOTOS', ['Frente, 45° e lateral de cada solitário.', 'Macro da pedra e das garras.', 'Cada um na caixinha aberta.', 'Todos lado a lado, do menor para o maior preço (guia de presentes).']),
             ('VÍDEOS', ['Giro lento de cada solitário num prato giratório.', 'Câmera passando devagar pela peça.'])],
       tip='Um rebatedor branco do lado oposto à janela suaviza as sombras.'),
- dict(kind='scene', dur=13, kick='CENA 2 · LUZ DE JANELA OU VARANDA', title='Caixinha na mão', pieces='Serena, Diana, Céu da Noite e Clássico',
+ dict(kind='scene', dur=13, kick='CENA 2 · LUZ DE JANELA', title='Caixinha na mão', pieces='Serena, Diana, Céu da Noite e Clássico',
       ref=('vid', UP + 'f2dff104-VID-20261105-WA0014.mp4', 3), guide=True,
-      secs=[('VÍDEOS', ['Caixinha aberta na mão, movendo devagar para a luz bater na pedra.', 'Fundo desfocado: a cidade, plantas ou a vitrine.']),
-            ('FOTOS', ['A caixinha aberta com o fundo desfocado.'])],
+      secs=[('VÍDEOS', ['Caixinha aberta na mão, movendo devagar para a luz bater na pedra.', 'Fundo desfocado e neutro: parede clara, tecido ou plantas. Nunca cidade nem prédios.']),
+            ('FOTOS', ['A caixinha aberta com o fundo desfocado e neutro.'])], city=True,
       tip='É o formato que mais funciona no perfil: a pedra brilhando com a luz natural.'),
  dict(kind='scene', dur=13, kick='CENA 3 · O MOMENTO DO SIM', title='POV do pedido', pieces='Serena, Maria, Clássico e Diana',
       ref=('vid', UP + '550e399f-VID-20261105-WA0016.mp4', 0), guide=True,
       secs=[('VÍDEOS', ['Câmera no lugar dos olhos dela: a caixinha aparece e abre.', 'Mãos dele segurando a caixinha (só as mãos, sem rosto).', 'A mão dela recebendo o anel.']),
-            ('FOTOS', ['A caixinha aberta entre as mãos do casal.'])],
+            ('FOTOS', ['A caixinha aberta entre as mãos do casal.'])], city=True,
       tip='Grave a abertura da caixinha devagar, pelo menos 3 vezes.'),
  dict(kind='scene', dur=13, kick='CENA 4 · MÃO DE MODELO', title='Anel na mão', pieces='Todos os solitários',
       ref=('vid', UP + 'c28071bc-VID-20261105-WA0015.mp4', 0), guide=True,
       secs=[('FOTOS', ['Mão relaxada, dedos levemente dobrados.', 'Mão no rosto, como na foto clássica da princesa Diana.', 'Comparação na mão: pedras de 2, 5 e 6 mm, uma de cada vez.']),
-            ('VÍDEOS', ['A mão girando devagar para a pedra pegar a luz.'])],
+            ('VÍDEOS', ['A mão girando devagar para a pedra pegar a luz.'])], city=True,
       tip='Unhas curtas, esmalte nude ou claro e pele hidratada.'),
- dict(kind='scene', dur=13, kick='CENA 5 · O OURIVES TRABALHANDO', title='Na bancada', pieces='Peças em produção',
+ dict(kind='scene', dur=14, kick='CENA 5 · A LOJA', title='O ambiente', pieces='Loja da Shimmer em Curitiba',
+      ref=('card', 'Ambiente'),
+      secs=[('REELS DO AMBIENTE', ['Tour pela loja num plano contínuo: a entrada, a vitrine, o balcão e o cantinho de atendimento.', 'A porta abrindo e a câmera entrando, como se fosse o cliente.']),
+            ('FOTOS', ['Vitrine e mostruário, de frente e em detalhe.', 'O balcão com as caixinhas da Shimmer.', 'Detalhes da decoração e da identidade da marca.'])],
+      tip='Grave com a loja arrumada e as luzes acesas. Primeiro o ambiente vazio, depois com pessoas.'),
+ dict(kind='scene', dur=13, kick='CENA 6 · O OURIVES TRABALHANDO', title='Na bancada', pieces='Peças em produção',
       ref=('seq', 'v2'), guide=True,
       secs=[('VÍDEOS', ['Solda com o maçarico.', 'Lixamento e polimento: a peça bruta virando joia.', 'Close nas mãos e nas ferramentas.', 'Grave o som ambiente da bancada, sem música.']),
             ('FOTOS', ['Mãos do ourives com a peça. Ferramentas sobre a bancada.'])],
       tip='É o conteúdo que mais gera confiança. Grave bastante material.'),
- dict(kind='scene', dur=12, kick='CENA 5 · DETALHES DA BANCADA', title='Cravação', pieces='Pedra central dos solitários',
+ dict(kind='scene', dur=12, kick='CENA 6 · DETALHES DA BANCADA', title='Cravação', pieces='Pedra central dos solitários',
       ref=('seq', 'v1'), guide=True,
       secs=[('VÍDEOS', ['Cravação das pedras, em macro.', 'As pedrinhas soltas na bancada, ao lado da peça.', 'O antes e o depois: a peça bruta e a peça pronta.'])],
       tip='Use o macro e mantenha o foco na ponta da ferramenta.'),
- dict(kind='scene', dur=13, kick='CENA 6 · SOB MEDIDA', title='Alianças', pieces='1 ou 2 pares do mostruário',
+ dict(kind='scene', dur=14, kick='CENA 7 · HUMANIZAR A MARCA', title='A equipe', pieces='Ourives, consultora e toda a equipe',
+      ref=('card', 'Equipe'),
+      secs=[('FOTOS', ['Retrato de cada pessoa da equipe, com fundo neutro.', 'A equipe toda junta, na loja.', 'O ourives na bancada e a consultora atendendo.']),
+            ('VÍDEOS', ['Cada um se apresentando: “Eu sou ___ e aqui eu ___”.', 'A equipe dizendo “Bem-vindos à Shimmer”.', 'Um atendimento real (de costas ou com autorização).'])],
+      tip='Pessoas geram conexão. Peça autorização de imagem de todos que aparecerem.'),
+ dict(kind='scene', dur=13, kick='CENA 8 · SOB MEDIDA', title='Alianças', pieces='1 ou 2 pares do mostruário',
       ref=('seq', 'v3'), guide=True,
       secs=[('VÍDEOS', ['A consultora medindo o aro com o medidor.', 'A escolha da largura e do modelo com o casal.', 'A aliança sendo feita na bancada, do fio de ouro à peça pronta.']),
             ('FOTOS', ['O par sobre um espelho, com o reflexo.', 'Mãos do casal entrelaçadas com as alianças.'])],
       tip='Menos peças e mais processo: o que vende a aliança é mostrar que ela é feita para o casal.'),
- dict(kind='scene', dur=13, kick='CENA 7 · NATAL E RÉVEILLON', title='Natal e Réveillon', pieces='Céu da Noite, Maria, Serena, Jardim de Rosas, Amélia e Ariel',
+ dict(kind='scene', dur=13, kick='CENA 9 · NATAL E RÉVEILLON', title='Natal e Réveillon', pieces='Céu da Noite, Maria, Serena, Jardim de Rosas, Amélia e Ariel',
       ref=('card', 'Natal'),
       secs=[('CENÁRIO', ['Pisca-pisca desfocado ao fundo, papel kraft ou bege com fita dourada, taças de espumante.']),
             ('FOTOS', ['A caixinha saindo do embrulho.', 'O Jardim de Rosas como presente para ela.', 'O Céu da Noite com as taças, para o Réveillon.']),
             ('VÍDEOS', ['Mãos desembrulhando o presente.', 'Um brinde com a mão usando o anel.'])],
       tip='As luzinhas ficam sempre desfocadas ao fundo. Nunca brilho aplicado.'),
- dict(kind='scene', dur=13, kick='CENA 8 · HUMANIZAR A MARCA', title='Loja e equipe', pieces='Ponto físico, consultora e ourives',
-      ref=('card', 'Loja'),
-      secs=[('FOTOS', ['Fachada e vitrine.', 'A consultora mostrando as peças.', 'Retrato da equipe e do ourives.']),
-            ('VÍDEOS', ['Alguém entrando na loja.', 'Um atendimento (de costas ou com autorização).', 'A equipe dizendo “Bem-vindos à Shimmer”.', 'Cliente retirando o presente na loja.'])],
-      tip='Pessoas geram conexão: grave pelo menos 3 vídeos com rosto.'),
  dict(kind='list', dur=15, kick='CHECKLIST', title='O que levar',
       cols=[['Tripé e estabilizador', 'Lente macro', 'Rebatedor branco', 'Prato giratório', 'Espelho ou vidro', 'Flanela e luvas', 'Tecidos: linho bege e veludo'],
             ['Caixinhas da Shimmer', 'Pisca-pisca', 'Papel kraft ou bege', 'Fita dourada', 'Taças de espumante', 'Enfeites de Natal discretos', 'Todas as peças limpas']]),
- dict(kind='list', dur=14, kick='CERCA DE 4 HORAS E 15 MINUTOS', title='Ordem do dia',
+ dict(kind='list', dur=14, kick='CERCA DE 4 HORAS E 40 MINUTOS', title='Ordem do dia',
       steps=[('20 min', 'Chegada e montagem do cenário'), ('70 min', 'Still dos solitários (prioridade)'), ('60 min', 'Solitários na mão, caixinha e POV do pedido'),
-             ('35 min', 'Bancada: solda e cravação'), ('20 min', 'Alianças sob medida'), ('30 min', 'Natal e Réveillon'), ('20 min', 'Loja e equipe')],
+             ('20 min', 'Reels e fotos do ambiente da loja'), ('35 min', 'Bancada: solda e cravação'), ('25 min', 'Fotos e vídeos da equipe'),
+             ('20 min', 'Alianças sob medida'), ('30 min', 'Natal e Réveillon')],
       tip='Comece pelo produto parado, enquanto a luz da janela está boa.'),
  dict(kind='end', dur=7),
 ]
@@ -111,7 +119,8 @@ def card(word):
     d.rectangle([22, 22, PW - 23, PH - 23], outline=(201, 180, 138), width=2)
     c = c.convert('RGBA')
     g = gold_text(word, script_font(96)); paste(c, g, PW / 2, PH / 2 - 80, anchor='center')
-    for i, t in enumerate(['CENA NOVA', 'MONTAR O CENÁRIO NO DIA']):
+    sub = ['NA PRÓPRIA LOJA', 'SEM FUNDO DE CIDADE'] if word in ('Ambiente', 'Equipe') else ['CENA NOVA', 'MONTAR O CENÁRIO NO DIA']
+    for i, t in enumerate(sub):
         paste(c, solid_text(t, caps_font(19, 600), BR, 3), PW / 2, PH / 2 + 60 + i * 36, anchor='center')
     return c.convert('RGB')
 
@@ -125,6 +134,13 @@ def guide_layer():
     sh = Image.new('RGBA', (PW, PH), (0, 0, 0, 0)); sh.putalpha(f.split()[3].filter(ImageFilter.GaussianBlur(3)).point(lambda v: int(v * .7)))
     g.alpha_composite(sh, (0, 2)); g.alpha_composite(f); return g
 GUIDE = guide_layer()
+def city_layer():
+    g = Image.new('RGBA', (PW, PH), (0, 0, 0, 0)); d = ImageDraw.Draw(g)
+    d.rectangle([0, PH - 92, PW, PH], fill=(40, 30, 22, 215))
+    for i, t in enumerate(['REFERÊNCIA SÓ DO MOVIMENTO', 'NÃO USAR FUNDO DE CIDADE']):
+        paste(g, solid_text(t, sans(18, 700), (255, 255, 255) if i == 0 else (240, 200, 120), 2), PW / 2, PH - 76 + i * 34, anchor='center')
+    return g
+CITY = city_layer()
 
 def panel_frames(ref, n):
     kind = ref[0]
@@ -192,12 +208,13 @@ def text_layer(sd):
                 d.polygon([(cx + 6, yy + 9), (cx + 13, yy + 17), (cx + 6, yy + 25), (cx - 1, yy + 17)], fill=(184, 150, 88))
                 d.text((cx + 34, yy), it, font=sans(30, 500), fill=INK); yy += 62
     if 'steps' in sd:
+        gp = 82 if len(sd['steps']) <= 6 else 68
         for i, (tm, tx) in enumerate(sd['steps']):
-            yy = y + i * 82
+            yy = y + i * gp
             paste(L, gold_text(str(i + 1), caps_font(52, 600)), x0, yy)
             d.text((x0 + 70, yy + 4), tx, font=sans(31, 600), fill=INK)
             d.text((x0 + 70, yy + 44), tm, font=sans(22, 500), fill=(138, 122, 102))
-        y += len(sd['steps']) * 82 + 10
+        y += len(sd['steps']) * gp + 10
     if sd.get('tip'):
         tf = sans(25, 600); lines = wrap('Dica: ' + sd['tip'], tf, maxw - 60)
         bh = 38 * len(lines) + 40; y = max(y, 0); top = min(y + 6, H - 80 - bh)
@@ -224,6 +241,7 @@ for si, sd in enumerate(SL):
         if pf:
             p = pf(i).convert('RGBA')
             if sd.get('guide'): p.alpha_composite(GUIDE)
+            if sd.get('city'): p.alpha_composite(CITY)
             im.paste(p, (PX, PY), mask)
         return im.convert('RGB')
     rep = compose(int(n * 0.5)); pages.append(rep)

@@ -45,6 +45,7 @@ Implementado em `shimmer_style.py`.
 - **Usar 100% como vieram:** sem ampliar, sem nitidez extra, sem mudar cor, sem desfocar e sem zoom.
 - Só recortar quando o formato exigir (4:5 no feed, 9:16 em Reels e Stories), sem redimensionar.
 - Exportar na qualidade máxima: JPEG com qualidade 100, ou vídeo com CRF 12.
+- **Fundo:** sempre neutro (parede clara, tecido, madeira, a própria loja). **Nunca fundo de cidade, prédios ou rua** (regra da cliente, 05/11/2026).
 
 ## Proibido
 - Brilhos, faíscas e reflexos animados ou aplicados.
