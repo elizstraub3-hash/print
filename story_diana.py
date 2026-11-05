@@ -38,7 +38,7 @@ cw, ch = ink_size(cap); sw, shh = ink_size(nm); left = W/2 - sw/2
 top = 1040
 paste(card, cap, left + sw*0.06, top); paste(card, nm, left, top + ch + 5)
 y2 = top + ch + 5 + shh + 24
-for ln in ['OURO AMARELO 18K MACIÇO', 'SAFIRA OVAL 6X8 MM', '17 PEDRAS DE 1,25 MM AO REDOR']:
+for ln in ['OURO AMARELO 18K MACIÇO', 'SAFIRA OVAL 6X8 MM', '17 MOISSANITES DE 1,25 MM AO REDOR']:
     L = white_text(ln, caps_font(20, 600), 2); paste(card, L, W/2, y2, anchor='center'); y2 += ink_size(L)[1] + 11
 print('card bottom', y2)
 card.alpha_composite(o); o = card

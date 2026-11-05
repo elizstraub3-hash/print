@@ -34,7 +34,7 @@ def card():
     paste(o, cap, left + sw * 0.06, 70)
     paste(o, nm, left, 70 + ch + 6)
     yy = 70 + ch + 6 + shh + 34
-    for ln in ['OURO AMARELO 18K MACIÇO', 'SAFIRA OVAL 6X8 MM', '17 PEDRAS DE 1,25 MM AO REDOR']:
+    for ln in ['OURO AMARELO 18K MACIÇO', 'SAFIRA OVAL 6X8 MM', '17 MOISSANITES DE 1,25 MM AO REDOR']:
         lay = white_text(ln, caps_font(25, 600), 2)
         paste(o, lay, cx, yy, anchor='center'); yy += ink_size(lay)[1] + 16
     print('card bottom', yy)
