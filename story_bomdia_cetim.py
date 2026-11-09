@@ -21,7 +21,7 @@ INK = (74, 59, 46)
 def L(): return Image.new('RGBA', (W, H), (0, 0, 0, 0))
 LAY = []
 a = L(); paste(a, solid_text('BOM DIA,', caps_font(52, 500), INK, 6), W / 2, 150, anchor='center'); LAY.append((a, 0.3))
-a = L(); paste(a, gold_text('boa semana', script_font(170)), W / 2, 225, anchor='center'); LAY.append((a, 0.8))
+a = L(); paste(a, gold_text('Boa semana', script_font(170)), W / 2, 225, anchor='center'); LAY.append((a, 0.8))
 a = L(); paste(a, solid_text('QUE ELA SEJA LEVE E CHEIA DE BRILHO', caps_font(25, 600), (132, 101, 46), 4), W / 2, 440, anchor='center'); LAY.append((a, 1.6))
 LA = [(np.asarray(l, np.float32), t) for l, t in LAY]
 def ease(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
