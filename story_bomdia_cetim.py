@@ -7,7 +7,7 @@ SRC, OUT = sys.argv[1], sys.argv[2]; PREV = sys.argv[3:]
 ph = np.asarray(Image.open(SRC).convert('RGB'), np.float32)   # native pixels, no resize
 ih, iw = ph.shape[:2]
 W = iw; H = round(W * 16 / 9) // 2 * 2
-TOP = H - ih - 70                                                # photo sits low, light band on top for the text
+TOP = H - ih                                                     # photo reaches the bottom edge: no fade there
 IV = np.array([241, 237, 229], np.float32)
 BG = np.empty((H, W, 3), np.float32); BG[:] = IV
 BG[TOP:TOP + ih] = ph
@@ -15,7 +15,7 @@ BG[TOP:TOP + ih] = ph
 y = np.arange(H, dtype=np.float32)[:, None, None]
 a_top = np.clip((y - TOP) / 230, 0, 1) ** 1.2
 a_bot = np.clip((TOP + ih - y) / 70, 0, 1)
-A = np.minimum(a_top, a_bot)
+A = a_top
 BG = IV + (BG - IV) * A
 INK = (74, 59, 46)
 def L(): return Image.new('RGBA', (W, H), (0, 0, 0, 0))
