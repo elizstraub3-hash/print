@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, '.')
 from shimmer_style import *
+from shimmer_style import _mask, _with_shadow
 O = '/home/user/print/marina/carrossel/'
 import os; os.makedirs(O, exist_ok=True)
 SRC = Image.open('/home/user/print/marina/foto-original.jpg').convert('RGB')
@@ -12,19 +13,24 @@ PIX, PARC = 'R$ 2.160', '12x de R$ 200,00'   # valores de exemplo: confirmar ant
 def zoom(cx, cy, cw):
     ch = cw * H / W
     return SRC.crop((int(cx - cw / 2), int(cy - ch / 2), int(cx + cw / 2), int(cy + ch / 2))).resize((W, H), Image.LANCZOS).convert('RGBA')
+def white_caps(text, size, tracking):
+    # brand white Cinzel; the satin behind is light, so the shadow is a touch firmer than usual (still soft, no outline)
+    m = _mask(text, caps_font(size, 500), tracking)
+    fill = Image.new('RGBA', m.size, WHITE + (0,)); fill.putalpha(m)
+    return _with_shadow(fill, m, (1, max(2, int(size * 0.035))), size * 0.05, 0.55, (60, 48, 36))
 def swipe(img):
     sw = solid_text('ARRASTE PARA O LADO  →', sans(18, 700), LABEL_COLOR, 2); paste(img, sw, W - M - ink_size(sw)[0], H - 74)
 
 # 1 — the stone up close + big name
 s1 = zoom(500, 830, 640)
-c = solid_text('ANEL', caps_font(54, 500), INK, 8); n = gold_text('Marina', script_font(290))
+c = white_caps('ANEL', 54, 8); n = gold_text('Marina', script_font(290))
 paste(s1, c, M + 10, 64); paste(s1, n, M - 6, 64 + ink_size(c)[1] + 2)
 swipe(s1)
 save_hq(s1, O + '01-marina-nome.jpg')
 
 # 2 — price in 12x
 s2 = zoom(505, 800, 860)
-paste(s2, solid_text('ANEL SOLITÁRIO', caps_font(34, 500), INK, 3), M + 4, 64)
+paste(s2, white_caps('ANEL SOLITÁRIO', 34, 3), M + 4, 64)
 paste(s2, gold_text('Marina', script_font(170)), M - 4, 64 + 40)
 bottom_fade(s2, 0.62)
 y = 960
