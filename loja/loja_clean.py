@@ -25,7 +25,7 @@ caps_lines(hm, ['AL. DR. MURICY, 650 · 8º ANDAR', 'CENTRO · CURITIBA – PR']
 jo = L(); y = caps_lines(jo, ['AS JOIAS MAIS LINDAS,'], 940, 32)
 gt = gold_text('com o melhor preço', script_font(78)); paste(jo, gt, W / 2, y + 2, anchor='center')
 caps_lines(jo, ['E GARANTIA VITALÍCIA'], y + ink_size(gt)[1] + 22, 32)
-TX = [(0.15, 2.2, arr(q)), (2.2, 3.7, arr(no)), (3.7, 8.2, arr(hm)), (20.8, 27.4, arr(jo))]
+TX = [(0.15, 2.0, arr(q)), (2.0, 3.4, arr(no)), (3.4, 7.7, arr(hm)), (26.5, 33.2, arr(jo))]
 def ease(x): x = min(max(x, 0), 1); return x * x * (3 - 2 * x)
 src, out = sys.argv[1], sys.argv[2]; prev = sys.argv[3:]
 dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', src, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
