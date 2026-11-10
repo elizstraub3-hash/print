@@ -16,11 +16,12 @@ def cap(lines, y0=210, font=F, lh=58, sub=None):
     o = Image.new('RGBA', (W, H), (0, 0, 0, 0)); o.alpha_composite(sh, (0, 5)); o.alpha_composite(lay)
     a = np.asarray(o, np.float32); return a[..., :3], a[..., 3:4] / 255
 # segment times in the joined video: gate 0-4, door/room 4-11.4, client 11.4-20.1, rings 20.1-29.1
-CAPS = [(0.0, 4.0, cap(['Vem conhecer a', 'Shimmer por dentro'])),
-        (4.0, 11.4, cap(['Um espaço pensado', 'para o seu momento'])),
-        (11.4, 20.1, cap(['Atendimento com', 'calma e atenção'])),
-        (20.1, 25.6, cap(['Aqui você escolhe', 'a joia da sua história'])),
-        (25.6, 29.2, cap(['Venha nos visitar'], sub='Shimmer Joias · Curitiba · Ouro 18k'))]
+CAPS = [(0.0, 5.5, cap(['Vem conhecer a', 'Shimmer por dentro'])),
+        (5.5, 9.5, cap(['Você é recebida', 'na porta'])),
+        (9.5, 16.9, cap(['Um espaço pensado', 'para o seu momento'])),
+        (16.9, 25.6, cap(['Atendimento com', 'calma e atenção'])),
+        (25.6, 31.1, cap(['Aqui você escolhe', 'a joia da sua história'])),
+        (31.1, 34.7, cap(['Venha nos visitar'], sub='Shimmer Joias · Curitiba · Ouro 18k'))]
 src, out = sys.argv[1], sys.argv[2]; prev = sys.argv[3:]
 dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', src, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
 enc = None if prev else subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
