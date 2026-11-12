@@ -3,7 +3,7 @@ U = '/root/.claude/uploads/081c4020-c9a3-5394-8b04-d630e012eb6b/'
 BASE = "hqdn3d=2:1.5:6:5,scale=1080:1920:flags=lanczos,unsharp=5:5:0.55:5:5:0"
 IN = BASE + ",eq=contrast=1.05:saturation=1.04:gamma=1.05,colortemperature=temperature=6000:mix=0.35,setsar=1,format=yuv420p"
 OUTD = BASE + ",eq=contrast=1.07:saturation=1.08:gamma=1.14:brightness=0.015,colortemperature=temperature=5200:mix=0.45,setsar=1,format=yuv420p"
-D = [2.1, 3.4, 1.8, 4.8, 3.8, 4.5, 4.6, 7.7, 6.5, 4.7, 6.5]
+D = [2.1, 3.4, 1.8, 4.8, 3.8, 4.5, 4.6, 6.2, 6.5, 4.7, 6.5]
 SEG = [(f'LOCAL:hd/s{i}.mp4' if i != 7 else 'LOCAL:hd/s7_logo.mp4', 0.0, d, None) for i, d in enumerate(D)]
 T = 0.4; END = 3.5; TE = 0.6
 inputs, fl, labels, starts = [], [], [], []

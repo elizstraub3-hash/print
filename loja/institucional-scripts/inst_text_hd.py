@@ -27,7 +27,7 @@ gt = gold_text('com o melhor preço', script_font(117)); paste(jo, gt, W / 2, y 
 caps_lines(jo, ['E GARANTIA VITALÍCIA'], y + ink_size(gt)[1] + 33, 48)
 mao = L(); y = caps_lines(mao, ['FEITAS À MÃO,', 'EM OURO 18K'], 1440, 48)
 paste(mao, gold_text('para durar a vida toda', script_font(114)), W / 2, y + 3, anchor='center')
-TX = [(0.15, 1.9, arr(q)), (1.9, 3.2, arr(no)), (3.2, 6.4, arr(hm)), (30.0, 35.4, arr(jo)), (40.6, 45.6, arr(mao))]
+TX = [(0.15, 1.9, arr(q)), (1.9, 3.2, arr(no)), (3.2, 6.4, arr(hm)), (28.5, 33.9, arr(jo)), (39.1, 44.1, arr(mao))]
 def ease(x): x = min(max(x, 0), 1); return x * x * (3 - 2 * x)
 src, out = sys.argv[1], sys.argv[2]; prev = sys.argv[3:]
 dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', src, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)

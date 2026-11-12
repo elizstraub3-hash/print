@@ -24,6 +24,9 @@ put(la, 0, 0)
 src = np.float32([[M, M], [M + LW, M], [M + LW, M + LH], [M, M + LH]])
 dst = np.float32([[330, 268], [600, 203], [600, 292], [330, 338]])
 P = cv2.getPerspectiveTransform(src, dst)
+SHAPE = np.float32([[-202, -47], [202, -75], [202, 51], [-202, 65]])
+_q0 = np.float32(CORN[126]).reshape(4, 2); REFD = np.linalg.norm(_q0[2] - _q0[0]) + np.linalg.norm(_q0[3] - _q0[1])
+START = 45   # drop the first 1.5 s (the consultant looks at the camera)
 def warp(layer, Hm):
     return cv2.warpPerspective(layer, Hm, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0, 0))
 def ease(x): x = min(max(x, 0), 1); return x * x * (3 - 2 * x)
@@ -36,9 +39,15 @@ while True:
     b = dec.stdout.read(W * H * 3)
     if len(b) < W * H * 3: break
     t = n / FPS; f = np.frombuffer(b, np.uint8).reshape(H, W, 3).astype(np.float32) / 255
-    k = ease((t - 0.9) / 0.9)
+    if n < START:
+        n += 1; continue
+    t = (n - START) / FPS
+    k = ease((t - 0.2) / 0.8)
     if k > 0 and n < len(CORN):
-        Hm = cv2.getPerspectiveTransform(src, np.float32(CORN[n]).reshape(4, 2))
+        q = np.float32(CORN[n]).reshape(4, 2); c = q.mean(0)
+        sc = (np.linalg.norm(q[2] - q[0]) + np.linalg.norm(q[3] - q[1])) / REFD
+        # upright sign: position and size follow the wall, the shape keeps a mild, constant perspective (no roll, no skew)
+        Hm = cv2.getPerspectiveTransform(src, np.float32(c + SHAPE * sc))
         s_ = warp(shadow, Hm); f = f * (1 - s_[..., 3:4] * k)
         l_ = warp(canvas, Hm); a = l_[..., 3:4] * k
         f = f * (1 - a) + l_[..., :3] * a
