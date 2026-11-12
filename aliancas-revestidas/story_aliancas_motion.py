@@ -59,7 +59,7 @@ def end_layers():
     return [(a, 0.2), (b, 0.6), (c, 1.0), (d, 1.4)]
 # scenes: (start, end, plate, [(layer, t_in)])
 SC = [
- (0.0, 3.4, plate(53), [(head('PAR DE', 'Alianças'), 0.15), (pill('R$ 2.250 no PIX ou 10x de R$ 250', 560), 0.9)]),
+ (0.0, 3.4, plate(53), [(head('PAR DE', 'Alianças'), -1.0), (pill('R$ 2.250 no PIX ou 10x de R$ 250', 560), 0.9)]),
  (3.4, 6.2, plate(55), [(head('FEITAS SOB MEDIDA', 'para o casal', size=150), 0.35)]),
  (6.2, 9.0, plate(52), [(head('DO PEDIDO', 'ao altar', size=170), 0.35)]),
  (9.0, 12.8, plate(54), [(price_card(1150), 0.45)]),
@@ -81,12 +81,13 @@ def frame(t):
     for i, (a, b, p, ls) in enumerate(SCA):
         if a <= t < b or (i == len(SCA) - 1 and t >= a): break
     f = scene_frame(i, t - a)
-    if i > 0 and t - a < TR:                      # slide in from the right, like swiping the carousel
-        k = ease_io((t - a) / TR); dx = int(round((1 - k) * W))
+    if i > 0 and t - a < TR:                      # previous scene slides out to the left, the new one comes in from the right
+        sft = int(round(ease_io((t - a) / TR) * W))
         prev = scene_frame(i - 1, t - SCA[i - 1][0])
-        out = np.empty_like(f); out[:, :W - dx] = prev[:, dx:] if dx > 0 else prev
-        if dx > 0: out[:, W - dx:] = f[:, :dx]
-        else: out = f
+        out = prev.copy()
+        if sft > 0:
+            out[:, :W - sft] = prev[:, sft:]
+            out[:, W - sft:] = f[:, :sft]
         f = out
     return np.clip(f, 0, 255).astype(np.uint8)
 if len(sys.argv) > 1 and sys.argv[1] == 'prev':
