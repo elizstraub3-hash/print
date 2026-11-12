@@ -47,6 +47,9 @@ Implementado em `shimmer_style.py`.
 - Exportar na qualidade máxima: JPEG com qualidade 100, ou vídeo com CRF 12.
 - **Fundo:** sempre neutro (parede clara, tecido, madeira, a própria loja). **Nunca fundo de cidade, prédios ou rua** (regra da cliente, 05/11/2026).
 
+## Garantia
+- **Todas as peças da Shimmer têm garantia vitalícia**, inclusive as revestidas (confirmado pela cliente em 12/11/2026). Pode citar em qualquer post.
+
 ## Proibido
 - Brilhos, faíscas e reflexos animados ou aplicados.
 - Degradês fortes por cima da foto. Uma sombra suave só atrás de um bloco de texto é aceitável quando o fundo for claro demais para ler.

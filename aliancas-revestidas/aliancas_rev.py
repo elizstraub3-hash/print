@@ -26,7 +26,7 @@ def swipe(img):
 # 1 — the pair + price
 s1 = base(53, 45); band(s1, 0.13, 0.27, top=True); band(s1, 0.74, 0.83)
 title(s1, 'PAR DE', 'Alianças')
-sp = solid_text('REVESTIDAS · 4 MM DE LARGURA', caps_font(20, 600), BR, 2); paste(s1, sp, M, 1090); y = 1090 + ink_size(sp)[1]
+sp = solid_text('REVESTIDAS · 4 MM · GARANTIA VITALÍCIA', caps_font(20, 600), BR, 2); paste(s1, sp, M, 1090); y = 1090 + ink_size(sp)[1]
 price_block(s1, M, y + 22, 'R$ 2.250', 'ou 10x de R$ 250,00 sem juros', size=56)
 swipe(s1); save_hq(s1, D + '01-par-de-aliancas.jpg')
 

@@ -18,7 +18,7 @@ a = L(); c = solid_text('PAR DE', caps_font(46, 500), INK, 5); s = gold_text('Al
 sw = ink_size(s)[0]; left = W / 2 - sw / 2
 paste(a, c, left + sw * 0.06, 272); paste(a, s, left, 272 + ink_size(c)[1] + 4); LAY.append((a, 0.2))
 a = L(); y = 1252
-sp = solid_text('REVESTIDAS · 4 MM DE LARGURA', caps_font(24, 600), BR, 3); paste(a, sp, W / 2, y, anchor='center'); LAY.append((a, 1.0))
+sp = solid_text('REVESTIDAS · 4 MM · GARANTIA VITALÍCIA', caps_font(23, 600), BR, 3); paste(a, sp, W / 2, y, anchor='center'); LAY.append((a, 1.0))
 b = L(); price_block(b, W / 2, y + ink_size(sp)[1] + 30, 'R$ 2.250', 'ou 10x de R$ 250,00 sem juros', size=74, anchor='center'); LAY.append((b, 1.6))
 c2 = L(); paste(c2, solid_text('AGENDE SUA VISITA PELO WHATSAPP', sans(24, 700), LABEL_COLOR, 3), W / 2, 1500, anchor='center'); LAY.append((c2, 2.4))
 LA = [(np.asarray(l, np.float32), t) for l, t in LAY]
