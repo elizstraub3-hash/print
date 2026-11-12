@@ -61,7 +61,7 @@ def end_layers():
 SC = [
  (0.0, 3.4, plate(53), [(head('PAR DE', 'Alianças'), -1.0), (pill('R$ 2.250 no PIX ou 10x de R$ 250', 560), 0.9)]),
  (3.4, 6.2, plate(55), [(head('FEITAS SOB MEDIDA', 'para o casal', size=150), 0.35)]),
- (6.2, 9.0, plate(52), [(head('DO PEDIDO', 'ao altar', size=170), 0.35)]),
+ (6.2, 9.0, plate(52), [(head('AQUI VOCÊ TEM', 'garantia vitalícia', size=140), 0.35)]),
  (9.0, 12.8, plate(54), [(price_card(1150), 0.45)]),
  (12.8, 16.0, end_plate(), end_layers()),
 ]
