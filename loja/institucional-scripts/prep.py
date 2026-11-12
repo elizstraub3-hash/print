@@ -13,9 +13,10 @@ only = [int(x) for x in sys.argv[1:]]
 for i, (f, a, b, g) in enumerate(SEG):
     if only and i not in only: continue
     vf = f"trim={a}:{b},setpts=PTS-STARTPTS,fps=30,{g}"
-    if i == 7:   # office: stabilise first so the wall sign sits still
-        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', U + f, '-vf', f"trim={a}:{b},setpts=PTS-STARTPTS,fps=30,vidstabdetect=shakiness=6:accuracy=15:result=hd/st.trf", '-f', 'null', '-'], check=True)
-        vf = f"trim={a}:{b},setpts=PTS-STARTPTS,fps=30,vidstabtransform=input=hd/st.trf:smoothing=25:zoom=4:optzoom=0:interpol=bicubic,{g}"
+    # stabilise every clip (the office one a bit stronger, the 3D sign depends on it)
+    sm, zm = (25, 4) if i == 7 else (18, 5)
+    subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', U + f, '-vf', f"trim={a}:{b},setpts=PTS-STARTPTS,fps=30,vidstabdetect=shakiness=6:accuracy=15:result=hd/st{i}.trf", '-f', 'null', '-'], check=True)
+    vf = f"trim={a}:{b},setpts=PTS-STARTPTS,fps=30,vidstabtransform=input=hd/st{i}.trf:smoothing={sm}:zoom={zm}:optzoom=0:interpol=bicubic,{g}"
     dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', U + f, '-vf', vf, '-f', 'rawvideo', '-pix_fmt', 'bgr24', '-'], stdout=subprocess.PIPE)
     enc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'bgr24', '-s', f'{W}x{H}', '-r', '30', '-i', '-',
                             '-an', '-c:v', 'libx264', '-crf', '10', '-preset', 'medium', '-pix_fmt', 'yuv420p', f'hd/s{i}.mp4'], stdin=subprocess.PIPE)
