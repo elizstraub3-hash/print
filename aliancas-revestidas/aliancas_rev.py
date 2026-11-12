@@ -31,22 +31,22 @@ def swipe(img):
     sw = solid_text('ARRASTE PARA O LADO  →', sans(18, 700), LABEL_COLOR, 2); paste(img, sw, W - M - ink_size(sw)[0], H - 66)
 
 # 1 — the pair + price
-s1 = base(53, 45); glow(s1, 290, 180, 440, 210); glow(s1, 300, 1205, 470, 200); glow(s1, 905, 1295, 240, 70)
+s1 = base(53, 45); band(s1, 0.02, 0.24, top=True, strength=0.72); band(s1, 0.77, 0.88, strength=0.92)
 title(s1, 'PAR DE', 'Alianças')
-sp = solid_text('REVESTIDAS · 4 MM · GARANTIA VITALÍCIA', caps_font(20, 600), BR, 2); paste(s1, sp, M, 1090); y = 1090 + ink_size(sp)[1]
-price_block(s1, M, y + 22, 'R$ 2.250', 'ou 10x de R$ 250,00 sem juros', size=56)
+sp = solid_text('REVESTIDAS · 4 MM · GARANTIA VITALÍCIA', caps_font(20, 600), BR, 2); paste(s1, sp, M, 1140); y = 1140 + ink_size(sp)[1]
+price_block(s1, M, y + 18, 'R$ 2.250', 'ou 10x de R$ 250,00 sem juros', size=54)
 swipe(s1); save_hq(s1, D + '01-par-de-aliancas.jpg')
 
 # 2 — with the solitaire: the full set
-s2 = base(52, 45); glow(s2, 270, 175, 400, 200); glow(s2, 320, 1225, 420, 130); glow(s2, 905, 1295, 240, 70)
+s2 = base(52, 45); band(s2, 0.02, 0.23, top=True, strength=0.72); band(s2, 0.80, 0.90, strength=0.92)
 title(s2, 'DO PEDIDO', 'ao altar', size=180)
-y = H - 175
+y = H - 140
 for t in ['Combine as alianças', 'com o seu solitário.']:
     lay = solid_text(t, caps_font(32, 500), INK, 1); paste(s2, lay, M, y); y += ink_size(lay)[1] + 12
 swipe(s2); save_hq(s2, D + '02-conjunto.jpg')
 
 # 3 — detail, made to measure
-s3 = base(55, 0); glow(s3, 543, 165, 470, 170)
+s3 = base(55, 0); band(s3, 0.02, 0.21, top=True, strength=0.72)
 y = 70
 lay = solid_text('FEITAS SOB MEDIDA', caps_font(30, 600), INK, 4); paste(s3, lay, W / 2, y, anchor='center'); y += ink_size(lay)[1] + 6
 paste(s3, gold_text('para o casal', script_font(110)), W / 2, y, anchor='center')
