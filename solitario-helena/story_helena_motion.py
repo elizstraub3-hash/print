@@ -43,7 +43,7 @@ def price_card(y0):
     pc = solid_text('ou 10x de R$ 450,00 sem juros', sans(36, 500), PARCEL_COLOR); paste(b, pc, W / 2, yp, anchor='center')
     yl = yp + ink_size(pc)[1] + 28
     m2 = Image.new('L', (W, H), 0); ImageDraw.Draw(m2).line([(W / 2 - 70, yl), (W / 2 + 70, yl)], fill=255, width=2); b.alpha_composite(gold_fill(m2))
-    paste(b, solid_text('PEDRA 7,5 MM · 4,35 G · GARANTIA VITALÍCIA', caps_font(21, 600), BR, 3), W / 2, yl + 20, anchor='center')
+    paste(b, solid_text('OURO 18K · 7,5 MM · 4,35 G · GARANTIA VITALÍCIA', caps_font(20, 600), BR, 3), W / 2, yl + 20, anchor='center')
     return b
 def end_plate():
     f = np.empty((H, W, 3), np.float32); f[:] = IV; return f
@@ -60,7 +60,7 @@ def end_layers():
 # scenes: (start, end, plate, [(layer, t_in)])
 SC = [
  (0.0, 3.4, plate(58), [(head('ANEL SOLITÁRIO', 'Helena', size=200), -1.0), (pill('R$ 4.050 no PIX ou 10x de R$ 450', 575), 0.9)]),
- (3.4, 6.2, plate(50), [(head('PEDRA DE 7,5 MM', 'a que brilha', size=118, y=285), 0.35)]),
+ (3.4, 6.2, plate(57), [(head('OURO 18K · PEDRA DE 7,5 MM', 'a que brilha', size=160), 0.35)]),
  (6.2, 9.0, plate(61), [(head('AQUI VOCÊ TEM', 'garantia vitalícia', size=140), 0.35)]),
  (9.0, 12.8, plate(59), [(price_card(330), 0.45)]),
  (12.8, 16.0, end_plate(), end_layers()),

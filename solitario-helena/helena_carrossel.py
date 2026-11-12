@@ -20,17 +20,17 @@ def swipe(img):
 # 1 — product + price
 s1 = base(58, 20); band(s1, 0.02, 0.22, top=True, strength=0.6); band(s1, 0.80, 0.90, strength=0.85)
 title(s1, 'ANEL SOLITÁRIO', 'Helena')
-sp = solid_text('PEDRA CENTRAL 7,5 MM · 4,35 G · GARANTIA VITALÍCIA', caps_font(19, 600), BR, 2); paste(s1, sp, M, 1105)
+sp = solid_text('OURO 18K · PEDRA CENTRAL 7,5 MM · 4,35 G', caps_font(19, 600), BR, 2); paste(s1, sp, M, 1105)
 price_block(s1, M, 1105 + ink_size(sp)[1] + 18, 'R$ 4.050', 'ou 10x de R$ 450,00 sem juros', size=54)
 swipe(s1); save_hq(s1, D + '01-helena-produto.jpg')
 # 2 — meaning, over the macro of the stone
-s2 = base(50, 0); band(s2, 0.02, 0.20, top=True, strength=0.8)
-y = 34
-c = solid_text('O SIGNIFICADO DE', caps_font(26, 500), INK, 3); paste(s2, c, W / 2, y, anchor='center')
-nm = gold_text('Helena', script_font(108)); paste(s2, nm, W / 2, y + ink_size(c)[1] + 2, anchor='center')
+s2 = base(57, 90); band(s2, 0.02, 0.22, top=True, strength=0.7)
+y = 50
+c = solid_text('O SIGNIFICADO DE', caps_font(30, 500), INK, 3); paste(s2, c, W / 2, y, anchor='center')
+nm = gold_text('Helena', script_font(150)); paste(s2, nm, W / 2, y + ink_size(c)[1] + 2, anchor='center')
 y2 = y + ink_size(c)[1] + 2 + ink_size(nm)[1] + 10
 for t in ['DO GREGO, “A QUE BRILHA”: UMA PEDRA DE 7,5 MM', 'QUE ILUMINA A MÃO E O MOMENTO DO SIM.']:
-    lay = solid_text(t, caps_font(17, 600), BR, 2); paste(s2, lay, W / 2, y2, anchor='center'); y2 += ink_size(lay)[1] + 9
+    lay = solid_text(t, caps_font(20, 600), BR, 2); paste(s2, lay, W / 2, y2, anchor='center'); y2 += ink_size(lay)[1] + 11
 print('s2 text bottom', y2)
 save_hq(s2, D + '02-helena-significado.jpg')
 # 3 — guarantee + call to action

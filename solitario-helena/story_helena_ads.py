@@ -17,7 +17,7 @@ LAY = []
 a = L(); c = solid_text('ANEL SOLITÁRIO', caps_font(44, 500), INK, 5); s = gold_text('Helena', script_font(205))
 sw = ink_size(s)[0]; left = W / 2 - sw / 2
 paste(a, c, left + sw * 0.06, 255); paste(a, s, left, 255 + ink_size(c)[1] + 4); LAY.append((a, 0.2))
-a = L(); sp = solid_text('PEDRA 7,5 MM · 4,35 G · GARANTIA VITALÍCIA', caps_font(25, 600), BR, 3); paste(a, sp, W / 2, 1335, anchor='center'); LAY.append((a, 0.9))
+a = L(); sp = solid_text('OURO 18K · 7,5 MM · 4,35 G · GARANTIA VITALÍCIA', caps_font(24, 600), BR, 3); paste(a, sp, W / 2, 1335, anchor='center'); LAY.append((a, 0.9))
 # price card: white card, thin gold frame, price large and centred
 b = L(); x0, y0, x1, y1 = 150, 1395, 930, 1665
 m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).rounded_rectangle([x0, y0, x1, y1], radius=26, fill=255)
