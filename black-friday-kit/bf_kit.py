@@ -26,7 +26,7 @@ def base(W, H, n, top, ring_y, fade=150, z=1.0):
     win = ph[src0:src0 + (H - top)]
     f[top:top + len(win)] = win
     yy = np.arange(H, dtype=np.float32)[:, None, None]
-    a = np.clip((yy - top) / fade, 0, 1) ** 1.6
+    a = np.clip((yy - top) / fade, 0, 1) ** 1.2
     end = top + len(win)
     if end < H: a = a * np.clip((end - 20 - yy) / 140, 0, 1)          # soft fade where the photo runs out
     f = BLK * (1 - a) + f * a
@@ -51,20 +51,21 @@ def to_img(f): return Image.fromarray(np.clip(f, 0, 255).astype(np.uint8)).conve
 
 # ---------------- carrossel 1080x1350 ----------------
 def slide1():
-    im = to_img(base(1080, 1350, 66, 470, 650))
-    y = kicker(im, 92); rule(im, y + 30)
-    y = C(im, solid_text('COMPRE O PAR DE ALIANÇAS', caps_font(50, 600), IVT, 3), y + 70)
-    C(im, gold_text('e ganhe o solitário', script_font(124)), y + 18)
+    im = to_img(base(1080, 1350, 66, 440, 520, fade=55))
+    y = kicker(im, 70); rule(im, y + 28)
+    y = C(im, solid_text('COMPRE O PAR DE ALIANÇAS', caps_font(50, 600), IVT, 3), y + 62)
+    y = C(im, gold_text('e ganhe o solitário', script_font(120)), y + 14)
+    C(im, solid_text('OURO 18K · VÁLIDO ATÉ 18 DE DEZEMBRO', caps_font(25, 600), SPEC_COLOR, 4), y + 26)
     return im
 
 
 def slide2():
-    im = to_img(base(1080, 1350, 63, 560, 700))
+    im = to_img(base(1080, 1350, 63, 465, 540, fade=55))
     y = kicker(im, 80); rule(im, y + 28)
     y = C(im, solid_text('PAR DE ALIANÇAS TRADICIONAIS', caps_font(40, 600), IVT, 3), y + 64)
-    y = C(im, solid_text('abauladas · 3 mm de largura', sans(34, 500), SOFT), y + 16)
+    y = C(im, solid_text('ouro 18k · abauladas · 3 mm de largura', sans(34, 500), SOFT), y + 16)
     y = C(im, gold_text('+ Solitário de brinde', script_font(96)), y + 34)
-    y = C(im, solid_text('moissanite de 3 mm · cor da pedra personalizável', sans(31, 500), SOFT), y + 10)
+    y = C(im, solid_text('ouro 18k · moissanite de 3 mm · cor da pedra personalizável', sans(29, 500), SOFT), y + 10)
     return im
 
 
@@ -76,34 +77,36 @@ def price(im, y, big=128):
 
 
 def slide3():
-    im = to_img(base(1080, 1350, 64, 640, 640, fade=150))
-    y = kicker(im, 80); rule(im, y + 28)
-    y = price(im, y + 62)
-    y = C(im, solid_text('+ SOLITÁRIO DE BRINDE · GARANTIA VITALÍCIA', caps_font(25, 600), SPEC_COLOR, 3), y + 30)
+    im = to_img(base(1080, 1350, 64, 540, 600, fade=55))
+    y = kicker(im, 70); rule(im, y + 28)
+    y = price(im, y + 56)
+    y = C(im, solid_text('+ SOLITÁRIO DE BRINDE · OURO 18K · GARANTIA VITALÍCIA', caps_font(24, 600), SPEC_COLOR, 3), y + 28)
+    y = C(im, gold_text('VÁLIDO ATÉ 18 DE DEZEMBRO', caps_font(30, 600), 5), y + 26)
     return im
 
 
 # ---------------- story 1080x1920 ----------------
 def story_layers(im):
     """Text kept between 14% (269 px) and 80% (1536 px) of the height."""
-    y = kicker(im, 285); rule(im, y + 26)
+    y = C(im, gold_text('BLACK FRIDAY · ATÉ 18/12', caps_font(38, 600), 10), 285); rule(im, y + 26)
     y = C(im, solid_text('COMPRE O PAR DE ALIANÇAS', caps_font(46, 600), IVT, 3), y + 56)
     C(im, gold_text('e ganhe o solitário', script_font(104)), y + 10)
 
 
-def price_card(im, y0=1314):
-    x0, x1, y1 = 120, 960, y0 + 220
+def price_card(im, y0=1284):
+    x0, x1, y1 = 120, 960, y0 + 250
     m = Image.new('L', im.size, 0); ImageDraw.Draw(m).rounded_rectangle([x0, y0, x1, y1], radius=28, fill=255)
     card = Image.new('RGBA', im.size, (13, 11, 9, 0)); card.putalpha(m.point(lambda v: int(v * 0.86))); im.alpha_composite(card)
     fr = Image.new('L', im.size, 0); ImageDraw.Draw(fr).rounded_rectangle([x0, y0, x1, y1], radius=28, outline=255, width=3); im.alpha_composite(gold_fill(fr))
-    y = C(im, solid_text('R$ 3.199,00', sans(84, 600), IVT), y0 + 24)
+    y = C(im, solid_text('R$ 3.199,00', sans(76, 600), IVT), y0 + 22)
     y = C(im, solid_text('em até 10x de R$ 319,90 sem juros', sans(32, 500), SOFT), y + 20)
-    C(im, gold_text('ou R$ 2.879,10 à vista · 10% OFF', sans(34, 700)), y + 12)
+    y = C(im, gold_text('ou R$ 2.879,10 à vista · 10% OFF', sans(34, 700)), y + 12)
+    C(im, solid_text('OURO 18K · GARANTIA VITALÍCIA', caps_font(21, 600), SPEC_COLOR, 4), y + 14)
     assert y1 < 1536
 
 
 def story(z=1.0):
-    im = to_img(base(1080, 1920, 66, 540, 650, fade=90, z=z))
+    im = to_img(base(1080, 1920, 66, 565, 640, fade=50, z=z))
     story_layers(im); price_card(im)
     return im
 
@@ -125,7 +128,7 @@ if __name__ == '__main__':
         A1, A2 = np.asarray(L1, np.float32), np.asarray(L2, np.float32)
         for n in range(int(DUR * FPS)):
             t = n / FPS
-            f = base(W, H, 66, 540, 650, fade=90, z=1.0 + 0.05 * t / DUR)
+            f = base(W, H, 66, 565, 640, fade=50, z=1.0 + 0.05 * t / DUR)
             for arr, t0 in ((A1, 0.0), (A2, 1.2)):
                 k = 1.0 if t0 == 0 else ease((t - t0) / 0.7)
                 if k <= 0: continue
