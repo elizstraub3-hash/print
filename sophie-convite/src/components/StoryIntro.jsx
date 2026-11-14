@@ -15,18 +15,9 @@ const SKIES = [
   'linear-gradient(180deg,#9FCBEA 0%,#DCCCF7 50%,#F8CDE3 100%)',
 ]
 
-function Stars({ n = 40 }) {
-  const stars = useRef(Array.from({ length: n }, (_, i) => ({ x: (i * 37) % 100, y: (i * 53) % 70, s: 1 + (i % 3), d: (i % 7) * 0.4 }))).current
-  return stars.map((st, i) => (
-    <m.span
-      key={i}
-      className="absolute rounded-full bg-white"
-      style={{ left: `${st.x}%`, top: `${st.y}%`, width: st.s * 2, height: st.s * 2, boxShadow: '0 0 6px #fff' }}
-      animate={{ opacity: [0.2, 1, 0.2] }}
-      transition={{ duration: 2.4, delay: st.d, repeat: Infinity }}
-      aria-hidden="true"
-    />
-  ))
+/** céu estrelado em UMA camada (gradientes) com brilho via CSS → leve */
+function Stars() {
+  return <div className="story-stars pointer-events-none absolute inset-0" aria-hidden="true" />
 }
 
 function SceneArt({ art }) {
@@ -47,14 +38,14 @@ function SceneArt({ art }) {
   if (art === 'princess')
     return (
       <div className="absolute inset-x-0 bottom-[11%] top-[30%] flex items-end justify-center" aria-hidden="true">
-        <div className="absolute bottom-[4%] left-1/2 h-[70%] w-[78%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,240,185,.85),rgba(248,205,227,.4)_45%,transparent_70%)] blur-md" />
+        <div className="absolute bottom-[4%] left-1/2 h-[70%] w-[78%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,240,185,.85),rgba(248,205,227,.4)_40%,transparent_68%)]" />
         {CHILD_IMAGES.photo ? (
           <m.img
             src={CHILD_IMAGES.photo}
             alt=""
-            className="relative h-full w-auto object-contain drop-shadow-[0_0_30px_rgba(255,220,240,.8)]"
-            initial={{ opacity: 0, scale: 0.85, y: 30, filter: 'brightness(2) blur(8px)' }}
-            animate={{ opacity: 1, scale: 1, y: 0, filter: 'brightness(1) blur(0px)' }}
+            className="relative h-full w-auto object-contain [will-change:transform,opacity]"
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.8, ease: 'easeOut' }}
           />
         ) : (
@@ -68,12 +59,12 @@ function SceneArt({ art }) {
         <m.img
           src={POSTER}
           alt=""
-          className="absolute top-[42%] h-[34%] w-auto"
+          className="absolute top-[42%] h-[34%] w-auto [will-change:transform,left]"
           initial={{ left: '-45%', rotate: -8 }}
           animate={{ left: ['-45%', '22%', '18%'], y: [0, -30, 0, -14, 0], rotate: [-8, 4, 0] }}
           transition={{ duration: 3.4, ease: 'easeInOut' }}
         />
-        <m.div className="absolute left-0 top-[58%] h-2 w-[60%] rounded-full bg-gradient-to-r from-transparent via-white/80 to-amarelo/80 blur-[2px]" initial={{ scaleX: 0, originX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 2.4 }} />
+        <m.div className="absolute left-0 top-[58%] h-2 w-[60%] rounded-full bg-gradient-to-r from-transparent via-white/80 to-amarelo/80" initial={{ scaleX: 0, originX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 2.4 }} />
       </div>
     )
   if (art === 'invite')
@@ -83,8 +74,8 @@ function SceneArt({ art }) {
           <m.img
             src={TEXT_ART.invite.src}
             alt=""
-            className="w-[86%] max-w-[24rem]"
-            initial={{ opacity: 0, scale: 0.4, rotate: -10, y: 80 }}
+            className="w-[86%] max-w-[24rem] [will-change:transform,opacity] [transform:translateZ(0)]"
+            initial={{ opacity: 0, scale: 0.8, rotate: -6, y: 60 }}
             animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
             transition={{ type: 'spring', stiffness: 70, damping: 11, delay: 0.3 }}
           />
@@ -94,7 +85,7 @@ function SceneArt({ art }) {
   return null
 }
 
-export default function StoryIntro({ onDone, onFirstTap }) {
+export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
   const reduce = useReducedMotion()
   const scenes = STORY.scenes
   const [i, setI] = useState(-1) // -1 = tela "toque para começar"
@@ -111,6 +102,7 @@ export default function StoryIntro({ onDone, onFirstTap }) {
   const finish = useCallback(() => {
     if (leavingRef.current) return
     leavingRef.current = true
+    onLeave?.()
     clearTimeout(timer.current)
     setLeaving(true)
     setTimeout(() => doneRef.current?.(), reduce ? 0 : 900)
@@ -124,30 +116,43 @@ export default function StoryIntro({ onDone, onFirstTap }) {
   }, [scenes.length, finish])
 
   // avanço automático
-  // narração por cena (se houver): a cena dura o tempo do áudio
+  // narração por cena: a cena dura o tempo da fala (+ respiro).
+  // Um único <audio> destravado no toque inicial (exigência do iPhone).
   const voiceRef = useRef(null)
+  const firstPlayed = useRef(false)
   useEffect(() => {
     if (i < 0 || leaving) return
     const src = scenes[i].audio
-    let a
-    if (src) {
-      a = voiceRef.current || (voiceRef.current = new Audio())
-      a.src = src
-      a.onended = () => (timer.current = setTimeout(next, 600))
-      a.onerror = () => (timer.current = setTimeout(next, STORY.secondsPerScene * 1000))
-      a.play().catch(() => (timer.current = setTimeout(next, STORY.secondsPerScene * 1000)))
-    } else {
-      timer.current = setTimeout(next, STORY.secondsPerScene * 1000)
-    }
-    return () => {
-      clearTimeout(timer.current)
-      if (a) {
+    const a = voiceRef.current
+    const fallback = () => (timer.current = setTimeout(next, STORY.secondsPerScene * 1000))
+    if (src && a) {
+      a.onended = () => (timer.current = setTimeout(next, 700))
+      a.onerror = fallback
+      if (i === 0 && firstPlayed.current) {
+        // já começou a tocar dentro do toque
+      } else {
+        a.src = src
+        a.currentTime = 0
+        a.play().catch(fallback)
+      }
+      // segurança: se o áudio travar, a história segue mesmo assim
+      const guard = setTimeout(() => a.paused && a.currentTime === 0 && fallback(), 2500)
+      return () => {
+        clearTimeout(timer.current)
+        clearTimeout(guard)
         a.onended = a.onerror = null
-        a.pause()
       }
     }
+    fallback()
+    return () => clearTimeout(timer.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i, leaving])
+
+  // ao sair (fim ou "pular"), silencia a narração
+  useEffect(() => {
+    if (leaving) voiceRef.current?.pause()
+  }, [leaving])
+  useEffect(() => () => voiceRef.current?.pause(), [])
 
   useEffect(() => {
     btnRef.current?.focus()
@@ -161,8 +166,28 @@ export default function StoryIntro({ onDone, onFirstTap }) {
     }
   }, [finish])
 
+  // decodifica as imagens das cenas já na tela de título (sem travar no meio)
+  useEffect(() => {
+    ;[CHILD_IMAGES.photo, POSTER, TEXT_ART.invite?.src].filter(Boolean).forEach((src) => {
+      const im = new Image()
+      im.src = src
+      im.decode?.().catch(() => {})
+    })
+  }, [])
+
   const begin = () => {
-    sparkle()
+    const first = scenes[0]?.audio
+    if (first) {
+      const a = voiceRef.current || (voiceRef.current = new Audio())
+      a.preload = 'auto'
+      a.src = first
+      a.play().then(() => (firstPlayed.current = true)).catch(() => {}) // dentro do toque
+      firstPlayed.current = true
+      // pré-carrega as próximas falas
+      scenes.slice(1).forEach((sc) => sc.audio && fetch(sc.audio).catch(() => {}))
+    } else {
+      sparkle()
+    }
     onFirstTap?.() // gesto do usuário: libera música
     setI(0)
   }
@@ -175,7 +200,7 @@ export default function StoryIntro({ onDone, onFirstTap }) {
       aria-modal="true"
       aria-label={`Historinha de abertura do convite da ${EVENT.childFirstName}`}
       className="fixed inset-0 z-[80] overflow-hidden bg-[#140E26] text-white"
-      animate={leaving ? { opacity: 0, scale: 1.08 } : { opacity: 1, scale: 1 }}
+      animate={leaving ? { opacity: 0 } : { opacity: 1 }}
       transition={{ duration: 0.9, ease: 'easeInOut' }}
       onClick={(e) => i >= 0 && !e.target.closest('button') && next()}
     >
@@ -184,21 +209,21 @@ export default function StoryIntro({ onDone, onFirstTap }) {
         key={`sky-${Math.max(0, i)}`}
         className="absolute inset-0"
         style={{ background: sky }}
-        initial={{ opacity: 0, scale: 1.12 }}
-        animate={{ opacity: 1, scale: reduce ? 1 : 1.0 }}
-        transition={{ duration: 1.4, ease: 'easeOut' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, ease: 'easeOut' }}
       />
-      <div className="absolute inset-0 opacity-90">{i < 3 && <Stars />}</div>
+      {i < 3 && <Stars />}
 
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence>
         {i >= 0 && (
           <m.div key={i} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}>
             <SceneArt art={scenes[i].art} />
             <div className="absolute inset-x-0 top-[13%] px-7 text-center">
               <m.p
-                className="mx-auto max-w-[19ch] text-balance font-script text-[clamp(2rem,9vw,3rem)] font-bold leading-[1.15] [text-shadow:0_2px_0_rgba(80,30,90,.5),0_0_24px_rgba(255,200,240,.9)]"
-                initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                className="mx-auto max-w-[19ch] text-balance font-script text-[clamp(2rem,9vw,3rem)] font-bold leading-[1.15] [text-shadow:0_2px_0_rgba(80,30,90,.55),0_0_10px_rgba(120,40,120,.45)]"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.3 }}
               >
                 {fill(scenes[i].text)}
@@ -211,12 +236,11 @@ export default function StoryIntro({ onDone, onFirstTap }) {
       {/* tela inicial */}
       {i < 0 && (
         <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-          <Stars />
           <m.p className="relative font-sans text-xs font-semibold uppercase tracking-[0.4em] text-white/80" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2 }}>
             Uma historinha mágica
           </m.p>
           <m.p
-            className="relative mt-3 font-script text-[clamp(2.6rem,12vw,3.6rem)] font-bold leading-tight [text-shadow:0_0_24px_rgba(255,200,240,.9)]"
+            className="relative mt-3 font-script text-[clamp(2.6rem,12vw,3.6rem)] font-bold leading-tight [text-shadow:0_2px_0_rgba(80,30,90,.55)]"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.6, delay: 0.3 }}

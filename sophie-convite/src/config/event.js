@@ -52,10 +52,10 @@ export const STORY = {
   // Narração (opcional): coloque um MP3 por cena em public/audio/ e informe em
   // cada cena, ex.: audio: '/audio/cena-1.mp3'. A cena dura o tempo da fala.
   scenes: [
-    { art: 'sky', audio: '', text: 'Era uma vez, lá no alto das nuvens, um reino mágico cheio de arco-íris…' },
-    { art: 'princess', audio: '', text: 'Lá vivia uma princesinha muito especial chamada {nome}.' },
-    { art: 'unicorn', audio: '', text: 'Ela vai fazer 5 aninhos, e o seu unicórnio mágico ganhou uma missão…' },
-    { art: 'invite', audio: '', text: 'entregar um convite muito especial… para você! 💌' },
+    { art: 'sky', audio: '/audio/narracao/cena-1.mp3', text: 'Era uma vez, lá no alto das nuvens, um reino mágico cheio de arco-íris…' },
+    { art: 'princess', audio: '/audio/narracao/cena-2.mp3', text: 'Lá vivia uma princesinha muito especial chamada {nome}.' },
+    { art: 'unicorn', audio: '/audio/narracao/cena-3.mp3', text: 'Ela vai fazer 5 aninhos, e o seu unicórnio mágico ganhou uma missão…' },
+    { art: 'invite', audio: '/audio/narracao/cena-4.mp3', text: 'entregar um convite muito especial… para você! 💌' },
   ],
 }
 

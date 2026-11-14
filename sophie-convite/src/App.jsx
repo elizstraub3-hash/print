@@ -40,14 +40,17 @@ export default function App() {
   const [opened, setOpened] = useState(false)
   const [unlocked, setUnlocked] = useState(readUnlocked)
   const [storyDone, setStoryDone] = useState(!STORY.enabled)
+  const [storyLeaving, setStoryLeaving] = useState(!STORY.enabled)
   const music = useMusic()
 
   useEffect(() => setSfxEnabled(SOUND_EFFECTS), [])
   // começa a baixar o corpo do convite assim que a página fica ociosa
+  // baixa o resto do convite só depois da historinha (não disputa o celular)
   useEffect(() => {
+    if (!storyDone) return
     const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1500))
     idle(() => import('./components/InviteBody.jsx'))
-  }, [])
+  }, [storyDone])
 
   const handleOpen = useCallback(() => {
     if (MUSIC.startOnOpen && music.status === 'paused') music.play() // ainda dentro do gesto do usuário
@@ -73,13 +76,14 @@ export default function App() {
       <MotionConfig reducedMotion="user">
         {!storyDone && (
           <StoryIntro
+            onLeave={() => setStoryLeaving(true)}
             onDone={() => setStoryDone(true)}
             onFirstTap={() => MUSIC.startOnOpen && music.status === 'paused' && music.play()}
           />
         )}
         {opened && <MusicFab music={music} />}
         <main className="relative w-full overflow-x-clip">
-          <Opening opened={opened} onOpen={handleOpen} />
+          {storyLeaving ? <Opening opened={opened} onOpen={handleOpen} /> : <div className="min-h-[100svh] bg-gradient-to-b from-azul via-[#E6E0FA] to-rosa" />}
           {opened && (
             <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
               <UnlockGame unlocked={unlocked} onUnlock={unlock} onSkip={skip} onContinue={() => scrollWhenReady('convite')} />

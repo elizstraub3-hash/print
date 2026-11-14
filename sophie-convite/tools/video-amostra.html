@@ -1,0 +1,33 @@
+<!doctype html><meta charset="utf-8">
+<style>
+  html,body{margin:0;width:540px;height:960px;overflow:hidden;font-family:system-ui;background:#F3E9FB}
+  .bg{position:absolute;inset:0;background:url(/img/pattern-lilas.webp) center/cover}
+  .veil{position:absolute;inset:0;background:radial-gradient(ellipse 75% 50% at 50% 66%,rgba(255,255,255,.92),rgba(255,248,252,.72) 65%,rgba(255,248,252,.5))}
+  #t{position:absolute;left:50%;top:36px;width:470px;transform:translateX(-50%)}
+  canvas{position:absolute;left:-30px;top:300px;width:600px;height:640px}
+</style>
+<div class="bg"></div><div class="veil"></div>
+<img id="t" src="/img/titulo-aniversario.webp">
+<canvas id="c"></canvas>
+<script>
+  // relógio controlado: cada quadro do vídeo avança exatamente 1/30 s
+  let T = 0; const q = []
+  performance.now = () => T
+  window.requestAnimationFrame = (cb) => (q.push(cb), q.length)
+  window.cancelAnimationFrame = () => {}
+  window.__step = (ms) => { T += ms; const cbs = q.splice(0); cbs.forEach((cb) => cb(T)); window.__onstep?.(T) }
+</script>
+<script type="module">
+import { createUnicornScene } from '/src/three/unicornScene.js'
+const s = await createUnicornScene(document.getElementById('c'), { yaw: -0.4 })
+s.start()
+const plan = [[700, 'pet'], [1900, 'celebrate'], [4300, 'tap'], [6200, 'pet']]
+const t0 = performance.now()
+window.__onstep = (t) => {
+  const e = t - t0
+  document.getElementById('t').style.transform = `translate(-50%, ${-8 + 8 * Math.sin(e / 650)}px) rotate(${Math.sin(e / 900) * 0.8}deg)`
+  s.look(Math.sin(e / 1400) * 0.6)
+  while (plan.length && e >= plan[0][0]) s.play(plan.shift()[1])
+}
+window.ready = true
+</script>

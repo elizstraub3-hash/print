@@ -118,3 +118,24 @@
 @keyframes halo { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
 .candle-halo { animation: halo 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .candle-flame, .candle-halo { animation: none; } }
+
+/* estrelas da historinha: uma camada, só opacidade (GPU) */
+.story-stars {
+  background-image:
+    radial-gradient(2px 2px at 12% 18%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 28% 42%, #fff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 47% 12%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 66% 30%, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 83% 14%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 92% 46%, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 7% 58%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 38% 66%, #fff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 74% 60%, #FFE58F 50%, transparent 52%),
+    radial-gradient(2px 2px at 57% 50%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 20% 8%, #FFE58F 50%, transparent 52%),
+    radial-gradient(2px 2px at 88% 70%, #fff 50%, transparent 52%);
+  animation: twinkle 3s ease-in-out infinite;
+  will-change: opacity;
+}
+@keyframes twinkle { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .story-stars { animation: none; } }
