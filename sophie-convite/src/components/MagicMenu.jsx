@@ -1,5 +1,7 @@
 import { MAPS_URL, hasGifts } from '../lib/event-utils.js'
 import ArtButton from './ArtButton.jsx'
+import { MUSIC } from '../config/event.js'
+import { PLAY_YT_EVENT } from './MusicCard.jsx'
 import Reveal from './Reveal.jsx'
 
 const go = (id) => () => {
@@ -16,7 +18,7 @@ export default function MagicMenu({ music }) {
     { art: 'sobre', label: 'Sobre a festa: data, horário e local', onClick: go('informacoes') },
     { art: 'confirmar', label: 'Confirmar presença', onClick: go('confirmar') },
     { art: 'localizacao', label: 'Ver localização no Google Maps (abre em nova aba)', href: MAPS_URL },
-    { art: 'joguinho', label: 'Jogar o mini joguinho de novo', onClick: go('jogo') },
+    { art: 'joguinho', label: 'Mini joguinho: Escadinha do Unicórnio', onClick: go('pulos') },
     music.available && {
       art: 'musica',
       label: playing ? 'Desligar música' : 'Ligar música',
@@ -24,6 +26,11 @@ export default function MagicMenu({ music }) {
       pressed: playing,
       badge: playing ? '♪ tocando' : 'desligada',
       glitter: !playing,
+    },
+    !music.available && !MUSIC.src && MUSIC.youtubeId && {
+      art: 'musica',
+      label: 'Ouvir a música da festa',
+      onClick: () => window.dispatchEvent(new Event(PLAY_YT_EVENT)),
     },
     hasGifts() && { art: 'presentes', label: 'Lista de presentes: lojas sugeridas', onClick: go('presentes') },
   ].filter(Boolean)

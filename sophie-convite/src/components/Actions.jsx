@@ -1,7 +1,8 @@
 import { useId, useState } from 'react'
 import { GIFT_LIST, RSVP_DEADLINE } from '../config/event.js'
 import { buildRsvpMessage, buildWhatsAppUrl, getRsvpPhone, getGiftUrl, getGiftStores, MAPS_URL, CALENDAR_URL } from '../lib/event-utils.js'
-import { AgendaIcon, InstagramIcon } from './Icons.jsx'
+import { AgendaIcon, InstagramIcon, WhatsIcon, PhoneIcon, PinIcon } from './Icons.jsx'
+import { EVENT } from '../config/event.js'
 import Reveal from './Reveal.jsx'
 import ArtButton from './ArtButton.jsx'
 import Pattern from './Pattern.jsx'
@@ -92,22 +93,78 @@ export default function Actions() {
         </Reveal>
 
         {(giftUrl || stores.length > 0) && (
-          <Reveal delay={0.2} className="mt-8">
-            <div id="presentes" className="scroll-mt-4 rounded-[2rem] bg-white/85 p-5 text-center shadow-soft ring-1 ring-white">
-              <h3 className="font-script text-3xl font-bold text-rosaForte">Lista de presentes</h3>
-              <p className="mx-auto mt-2 max-w-[32ch] font-sans text-base text-ameixa">{GIFT_LIST.note}</p>
-              {giftUrl && <ArtButton art="presentes" className="mx-auto mt-3 w-[min(100%,18rem)]" label={`${GIFT_LIST.label} (abre em nova aba)`} href={giftUrl} />}
-              {stores.length > 0 && (
-                <ul className="mt-4 grid gap-2.5">
-                  {stores.map((st) => (
-                    <li key={st.url}>
-                      <a href={st.url} target="_blank" rel="noopener noreferrer" className="btn-soft !min-h-[54px] !text-base" aria-label={`Loja ${st.name} no Instagram (abre em nova aba)`}>
-                        <InstagramIcon className="h-6 w-6 shrink-0 text-rosaForte" />
-                        <span className="min-w-0 truncate">{st.name}</span>
-                      </a>
-                    </li>
+          <Reveal delay={0.1} className="mt-8">
+            <div id="presentes" className="scroll-mt-4 rounded-[2rem] bg-white/90 p-5 text-center shadow-soft ring-1 ring-white">
+              <h3 className="font-script text-[2.2rem] font-bold leading-tight text-rosaForte">Lista de presentes</h3>
+              <p className="mx-auto mt-1 max-w-[32ch] font-sans text-base font-medium text-ameixa">{GIFT_LIST.note.replaceAll('{nome}', EVENT.childFirstName)}</p>
+
+              {/* tamanhos */}
+              {GIFT_LIST.sizes?.length > 0 && (
+                <dl className="mt-4 grid grid-cols-2 gap-2.5">
+                  {GIFT_LIST.sizes.map((z) => (
+                    <div key={z.label} className="rounded-2xl bg-gradient-to-b from-rosa/60 to-lilas/50 px-3 py-3 ring-1 ring-white">
+                      <dt className="font-sans text-xs font-semibold uppercase tracking-[0.15em] text-ameixaSoft">
+                        <span aria-hidden="true">{z.icon} </span>
+                        {z.label}
+                      </dt>
+                      <dd className="mt-0.5 font-sans text-lg font-semibold leading-tight text-ameixa">{z.value}</dd>
+                    </div>
                   ))}
-                </ul>
+                </dl>
+              )}
+
+              {/* gostos */}
+              {GIFT_LIST.likes?.length > 0 && (
+                <div className="mt-4">
+                  <p className="font-sans text-sm font-semibold text-ameixa">A {EVENT.childFirstName} adora:</p>
+                  <ul className="mt-2 flex flex-wrap justify-center gap-1.5">
+                    {GIFT_LIST.likes.map((l) => (
+                      <li key={l} className="rounded-full bg-amarelo/80 px-3 py-1 font-sans text-sm font-semibold text-ameixa ring-1 ring-dourado/50">
+                        {l}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {giftUrl && <ArtButton art="presentes" className="mx-auto mt-4 w-[min(100%,18rem)]" label={`${GIFT_LIST.label} (abre em nova aba)`} href={giftUrl} />}
+
+              {/* lojas */}
+              {stores.length > 0 && (
+                <>
+                  <p className="mt-5 font-sans text-sm font-semibold uppercase tracking-[0.18em] text-ameixaSoft">Lojas que ela ama</p>
+                  <ul className="mt-2 grid gap-3 text-left">
+                    {stores.map((st) => (
+                      <li key={st.name} className="rounded-3xl bg-white p-4 shadow-soft ring-1 ring-rosa/50">
+                        <p className="font-sans text-lg font-semibold leading-tight text-ameixa">{st.name}</p>
+                        {st.place && <p className="font-sans text-sm text-ameixaSoft">{st.place}</p>}
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          {st.whatsappUrl && (
+                            <a href={st.whatsappUrl} target="_blank" rel="noopener noreferrer" className="store-btn col-span-2 bg-[#25A35F] text-white" aria-label={`Chamar a loja ${st.name} no WhatsApp (abre o WhatsApp)`}>
+                              <WhatsIcon className="h-5 w-5" /> Chamar no WhatsApp
+                            </a>
+                          )}
+                          {st.phoneUrl && (
+                            <a href={st.phoneUrl} className="store-btn col-span-2 bg-rosaForte text-white" aria-label={`Ligar para a loja ${st.name}: ${st.phoneLabel}`}>
+                              <PhoneIcon className="h-5 w-5" /> Ligar · {st.phoneLabel}
+                            </a>
+                          )}
+                          {st.instagramUrl && (
+                            <a href={st.instagramUrl} target="_blank" rel="noopener noreferrer" className="store-btn bg-lilas/70 text-ameixa" aria-label={`Instagram da loja ${st.name} (abre em nova aba)`}>
+                              <InstagramIcon className="h-5 w-5" /> Instagram
+                            </a>
+                          )}
+                          {st.mapsUrl && (
+                            <a href={st.mapsUrl} target="_blank" rel="noopener noreferrer" className="store-btn bg-menta text-ameixa" aria-label={`Ver a loja ${st.name} no mapa (abre em nova aba)`}>
+                              <PinIcon className="h-5 w-5" /> Mapa
+                            </a>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 font-sans text-xs text-ameixaSoft">O WhatsApp já abre com os tamanhos e os gostos da {EVENT.childFirstName} 💌</p>
+                </>
               )}
             </div>
           </Reveal>

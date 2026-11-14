@@ -11,10 +11,10 @@ export default {
         menta: '#D6EEDC',
         dourado: '#EBCB85',
         // tons de apoio (texto com contraste AA sobre fundos pastel)
-        ameixa: '#5E4466',
-        ameixaSoft: '#7D6585',
+        ameixa: '#472A52',
+        ameixaSoft: '#5E4468',
         douradoEscuro: '#A67C2E',
-        rosaForte: '#E58DB8',
+        rosaForte: '#CF4A92',
       },
       fontFamily: {
         script: ['"Dancing Script"', 'cursive'],

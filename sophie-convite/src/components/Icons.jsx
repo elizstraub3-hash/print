@@ -26,3 +26,6 @@ export const AgendaIcon = (p) => (
 export const InstagramIcon = (p) => (
   <svg viewBox="0 0 24 24" {...base} {...p}><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" /></svg>
 )
+export const PhoneIcon = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}><path d="M5 4h3.5l1.5 4-2 1.5a11 11 0 005.5 5.5l1.5-2 4 1.5V18a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z" /></svg>
+)

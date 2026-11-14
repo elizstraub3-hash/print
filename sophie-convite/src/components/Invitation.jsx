@@ -1,6 +1,7 @@
 import { m } from 'framer-motion'
 import { useRef } from 'react'
-import { EVENT, CHILD_IMAGES } from '../config/event.js'
+import { EVENT, CHILD_IMAGES, TEXT_ART } from '../config/event.js'
+import Float from './Float.jsx'
 import Unicorn3D from './Unicorn3D.jsx'
 import { burstFrom } from '../lib/glitter.js'
 import { sparkle } from '../lib/sfx.js'
@@ -8,6 +9,7 @@ import Reveal from './Reveal.jsx'
 import { Divider, Twinkles, DriftCloud, Cloud } from './Decor.jsx'
 import Pattern from './Pattern.jsx'
 import MagicMenu from './MagicMenu.jsx'
+import MusicCard from './MusicCard.jsx'
 
 export default function Invitation({ music }) {
   const uniRef = useRef(null)
@@ -69,21 +71,36 @@ export default function Invitation({ music }) {
 
         <Reveal delay={0.1}>
           {!CHILD_IMAGES.photo && <p className="mt-1 font-sans text-sm text-ameixaSoft">Toque no unicórnio para fazer carinho 💕</p>}
-          <p className="mt-4 font-sans text-xs font-semibold uppercase tracking-[0.3em] text-ameixaSoft">Aniversário de</p>
-          <h2 id="convite-titulo" className="mt-1">
-            <span className="sophie-lettering block font-script text-[clamp(3.2rem,15vw,4.6rem)] font-bold leading-none">
-              {EVENT.childFirstName}
-            </span>
-            <span className="mt-2 block font-sans text-[clamp(1.05rem,4.6vw,1.3rem)] font-medium text-ameixa">
-              {EVENT.childFullName}
-            </span>
-          </h2>
+          {TEXT_ART.invite?.src ? (
+            <h2 id="convite-titulo" className="mt-3">
+              <Float y={8} duration={4.5} rotate={0.8}>
+                <img
+                  src={TEXT_ART.invite.src}
+                  alt={TEXT_ART.invite.alt}
+                  width={TEXT_ART.invite.w}
+                  height={TEXT_ART.invite.h}
+                  loading="lazy"
+                  decoding="async"
+                  className="mx-auto h-auto w-[min(100%,24rem)] drop-shadow-[0_14px_18px_rgba(190,120,170,.28)]"
+                />
+              </Float>
+              <span className="mt-1 block font-sans text-[clamp(1.1rem,4.8vw,1.35rem)] font-semibold text-ameixa">{EVENT.childFullName}</span>
+            </h2>
+          ) : (
+            <>
+              <p className="mt-4 font-sans text-xs font-semibold uppercase tracking-[0.3em] text-ameixaSoft">Aniversário de</p>
+              <h2 id="convite-titulo" className="mt-1">
+                <span className="sophie-lettering block font-script text-[clamp(3.2rem,15vw,4.6rem)] font-bold leading-none">{EVENT.childFirstName}</span>
+                <span className="mt-2 block font-sans text-[clamp(1.05rem,4.6vw,1.3rem)] font-medium text-ameixa">{EVENT.childFullName}</span>
+              </h2>
+            </>
+          )}
         </Reveal>
 
         <Reveal delay={0.2}>
           <div className="mx-auto mt-5 flex w-fit items-center gap-3 rounded-full bg-gradient-to-r from-amarelo via-white to-amarelo px-6 py-2 ring-1 ring-dourado/60">
             <span className="font-script text-4xl font-bold leading-none text-douradoEscuro">{EVENT.age}</span>
-            <span className="font-sans text-lg font-medium text-ameixa">anos de pura magia</span>
+            <span className="font-sans text-lg font-semibold text-ameixa">anos de pura magia</span>
           </div>
         </Reveal>
 
@@ -92,11 +109,12 @@ export default function Invitation({ music }) {
         </Reveal>
 
         <Reveal delay={0.3}>
-          <p className="mx-auto mt-3 max-w-[34ch] text-balance font-sans text-[1.08rem] leading-relaxed text-ameixa">
+          <p className="mx-auto mt-3 max-w-[34ch] text-balance font-sans text-[1.12rem] font-medium leading-relaxed text-ameixa">
             {EVENT.message}
           </p>
         </Reveal>
         <MagicMenu music={music} />
+        <MusicCard />
       </div>
     </section>
   )

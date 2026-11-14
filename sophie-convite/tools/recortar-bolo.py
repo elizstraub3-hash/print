@@ -31,6 +31,17 @@ p2 = cv2.copyMakeBorder(fg, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=0)
 cv2.floodFill(p2, np.zeros((H + 4, W + 4), np.uint8), (0, 0), 255)
 fg |= cv2.bitwise_not(p2)[1:-1, 1:-1]
 fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+# remove "ilhas" de xadrez falso presas dentro da arte (dois tons neutros alternados)
+strict = (((mx - mn) <= 6) & (mn >= 215) & (fg > 0)).astype(np.uint8)
+strict = cv2.morphologyEx(strict, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+n2, lab2, st2, _ = cv2.connectedComponentsWithStats(strict)
+L = rgb.mean(2)
+for k in range(1, n2):
+    if st2[k, cv2.CC_STAT_AREA] < 250:
+        continue
+    reg = lab2 == k
+    if L[reg].std() > 4.5:  # alternância clara/escura = xadrez, não cobertura branca lisa
+        fg[cv2.dilate(reg.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0] = 0
 alpha = cv2.GaussianBlur(fg, (5, 5), 0)
 alpha[alpha < 40] = 0
 res = Image.fromarray(np.dstack([rgb, alpha]), 'RGBA')

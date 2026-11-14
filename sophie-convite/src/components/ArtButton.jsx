@@ -1,4 +1,5 @@
 import { m } from 'framer-motion'
+import Float from './Float.jsx'
 import { burstFrom } from '../lib/glitter.js'
 import { sparkle } from '../lib/sfx.js'
 
@@ -18,6 +19,8 @@ export const ART = {
  *  - onClick → botão
  *  - disabled → arte esmaecida + legenda explicando o motivo
  */
+const PHASE = { sobre: 0, confirmar: 1.2, localizacao: 2.1, joguinho: 0.6, musica: 1.7, presentes: 2.6 }
+
 export default function ArtButton({ art, label, href, onClick, disabled, note, badge, pressed, className = '', glitter = true }) {
   const external = href && /^https?:/.test(href)
   const Tag = href && !disabled ? m.a : m.button
@@ -31,6 +34,7 @@ export default function ArtButton({ art, label, href, onClick, disabled, note, b
   }
   return (
     <div className={`relative ${className}`}>
+      <Float y={disabled ? 0 : 5} duration={5.5} delay={PHASE[art] || 0}>
       <Tag
         {...(href && !disabled
           ? { href, ...(external && { target: '_blank', rel: 'noopener noreferrer' }) }
@@ -60,6 +64,7 @@ export default function ArtButton({ art, label, href, onClick, disabled, note, b
           </span>
         )}
       </Tag>
+      </Float>
       {note && (
         <p id={`${art}-note`} className="mt-1 text-center font-sans text-sm text-ameixaSoft">
           {note}

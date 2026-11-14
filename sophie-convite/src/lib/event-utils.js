@@ -84,10 +84,41 @@ export function getGiftUrl() {
   return GIFT_LIST.enabled ? safeHttps(GIFT_LIST.url) : null
 }
 
-/** Lojas sugeridas válidas (https) */
+const digits = (v) => String(v || '').replace(/\D/g, '')
+
+/** Mensagem pronta para a loja (já com tamanhos e gostos) */
+export function buildStoreMessage() {
+  const sizes = (GIFT_LIST.sizes || []).map((z) => `${z.label.toLowerCase()} ${z.value}`).join(', ')
+  const likes = (GIFT_LIST.likes || []).join(', ')
+  return [
+    `Olá! 🦄 Vim pelo convite de aniversário de ${EVENT.age} anos da ${EVENT.childFirstName} e gostaria de ver opções de presente.`,
+    sizes && `Ela usa ${sizes}.`,
+    likes && `Gosta muito de: ${likes}.`,
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+/** Lojas válidas, com links prontos (WhatsApp, ligar, Instagram, mapa) */
 export function getGiftStores() {
   if (!GIFT_LIST.enabled) return []
-  return (GIFT_LIST.stores || []).map((st) => ({ ...st, url: safeHttps(st.url) })).filter((st) => st.url && st.name)
+  const msg = buildStoreMessage()
+  return (GIFT_LIST.stores || [])
+    .filter((st) => st && st.name)
+    .map((st) => {
+      const w = digits(st.whatsapp)
+      const ph = digits(st.phone)
+      const ig = String(st.instagram || '').replace(/^@/, '').replace(/[^\w.]/g, '')
+      return {
+        ...st,
+        whatsappUrl: w.length >= 10 ? `https://wa.me/${w.length <= 11 ? '55' + w : w}?text=${encodeURIComponent(msg)}` : null,
+        phoneUrl: ph.length >= 10 ? `tel:+${ph.length <= 11 ? '55' + ph : ph}` : null,
+        phoneLabel: st.phone || null,
+        instagramUrl: ig ? `https://www.instagram.com/${ig}/` : safeHttps(st.url),
+        instagramHandle: ig ? `@${ig}` : null,
+        mapsUrl: st.maps ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(st.maps)}` : null,
+      }
+    })
 }
 
 /** A seção de presentes aparece se houver lista OU lojas */

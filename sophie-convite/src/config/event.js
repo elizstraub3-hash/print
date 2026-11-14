@@ -42,6 +42,34 @@ export const TITLE_ART = {
 }
 
 /**
+ * Historinha de abertura (estilo cinema). {nome} = nome da criança.
+ * art: 'sky' | 'princess' | 'unicorn' | 'invite' (cenas prontas) — troque as
+ * imagens em CHILD_IMAGES/TEXT_ART ou peça novas cenas com seus personagens.
+ */
+export const STORY = {
+  enabled: true,
+  secondsPerScene: 4.2,
+  // Narração (opcional): coloque um MP3 por cena em public/audio/ e informe em
+  // cada cena, ex.: audio: '/audio/cena-1.mp3'. A cena dura o tempo da fala.
+  scenes: [
+    { art: 'sky', audio: '', text: 'Era uma vez, lá no alto das nuvens, um reino mágico cheio de arco-íris…' },
+    { art: 'princess', audio: '', text: 'Lá vivia uma princesinha muito especial chamada {nome}.' },
+    { art: 'unicorn', audio: '', text: 'Ela vai fazer 5 aninhos, e o seu unicórnio mágico ganhou uma missão…' },
+    { art: 'invite', audio: '', text: 'entregar um convite muito especial… para você! 💌' },
+  ],
+}
+
+/**
+ * Artes de texto (PNG/WebP transparentes). '' = usa o texto digitado.
+ *  invite: título abaixo da foto ("Aniversário da Sophie")
+ *  finale: mensagem final ("Sua presença tornará...")
+ */
+export const TEXT_ART = {
+  invite: { src: '/img/titulo-aniversario.webp', w: 960, h: 562, alt: 'Aniversário da Sophie' },
+  finale: { src: '/img/mensagem-final.webp', w: 960, h: 575, alt: 'Sua presença tornará este dia ainda mais mágico' },
+}
+
+/**
  * Imagens da aniversariante (PNG/WebP sem fundo, em /public/img).
  *  photo: foto de corpo inteiro (seção do convite). '' = mostra o unicórnio 3D.
  *  gameHead: rostinho usado como personagem do mini-jogo.
@@ -89,6 +117,9 @@ export const RSVP_DEADLINE = ''
  */
 export const MUSIC = {
   src: '',
+  // Vídeo do YouTube (player incorporado, oficial). Usado quando não há MP3.
+  // O ID é o trecho depois de youtu.be/  →  https://youtu.be/hm9lp5CsRMs
+  youtubeId: 'hm9lp5CsRMs',
   title: 'Trilha mágica',
   volume: 0.45,
   // Começar a tocar quando o convidado tocar em "Abrir convite mágico"
@@ -98,33 +129,60 @@ export const MUSIC = {
 
 /**
  * Lista de presentes (opcional). Fica oculta enquanto enabled = false.
- *  - url: link de uma lista online (opcional)
- *  - stores: lojas sugeridas (Instagram, site…) — só links https:// reais
+ * Cada loja pode ter: whatsapp (número), phone (fixo), instagram (@), maps (busca).
+ * Só números/links REAIS informados pela família.
  */
 export const GIFT_LIST = {
   enabled: true,
-  url: '',
+  url: '', // lista online (opcional)
   label: 'Ver lista de presentes',
-  note: 'Sua presença é o nosso maior presente! Mas, se quiser mimar a Sophie, estas lojas têm sugestões especiais:',
+  note: 'Sua presença é o nosso maior presente! Mas, se quiser mimar a {nome}, aqui vão algumas dicas:',
+  sizes: [
+    { icon: '👗', label: 'Roupas', value: 'tamanho 5 e 6' },
+    { icon: '👟', label: 'Calçados', value: 'número 27/28' },
+  ],
+  likes: ['Barbies', 'Cavalos', 'Casinhas', 'Maquiagens', 'Acessórios de cabelo'],
   stores: [
-    { name: '@milonmueller', url: 'https://www.instagram.com/milonmueller/' },
-    { name: '@pipoquinhamundoinfantill', url: 'https://www.instagram.com/pipoquinhamundoinfantill/' },
-    { name: '@kidsteencalcados', url: 'https://www.instagram.com/kidsteencalcados/' },
+    {
+      name: 'Pipoquinha Mundo Infantil',
+      place: 'Centro · Bocaiúva do Sul',
+      whatsapp: '55 41 98742-2245',
+      instagram: 'pipoquinhamundoinfantill',
+      maps: 'Pipoquinha Mundo Infantil, Centro, Bocaiúva do Sul - PR',
+    },
+    {
+      name: 'Milon',
+      place: 'Shopping Mueller · Centro, Curitiba',
+      phone: '41 3023-2336',
+      instagram: 'milonmueller',
+      maps: 'Milon Shopping Mueller, Curitiba - PR',
+    },
+    {
+      name: 'Kids Teen',
+      place: 'Park Shopping · Colombo',
+      whatsapp: '55 41 99808-4961',
+      instagram: 'kidsteencalcados',
+      maps: 'Kids Teen, Park Shopping, Colombo - PR',
+    },
   ],
 }
 
 /**
- * Bolo (imagem sem fundo em /public/img) sobre a mesa 3D com velinha.
- * topper: redesenha a plaquinha do topo com o nome correto (a arte original
- * dizia "Sophia"). box = área da plaquinha na imagem, em px da imagem.
+ * Bolo (imagem sem fundo em /public/img) sobre a mesa 3D com velinhas.
+ * candles = base de cada velinha, em frações da imagem [x, y].
  */
 export const CAKE = {
   src: '/img/bolo-sophie.webp',
-  w: 744,
+  w: 696,
   h: 1100,
-  alt: 'Bolo de dois andares com tema unicórnio, arco-íris, laço rosa e topo com o nome Sophie e o número 5',
-  topper: { name: '{nome}', box: [66, 2, 604, 252], keepClear: [482, 172] },
-  candle: { x: 0.25, y: 0.625 }, // posição da base da velinha (frações da imagem)
+  alt: 'Bolo de dois andares com unicórnio, arco-íris, laço rosa, número 5 e topo escrito Sophie',
+  candles: [
+    [0.1, 0.49],
+    [0.17, 0.478],
+    [0.245, 0.482],
+    [0.585, 0.48],
+    [0.85, 0.5],
+  ],
 }
 
 /**

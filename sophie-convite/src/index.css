@@ -15,7 +15,7 @@
   body {
     margin: 0;
     background: #fffafc;
-    color: #5e4466;
+    color: #472a52;
     font-family: Fredoka, ui-rounded, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
@@ -48,9 +48,9 @@
   }
   .btn-magic {
     @apply btn-base text-white;
-    background: linear-gradient(135deg, #f0a3c8 0%, #c9a6ee 55%, #9fd3e6 100%);
-    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.6), 0 16px 30px -12px rgba(200, 120, 180, 0.8);
-    text-shadow: 0 1px 2px rgba(120, 70, 120, 0.35);
+    background: linear-gradient(135deg, #e374ae 0%, #ad84e3 55%, #6fb6d9 100%);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.7), 0 16px 30px -12px rgba(180, 90, 160, 0.85);
+    text-shadow: 0 1px 2px rgba(70, 25, 80, 0.55);
   }
   .btn-whats {
     @apply btn-base px-6 text-lg text-white;
@@ -70,6 +70,10 @@
   .btn-ghost:hover { @apply bg-white/80; }
   .btn-disabled {
     @apply btn-base w-full cursor-not-allowed bg-white/50 px-6 text-lg text-ameixaSoft border-2 border-dashed border-ameixaSoft/30;
+  }
+  .store-btn {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-3 font-sans text-[0.95rem] font-semibold shadow-sm transition active:scale-95;
+    touch-action: manipulation;
   }
   .stepper-btn {
     @apply grid h-11 w-11 place-items-center rounded-full bg-rosa text-xl font-semibold text-ameixa transition active:scale-90 disabled:opacity-40;

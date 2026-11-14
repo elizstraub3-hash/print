@@ -1,5 +1,6 @@
 import { m, useReducedMotion } from 'framer-motion'
-import { EVENT, BACKGROUNDS } from '../config/event.js'
+import { EVENT, BACKGROUNDS, TEXT_ART } from '../config/event.js'
+import Float from './Float.jsx'
 import { POSTER } from './Unicorn3D.jsx'
 import Reveal from './Reveal.jsx'
 import { Rainbow, DriftCloud, Twinkles, Cloud, Heart } from './Decor.jsx'
@@ -16,9 +17,25 @@ export default function Finale() {
 
       <div className="relative mx-auto max-w-md">
         <Reveal>
-          <h2 id="final-titulo" className="mx-auto max-w-[16ch] text-balance font-script text-[clamp(2.3rem,10.5vw,3.2rem)] font-bold leading-[1.1] text-ameixa">
-            {EVENT.finalMessage}
-          </h2>
+          {TEXT_ART.finale?.src ? (
+            <h2 id="final-titulo">
+              <Float y={8} duration={5} rotate={0.6}>
+                <img
+                  src={TEXT_ART.finale.src}
+                  alt={TEXT_ART.finale.alt}
+                  width={TEXT_ART.finale.w}
+                  height={TEXT_ART.finale.h}
+                  loading="lazy"
+                  decoding="async"
+                  className="mx-auto h-auto w-[min(100%,25rem)] drop-shadow-[0_14px_18px_rgba(190,120,170,.3)]"
+                />
+              </Float>
+            </h2>
+          ) : (
+            <h2 id="final-titulo" className="mx-auto max-w-[16ch] text-balance font-script text-[clamp(2.3rem,10.5vw,3.2rem)] font-bold leading-[1.1] text-ameixa">
+              {EVENT.finalMessage}
+            </h2>
+          )}
         </Reveal>
 
         <div className="relative mx-auto mt-6 w-[min(84vw,330px)]">

@@ -4,9 +4,10 @@ import Opening from './components/Opening.jsx'
 import UnlockGame from './components/UnlockGame.jsx'
 import MusicFab from './components/MusicFab.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
+import StoryIntro from './components/StoryIntro.jsx'
 import useMusic from './lib/useMusic.js'
 import { setSfxEnabled } from './lib/sfx.js'
-import { MUSIC, SOUND_EFFECTS } from './config/event.js'
+import { MUSIC, SOUND_EFFECTS, STORY } from './config/event.js'
 
 // o restante do convite carrega em paralelo enquanto o convidado joga
 const InviteBody = lazy(() => import('./components/InviteBody.jsx'))
@@ -48,6 +49,7 @@ const scrollWhenReady = (id, tries = 40) => {
 export default function App() {
   const [opened, setOpened] = useState(false)
   const [unlocked, setUnlocked] = useState(readUnlocked)
+  const [storyDone, setStoryDone] = useState(!STORY.enabled)
   const music = useMusic()
 
   useEffect(() => setSfxEnabled(SOUND_EFFECTS), [])
@@ -79,6 +81,12 @@ export default function App() {
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
+        {!storyDone && (
+          <StoryIntro
+            onDone={() => setStoryDone(true)}
+            onFirstTap={() => MUSIC.startOnOpen && music.status === 'paused' && music.play()}
+          />
+        )}
         {opened && <MusicFab music={music} />}
         <main className="relative w-full overflow-x-clip">
           <Opening opened={opened} onOpen={handleOpen} />

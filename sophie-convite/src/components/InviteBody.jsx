@@ -4,6 +4,7 @@ import Details from './Details.jsx'
 import Actions from './Actions.jsx'
 import Finale from './Finale.jsx'
 import ScratchCards from './ScratchCards.jsx'
+import StairsGame from './StairsGame.jsx'
 
 export default function InviteBody({ music }) {
   return (
@@ -13,6 +14,7 @@ export default function InviteBody({ music }) {
       <Details />
       <Actions />
       <ScratchCards />
+      <StairsGame />
       <Finale />
     </>
   )
