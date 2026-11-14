@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:transparent">
+<canvas id="c" style="width:900px;height:900px;display:block"></canvas>
+<script type="module">
+import { createUnicornScene } from '/src/three/unicornScene.js'
+const yaw = Number(new URLSearchParams(location.search).get('yaw') ?? -0.5)
+await createUnicornScene(document.getElementById('c'), { reduceMotion: true, yaw })
+window.ready = true
+</script></body>

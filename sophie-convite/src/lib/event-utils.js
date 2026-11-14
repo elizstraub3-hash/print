@@ -70,13 +70,25 @@ export const CALENDAR_URL =
   `&location=${encodeURIComponent(`${EVENT.venueName} - ${FULL_ADDRESS}`)}` +
   `&details=${encodeURIComponent(EVENT.message)}`
 
-/** Lista de presentes só aparece com enabled=true e URL https válida */
-export function getGiftUrl() {
-  if (!GIFT_LIST.enabled) return null
+const safeHttps = (u) => {
   try {
-    const u = new URL(GIFT_LIST.url)
-    return u.protocol === 'https:' ? u.href : null
+    const x = new URL(u)
+    return x.protocol === 'https:' ? x.href : null
   } catch {
     return null
   }
 }
+
+/** Link principal da lista (se houver) */
+export function getGiftUrl() {
+  return GIFT_LIST.enabled ? safeHttps(GIFT_LIST.url) : null
+}
+
+/** Lojas sugeridas válidas (https) */
+export function getGiftStores() {
+  if (!GIFT_LIST.enabled) return []
+  return (GIFT_LIST.stores || []).map((st) => ({ ...st, url: safeHttps(st.url) })).filter((st) => st.url && st.name)
+}
+
+/** A seção de presentes aparece se houver lista OU lojas */
+export const hasGifts = () => !!getGiftUrl() || getGiftStores().length > 0

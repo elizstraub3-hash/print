@@ -33,6 +33,42 @@ export const EVENT = {
   finalMessage: 'Sua presença tornará esse dia ainda mais mágico!',
 }
 
+/** Arte do título (PNG/WebP com fundo transparente em /public). '' = usa o título em texto */
+export const TITLE_ART = {
+  src: '/img/titulo-sophie.webp',
+  alt: 'Aniversário da Sophie Polli dos Santos — 5 anos',
+  width: 960,
+  height: 860,
+}
+
+/**
+ * Imagens da aniversariante (PNG/WebP sem fundo, em /public/img).
+ *  photo: foto de corpo inteiro (seção do convite). '' = mostra o unicórnio 3D.
+ *  gameHead: rostinho usado como personagem do mini-jogo.
+ */
+export const CHILD_IMAGES = {
+  photo: '/img/sophie-fantasia.webp',
+  photoAlt: 'Sophie com fantasia de unicórnio, tiara dourada e varinha de estrela',
+  gameHead: '/img/sophie-cabeca.webp',
+}
+
+/** Patterns de fundo (imagens em /public/img). '' = usa o pattern desenhado em código */
+export const BACKGROUNDS = {
+  opening: '/img/pattern-lilas.webp',
+  game: '/img/pattern-azul.webp',
+  finale: '/img/pattern-lilas.webp',
+}
+
+/**
+ * Fotos da aniversariante (opcional). Coloque os arquivos em public/fotos/
+ * (JPG/WebP, ~1200 px no lado maior) e liste aqui. [] = seção oculta.
+ * Ex.: { src: '/fotos/sophie-1.webp', alt: 'Sophie sorrindo', caption: 'Meu 1º aninho' }
+ */
+export const PHOTOS = []
+
+/** Efeitos sonoros do jogo ("plim" das estrelinhas). Sintetizados, sem arquivo. */
+export const SOUND_EFFECTS = true
+
 /**
  * Telefone para confirmação de presença (WhatsApp).
  * Formato: código do país + DDD + número, só dígitos ou com máscara.
@@ -62,13 +98,52 @@ export const MUSIC = {
 
 /**
  * Lista de presentes (opcional). Fica oculta enquanto enabled = false.
- * Use apenas links https:// reais (loja, PIX page, lista online…).
+ *  - url: link de uma lista online (opcional)
+ *  - stores: lojas sugeridas (Instagram, site…) — só links https:// reais
  */
 export const GIFT_LIST = {
-  enabled: false,
+  enabled: true,
   url: '',
   label: 'Ver lista de presentes',
-  note: 'Sua presença é o nosso maior presente! Mas, se quiser mimar a Sophie, preparamos algumas sugestões.',
+  note: 'Sua presença é o nosso maior presente! Mas, se quiser mimar a Sophie, estas lojas têm sugestões especiais:',
+  stores: [
+    { name: '@milonmueller', url: 'https://www.instagram.com/milonmueller/' },
+    { name: '@pipoquinhamundoinfantill', url: 'https://www.instagram.com/pipoquinhamundoinfantill/' },
+    { name: '@kidsteencalcados', url: 'https://www.instagram.com/kidsteencalcados/' },
+  ],
+}
+
+/**
+ * Bolo (imagem sem fundo em /public/img) sobre a mesa 3D com velinha.
+ * topper: redesenha a plaquinha do topo com o nome correto (a arte original
+ * dizia "Sophia"). box = área da plaquinha na imagem, em px da imagem.
+ */
+export const CAKE = {
+  src: '/img/bolo-sophie.webp',
+  w: 744,
+  h: 1100,
+  alt: 'Bolo de dois andares com tema unicórnio, arco-íris, laço rosa e topo com o nome Sophie e o número 5',
+  topper: { name: '{nome}', box: [66, 2, 604, 252], keepClear: [482, 172] },
+  candle: { x: 0.25, y: 0.625 }, // posição da base da velinha (frações da imagem)
+}
+
+/**
+ * Raspadinhas (missões para os convidados fazerem com a aniversariante).
+ * O texto é escrito pelo site sobre a arte — {nome} vira EVENT.childFirstName.
+ * textBox = área do texto na arte, em frações [x0, y0, x1, y1].
+ */
+export const SCRATCH_CARDS = {
+  enabled: true,
+  title: 'Raspadinhas mágicas',
+  subtitle: 'Raspe com o dedo e descubra sua missão para a festa!',
+  hint: 'Na festa, mostre sua missão e tire a foto com a {nome}! 📸',
+  cards: [
+    { img: '/img/raspadinhas/raspadinha-1.webp', w: 510, h: 524, textBox: [0.39, 0.49, 0.86, 0.79], lines: ['Tire uma foto', 'com a {nome}', 'fazendo', 'careta!'] },
+    { img: '/img/raspadinhas/raspadinha-2.webp', w: 508, h: 526, textBox: [0.4, 0.48, 0.92, 0.78], lines: ['Tire uma foto', 'com a {nome}', 'de óculos', 'de sol!'] },
+    { img: '/img/raspadinhas/raspadinha-3.webp', w: 510, h: 526, textBox: [0.44, 0.48, 0.94, 0.78], lines: ['Tire uma foto', 'com a {nome}', 'de boné e', 'óculos de sol!'] },
+    { img: '/img/raspadinhas/raspadinha-4.webp', w: 516, h: 529, textBox: [0.4, 0.46, 0.88, 0.79], lines: ['Tire uma foto', 'com a {nome}', 'te dando', 'um abraço!'] },
+    { img: '/img/raspadinhas/raspadinha-5.webp', w: 512, h: 528, textBox: [0.43, 0.46, 0.9, 0.78], lines: ['Tire uma foto', 'com a {nome}', 'dando muita', 'gargalhada!'] },
+  ],
 }
 
 /**

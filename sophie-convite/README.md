@@ -12,6 +12,15 @@ npm run build      # gera a pasta dist/ (o que vai para a Vercel)
 npm run preview    # testa o build final
 ```
 
+## O que tem no convite
+
+1. **Abertura**: arte do título + unicórnio 3D (modelo Blender) que "aperta" o botão junto com o convidado, com glitter.
+2. **Jogo "Ei, convidado!"**: a cabecinha da Sophie pula nos tijolinhos coloridos e pega 5 estrelinhas para desbloquear o convite (chão contínuo, pulo duplo e ajuda automática após 20 s — feito para crianças). Opção "Prefiro pular o jogo".
+3. **Convite**: foto da Sophie com a fantasia + mensagem + **menu mágico** com os botões ilustrados.
+4. **Galeria** (opcional) · 5. **Quando e onde** + contagem regressiva · 6. **Confirmação** (WhatsApp), localização, agenda e **lojas da lista de presentes**.
+7. **Raspadinhas mágicas**: 5 missões para fazer com a aniversariante, raspadas com o dedo.
+8. **Final** com unicórnio e arco-íris.
+
 ## Configurar (um único arquivo)
 
 Tudo fica em **`src/config/event.js`**:
@@ -23,6 +32,12 @@ Tudo fica em **`src/config/event.js`**:
 | Prazo de confirmação | `RSVP_DEADLINE` | Opcional. |
 | Música | `MUSIC.src` | Coloque o MP3 em `public/audio/` e use `'/audio/arquivo.mp3'`. Use só música com direito de uso. Ela só toca depois de um toque do convidado. |
 | Lista de presentes | `GIFT_LIST` | `enabled: true` + `url` https real. Desligada por padrão. |
+| Lojas / lista de presentes | `GIFT_LIST.stores` | Links https (Instagram, site). |
+| Arte do título | `TITLE_ART` | PNG/WebP transparente. |
+| Fotos da criança e rostinho do jogo | `CHILD_IMAGES` | PNG/WebP sem fundo. |
+| Patterns de fundo | `BACKGROUNDS` | Abertura, jogo e final. |
+| Raspadinhas | `SCRATCH_CARDS` | Arte + texto da missão ({nome} = nome da criança). |
+| Galeria de fotos | `PHOTOS` | Vazio = seção oculta. |
 | Compartilhamento | `SHARE` | Título, descrição e imagem do card do WhatsApp. |
 
 ### Imagem de capa do WhatsApp (Open Graph)
@@ -51,6 +66,18 @@ vercel --prod   # publica em produção
 **Depois de publicar**
 - Teste o card: cole o link em uma conversa do WhatsApp consigo mesma. Se a imagem não aparecer, confira se `https://SEU-DOMINIO/og-cover.jpg` abre no navegador.
 - O WhatsApp guarda o card em cache: se mudar a imagem, troque o nome do arquivo (ex.: `og-cover-v2.jpg`) e atualize `SHARE.ogImage`.
+
+## Ferramentas (para reaproveitar o modelo com outros clientes)
+
+| Comando | O que faz |
+|---|---|
+| `npm run model -- arquivo.glb` | Otimiza um modelo 3D do Blender (articulações cabeça/patas/rabo, sombreamento suave). |
+| `npm run poster` | Renderiza o unicórnio 3D em imagem (fallback). |
+| `npm run og` | Gera a capa do WhatsApp. |
+| `python3 tools/preparar-raspadinhas.py prancha.png public/img/raspadinhas` | Separa os cartões, tira o fundo e apaga o texto (o site escreve o texto certo). |
+
+Os scripts `npm run model/poster/og` precisam do Playwright: `npm i -D playwright && npx playwright install chromium`.
+O script Python precisa de `pip install opencv-python-headless pillow numpy`.
 
 ## Estrutura
 

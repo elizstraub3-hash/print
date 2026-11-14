@@ -23,3 +23,6 @@ export const MuteIcon = (p) => (
 export const AgendaIcon = (p) => (
   <svg viewBox="0 0 24 24" {...base} {...p}><rect x="3.5" y="5" width="17" height="15" rx="3.5" /><path d="M8 3v4M16 3v4M12 11v6M9 14h6" /></svg>
 )
+export const InstagramIcon = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" /></svg>
+)

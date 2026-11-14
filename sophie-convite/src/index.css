@@ -102,3 +102,13 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* chama da velinha */
+@keyframes flame {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); }
+  25% { transform: scale(0.94, 1.06) skewX(3deg); }
+  50% { transform: scale(1.04, 0.96) skewX(-2deg); }
+  75% { transform: scale(0.97, 1.04) skewX(2deg); }
+}
+.candle-flame { animation: flame 0.9s ease-in-out infinite; transform-box: fill-box; }
+@media (prefers-reduced-motion: reduce) { .candle-flame { animation: none; } }

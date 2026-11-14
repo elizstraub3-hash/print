@@ -1,0 +1,63 @@
+<!doctype html><meta charset="utf-8"><body><script type="module">
+/**
+ * Otimiza o GLB vindo do Blender/trimesh para uso na web:
+ *  - gira de Z-up (Blender) para Y-up (web)
+ *  - agrupa as peças em articulações animáveis com pivô correto
+ *  - junta geometrias por material dentro de cada articulação (131 → ~30 draw calls)
+ *  - solda vértices e recalcula normais suaves (some o aspecto facetado)
+ */
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
+import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+
+const src = new URLSearchParams(location.search).get('src')
+const gltf = await new GLTFLoader().loadAsync(src)
+const wrap = new THREE.Group(); gltf.scene.rotation.x = -Math.PI / 2; wrap.add(gltf.scene); wrap.updateMatrixWorld(true)
+
+// articulação → [teste do nome, pivô (Y-up)]
+const JOINTS = {
+  Head: [/^(Head|Muzzle|.*Ear|.*InnerEar|.*Eyelid|.*Lash|.*Blush|.*Nostril|GoldenHorn|HornSpiral|ManeLock|ManeTip|Flower)/, [0, 1.78, 0.5]],
+  LegFrontR: [/^Right_Front/, [0.42, 1.02, 0.45]],
+  LegFrontL: [/^Left_Front/, [-0.42, 1.02, 0.45]],
+  Tail: [/^TailLock/, [0, 1.5, -0.78]],
+  Body: [/.*/, [0, 0, 0]],
+}
+// Cada geometria única (esfera, cilindro…) é processada uma vez e continua
+// COMPARTILHADA entre as peças → arquivo pequeno (o original reaproveita as malhas).
+const smooth = new Map()
+const getSmooth = (geo) => {
+  if (!smooth.has(geo)) {
+    let g = geo.clone()
+    for (const k of Object.keys(g.attributes)) if (k !== 'position') g.deleteAttribute(k)
+    g = mergeVertices(g, 1e-4); g.computeVertexNormals()
+    smooth.set(geo, g)
+  }
+  return smooth.get(geo)
+}
+const matCache = new Map()
+const getMat = (m) => {
+  if (!matCache.has(m)) { const c = m.clone(); c.flatShading = false; matCache.set(m, c) }
+  return matCache.get(m)
+}
+const out = new THREE.Scene()
+const rig = new THREE.Group(); rig.name = 'Unicorn'; out.add(rig)
+const pivots = {}
+for (const [k, [, p]] of Object.entries(JOINTS)) {
+  const g = new THREE.Group(); g.name = k; g.position.set(...p); rig.add(g); g.updateMatrixWorld(true); pivots[k] = g
+}
+let calls = 0, verts = 0
+const meshes = []; wrap.traverse((o) => o.isMesh && meshes.push(o))
+for (const o of meshes) {
+  const joint = Object.keys(JOINTS).find((k) => JOINTS[k][0].test(o.name))
+  const pv = pivots[joint]
+  const mesh = new THREE.Mesh(getSmooth(o.geometry), getMat(o.material)); mesh.name = o.name
+  const local = new THREE.Matrix4().copy(pv.matrixWorld).invert().multiply(o.matrixWorld)
+  local.decompose(mesh.position, mesh.quaternion, mesh.scale)
+  pv.add(mesh); calls++; verts += mesh.geometry.attributes.position.count
+}
+const mats = {}; for (const m of matCache.values()) mats[m.name] = m
+const glb = await new GLTFExporter().parseAsync(out, { binary: true })
+const bytes = new Uint8Array(glb); let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000))
+window.result = { b64: btoa(s), calls, verts, mats: Object.values(mats).map((m) => [m.name, '#' + m.color.getHexString()]) }
+</script></body>

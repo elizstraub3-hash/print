@@ -30,3 +30,20 @@ export default function Pattern({ opacity = 0.32, className = '' }) {
     />
   )
 }
+
+/**
+ * Pattern ilustrado (imagem) com véu claro por cima, para não competir
+ * com textos. `veil` = opacidade do véu; o centro fica mais claro (spotlight).
+ */
+export function PhotoPattern({ src, veil = 0.55, spotlight = true, className = '' }) {
+  if (!src) return null
+  return (
+    <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${className}`}>
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${src}")` }} />
+      <div className="absolute inset-0" style={{ background: `rgba(255,250,252,${veil})` }} />
+      {spotlight && (
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 45%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 70%)' }} />
+      )}
+    </div>
+  )
+}

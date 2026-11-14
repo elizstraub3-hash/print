@@ -1,8 +1,9 @@
 import { useId, useState } from 'react'
-import { EVENT, GIFT_LIST, RSVP_DEADLINE, MUSIC } from '../config/event.js'
-import { buildRsvpMessage, buildWhatsAppUrl, getRsvpPhone, getGiftUrl, MAPS_URL, CALENDAR_URL } from '../lib/event-utils.js'
-import { WhatsIcon, PinIcon, GiftIcon, MusicIcon, MuteIcon, AgendaIcon } from './Icons.jsx'
+import { GIFT_LIST, RSVP_DEADLINE } from '../config/event.js'
+import { buildRsvpMessage, buildWhatsAppUrl, getRsvpPhone, getGiftUrl, getGiftStores, MAPS_URL, CALENDAR_URL } from '../lib/event-utils.js'
+import { AgendaIcon, InstagramIcon } from './Icons.jsx'
 import Reveal from './Reveal.jsx'
+import ArtButton from './ArtButton.jsx'
 import Pattern from './Pattern.jsx'
 
 function Stepper({ label, value, setValue, min = 0, max = 10 }) {
@@ -47,42 +48,27 @@ function Rsvp() {
         <Stepper label="Crianças" value={kids} setValue={setKids} min={0} max={15} />
       </div>
 
-      {href ? (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="btn-whats mt-4 w-full">
-          <WhatsIcon className="h-6 w-6" /> Confirmar presença
-        </a>
-      ) : (
-        <div className="mt-4" role="note">
-          <button type="button" disabled className="btn-disabled w-full" aria-describedby="rsvp-config">
-            <WhatsIcon className="h-6 w-6" /> Confirmação em breve
-          </button>
-          <p id="rsvp-config" className="mt-2 text-center font-sans text-sm text-ameixaSoft">
-            O número para confirmação ainda está sendo configurado.
-            {import.meta.env.DEV && (
-              <span className="mt-1 block rounded-lg bg-amarelo/70 px-2 py-1 text-xs text-ameixa">
-                Dev: defina <code>RSVP_PHONE</code> em <code>src/config/event.js</code>
-              </span>
-            )}
-          </p>
-        </div>
+      <ArtButton
+        art="confirmar"
+        className="mx-auto mt-4 w-[min(100%,20rem)]"
+        label={href ? 'Confirmar presença pelo WhatsApp (abre o WhatsApp)' : 'Confirmar presença — em breve'}
+        href={href || undefined}
+        disabled={!href}
+        note={href ? null : 'A confirmação pelo WhatsApp será liberada em breve.'}
+      />
+      {!href && import.meta.env.DEV && (
+        <p className="mt-1 rounded-lg bg-amarelo/70 px-2 py-1 text-center text-xs text-ameixa">
+          Dev: defina <code>RSVP_PHONE</code> em <code>src/config/event.js</code>
+        </p>
       )}
       {href && <p className="mt-3 text-center font-sans text-xs text-ameixaSoft">Abre o WhatsApp com a mensagem pronta — é só enviar 💌</p>}
     </div>
   )
 }
 
-export default function Actions({ music }) {
+export default function Actions() {
   const giftUrl = getGiftUrl()
-  const playing = music.status === 'playing' || music.status === 'loading'
-  const musicLabel =
-    music.status === 'unavailable'
-      ? 'Música indisponível'
-      : music.status === 'error'
-      ? 'Não foi possível tocar'
-      : playing
-      ? 'Desligar música'
-      : 'Ligar música'
-
+  const stores = getGiftStores()
   return (
     <section id="confirmar" aria-labelledby="acoes-titulo" className="relative overflow-hidden bg-gradient-to-b from-azul/70 via-menta/60 to-amarelo/60 px-5 py-16">
       <Pattern opacity={0.18} />
@@ -98,39 +84,31 @@ export default function Actions({ music }) {
           <Rsvp />
         </Reveal>
 
-        <Reveal delay={0.15} className="mt-4 grid gap-3">
-          <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn-soft">
-            <PinIcon className="h-6 w-6" /> Ver localização
-          </a>
-          <a href={CALENDAR_URL} target="_blank" rel="noopener noreferrer" className="btn-soft">
+        <Reveal delay={0.15} className="mt-6 grid justify-items-center gap-3">
+          <ArtButton art="localizacao" className="w-[min(100%,20rem)]" label="Ver localização no Google Maps (abre em nova aba)" href={MAPS_URL} />
+          <a href={CALENDAR_URL} target="_blank" rel="noopener noreferrer" className="btn-soft max-w-[20rem]">
             <AgendaIcon className="h-6 w-6" /> Salvar na agenda
           </a>
-          <button
-            type="button"
-            onClick={music.toggle}
-            disabled={!music.available}
-            aria-pressed={playing}
-            className={music.available ? 'btn-soft' : 'btn-disabled'}
-            title={music.status === 'unavailable' ? 'Nenhuma música configurada' : undefined}
-          >
-            {playing ? <MusicIcon className="h-6 w-6" /> : <MuteIcon className="h-6 w-6" />} {musicLabel}
-            {playing && <span className="eq" aria-hidden="true"><i /><i /><i /></span>}
-          </button>
-          {music.status === 'unavailable' && import.meta.env.DEV && (
-            <p className="text-center font-sans text-xs text-ameixaSoft">
-              Dev: adicione um MP3 em <code>public/audio/</code> e configure <code>MUSIC.src</code> ({MUSIC.title}).
-            </p>
-          )}
         </Reveal>
 
-        {giftUrl && (
-          <Reveal delay={0.2} className="mt-6">
-            <div className="rounded-[2rem] bg-white/85 p-5 text-center shadow-soft ring-1 ring-white">
-              <GiftIcon className="mx-auto h-8 w-8 text-rosaForte" />
-              <p className="mt-2 font-sans text-base text-ameixa">{GIFT_LIST.note}</p>
-              <a href={giftUrl} target="_blank" rel="noopener noreferrer" className="btn-soft mt-4">
-                <GiftIcon className="h-6 w-6" /> {GIFT_LIST.label}
-              </a>
+        {(giftUrl || stores.length > 0) && (
+          <Reveal delay={0.2} className="mt-8">
+            <div id="presentes" className="scroll-mt-4 rounded-[2rem] bg-white/85 p-5 text-center shadow-soft ring-1 ring-white">
+              <h3 className="font-script text-3xl font-bold text-rosaForte">Lista de presentes</h3>
+              <p className="mx-auto mt-2 max-w-[32ch] font-sans text-base text-ameixa">{GIFT_LIST.note}</p>
+              {giftUrl && <ArtButton art="presentes" className="mx-auto mt-3 w-[min(100%,18rem)]" label={`${GIFT_LIST.label} (abre em nova aba)`} href={giftUrl} />}
+              {stores.length > 0 && (
+                <ul className="mt-4 grid gap-2.5">
+                  {stores.map((st) => (
+                    <li key={st.url}>
+                      <a href={st.url} target="_blank" rel="noopener noreferrer" className="btn-soft !min-h-[54px] !text-base" aria-label={`Loja ${st.name} no Instagram (abre em nova aba)`}>
+                        <InstagramIcon className="h-6 w-6 shrink-0 text-rosaForte" />
+                        <span className="min-w-0 truncate">{st.name}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </Reveal>
         )}

@@ -6,6 +6,7 @@ import { CalendarIcon, ClockIcon, PinIcon } from './Icons.jsx'
 import Reveal from './Reveal.jsx'
 import Pattern from './Pattern.jsx'
 import { Heart } from './Decor.jsx'
+import CakeStage from './CakeStage.jsx'
 
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 
@@ -92,7 +93,11 @@ export default function Details() {
           </h2>
         </Reveal>
 
-        <div className="mt-6 grid gap-3">
+        <Reveal className="mt-6">
+          <CakeStage />
+        </Reveal>
+
+        <div className="mt-8 grid gap-3">
           <InfoCard icon={CalendarIcon} label="Data" tint="bg-rosa" delay={0.05}>
             {cap(DATE_LONG)}
           </InfoCard>

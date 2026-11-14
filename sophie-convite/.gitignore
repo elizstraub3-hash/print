@@ -2,3 +2,8 @@ node_modules
 dist
 dist-single
 .vercel
+tools/source/botoes
+tools/source/fotos
+tools/source/pattern-*.png
+tools/source/raspadinhas-original.png
+tools/source/bolo-original.png
