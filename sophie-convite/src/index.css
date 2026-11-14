@@ -164,3 +164,17 @@
 }
 @keyframes twinkle { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .story-stars { animation: none; } }
+
+/* estrela tocável da historinha */
+@keyframes starRing { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(1.5); opacity: 0; } }
+.story-star-ring { box-shadow: 0 0 0 4px rgba(255, 229, 143, .9), 0 0 24px 6px rgba(255, 214, 107, .8); animation: starRing 1.3s ease-out infinite; }
+@keyframes starBob { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-6px) rotate(6deg); } }
+.story-star-bob { animation: starBob 1.6s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(255, 220, 120, .95)); }
+/* transformação (cena 8): brilho dourado girando */
+@keyframes magicSpin { to { transform: rotate(360deg); } }
+.story-magic::before {
+  content: ''; position: absolute; inset: -40%;
+  background: conic-gradient(from 0deg, transparent, rgba(255, 229, 143, .55), transparent 30%, rgba(248, 205, 227, .55), transparent 60%, rgba(220, 204, 247, .55), transparent 90%);
+  animation: magicSpin 3s linear infinite; mix-blend-mode: screen;
+}
+@media (prefers-reduced-motion: reduce) { .story-star-ring, .story-star-bob, .story-magic::before { animation: none; } }

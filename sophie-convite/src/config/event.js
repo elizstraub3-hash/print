@@ -42,20 +42,39 @@ export const TITLE_ART = {
 }
 
 /**
- * Historinha de abertura (estilo cinema). {nome} = nome da criança.
- * art: 'sky' | 'princess' | 'unicorn' | 'invite' (cenas prontas) — troque as
- * imagens em CHILD_IMAGES/TEXT_ART ou peça novas cenas com seus personagens.
+ * Historinha de abertura — "O Reino Encantado da Sophie" (9 cenas do storyboard).
+ * Cada cena aceita:
+ *   image: quadro do storyboard (usado enquanto não houver vídeo)
+ *   video: MP4 vertical 1080x1920 SEM textos (quando tiver, ele substitui a imagem)
+ *   audio: narração da cena (MP3). Sem áudio, a cena dura `seconds`.
+ *   cam:   movimento de câmera sobre a imagem [escala, x%, y%] de → para
+ *   stars: estrelas que o convidado toca nessa cena (posição em % do quadro)
+ *   showSlots: mostra o contador ⭐ x/5 a partir desta cena
+ * {nome} = nome da criança.
  */
 export const STORY = {
   enabled: true,
-  secondsPerScene: 4.2,
-  // Narração (opcional): coloque um MP3 por cena em public/audio/ e informe em
-  // cada cena, ex.: audio: '/audio/cena-1.mp3'. A cena dura o tempo da fala.
+  secondsPerScene: 5.5,
+  starTimeout: 9, // segundos até a estrela "se coletar sozinha" (nunca trava)
   scenes: [
-    { art: 'sky', audio: '/audio/narracao/cena-1.mp3', text: 'Era uma vez, lá no alto das nuvens, um reino mágico cheio de arco-íris…' },
-    { art: 'princess', audio: '/audio/narracao/cena-2.mp3', text: 'Lá vivia uma princesinha muito especial chamada {nome}.' },
-    { art: 'unicorn', audio: '/audio/narracao/cena-3.mp3', text: 'Ela vai fazer 5 aninhos, e o seu unicórnio mágico ganhou uma missão…' },
-    { art: 'invite', audio: '/audio/narracao/cena-4.mp3', text: 'entregar um convite muito especial… para você! 💌' },
+    { title: 'O Reino Encantado', image: '/img/historia/cena-1.webp', video: '', audio: '/audio/narracao/cena-1.mp3', seconds: 6,
+      cam: [[1.0, 0, 0], [1.25, 0, 6]], text: 'Era uma vez, lá no alto das nuvens, um reino mágico cheio de arco-íris…' },
+    { title: 'A Princesinha', image: '/img/historia/cena-2.webp', video: '', audio: '/audio/narracao/cena-2.mp3', seconds: 6,
+      cam: [[1.05, 0, 4], [1.3, 0, -2]], text: 'Lá vivia uma princesinha muito especial chamada {nome}.' },
+    { title: 'O Melhor Amigo', image: '/img/historia/cena-3.webp', video: '', audio: '/audio/narracao/cena-3.mp3', seconds: 6,
+      cam: [[1.15, -4, 0], [1.15, 4, 0]], text: 'Ela vai fazer cinco aninhos, e o seu unicórnio mágico ganhou uma missão…' },
+    { title: 'O Vestido dos Sonhos', image: '/img/historia/cena-4.webp', video: '', audio: '', seconds: 7, showSlots: true,
+      cam: [[1.3, 18, 4], [1.15, -2, 0]], text: 'Encontrar as 5 estrelinhas mágicas que dão brilho ao vestido dos sonhos!' },
+    { title: 'A Primeira Estrela', image: '/img/historia/cena-5.webp', video: '', audio: '', seconds: 6, showSlots: true,
+      cam: [[1.35, -4, -10], [1.05, 0, 0]], stars: [[61, 70]], text: 'A primeira estrelinha estava escondida na flor… toque nela!' },
+    { title: 'O Lago dos Sonhos', image: '/img/historia/cena-6.webp', video: '', audio: '', seconds: 7, showSlots: true,
+      cam: [[1.1, 0, -4], [1.02, 0, 0]], stars: [[57, 79], [84, 79]], text: 'No lago dos sonhos, mais duas estrelinhas! Pegue as duas!' },
+    { title: 'A Quarta Estrela', image: '/img/historia/cena-7.webp', video: '', audio: '', seconds: 6, showSlots: true,
+      cam: [[1.05, 0, 6], [1.3, 0, 14]], stars: [[52, 19]], text: 'A quarta estrelinha brilha lá no alto da árvore… alcance ela!' },
+    { title: 'A Magia das Cinco Estrelas', image: '/img/historia/cena-8.webp', video: '', audio: '', seconds: 9, showSlots: true, magic: true,
+      cam: [[1.0, 0, 0], [1.12, 0, 4]], stars: [[50, 12]], text: 'Com as cinco estrelas, a magia acontece!' },
+    { title: 'O Convite Real', image: '/img/historia/cena-9.webp', video: '', audio: '', seconds: 8, showSlots: true,
+      cam: [[1.0, 6, 0], [1.25, 10, 4]], text: 'A festa está pronta… e a princesa {nome} convida você! 💌' },
   ],
 }
 
