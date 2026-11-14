@@ -107,7 +107,7 @@ export const SOUND_EFFECTS = true
 export const RSVP_PHONE = '55 41 99834-6478'
 
 /** Nome de quem recebe as confirmações (aparece no botão e na mensagem) */
-export const RSVP_CONTACT = 'Mamãe Polli'
+export const RSVP_CONTACT = 'Jéssica'
 
 /** Prazo para confirmar (opcional, texto livre). Ex.: '30/11/2026'. '' = não exibir */
 export const RSVP_DEADLINE = ''
