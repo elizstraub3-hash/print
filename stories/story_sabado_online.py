@@ -11,7 +11,7 @@ PREV = [float(x) for x in sys.argv[1:]]
 W, H, FPS, DUR = 1080, 1920, 30, 8.0
 SW, SH = 2160, 3840                          # 4K source, used directly for the zoom (no upscaling)
 INK = (74, 59, 46); BR = (132, 101, 46)
-TX, TY = 760, 1600                           # the tiny note, bottom-right corner on the plain satin
+TX, TY = 740, 1590                           # the tiny note, bottom-right corner on the plain satin
 
 
 def L(): return Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -83,8 +83,24 @@ def compose(src, t):
     return np.clip(f, 0, 255).astype(np.uint8)
 
 
-dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', VID, '-vf', f'setpts=1.15*PTS,fps={FPS},scale={SW}:{SH}',
-                        '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
+PHOTO = '/home/user/print/solitario-helena/fotos/59.webp'
+IV = np.array([246, 242, 235], np.float32)
+src = Image.open(PHOTO).convert('RGB'); iw, ih = src.size
+crisp = np.asarray(src.crop(((iw - W) // 2, 0, (iw - W) // 2 + W, ih)), np.float32)        # native pixels
+k = H / ih; bg = src.resize((int(iw * k), H), Image.BICUBIC); bg = bg.crop(((bg.width - W) // 2, 0, (bg.width - W) // 2 + W, H)).filter(ImageFilter.GaussianBlur(40))
+fb = np.asarray(bg, np.float32) * 0.92 + IV * 0.08
+PY = (H - ih) // 2; yy = np.arange(H, dtype=np.float32)[:, None, None]
+m = np.clip((yy - PY) / 140, 0, 1) * np.clip((PY + ih - yy) / 140, 0, 1); m = m * m * (3 - 2 * m)
+full = fb.copy(); full[PY:PY + ih] = crisp
+plate = (fb * (1 - m) + full * m).astype(np.uint8)
+STILL = np.asarray(Image.fromarray(plate).resize((SW, SH), Image.LANCZOS))
+class _D:
+    class stdout:
+        @staticmethod
+        def read(n): return STILL.tobytes()
+    @staticmethod
+    def kill(): pass
+dec = _D()
 enc = None if PREV else subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
     '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo', '-shortest', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16',
     '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-c:a', 'aac', OUT], stdin=subprocess.PIPE)
