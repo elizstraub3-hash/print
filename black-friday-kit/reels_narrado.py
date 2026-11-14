@@ -6,9 +6,11 @@ sys.path.insert(0, '/tmp/claude-0/-home-user-print/081c4020-c9a3-5394-8b04-d630e
 from shimmer_style import *
 from story_nativo_lib import emoji
 
-TTS = '/tmp/claude-0/-home-user/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/tts/'
+import os
+TTS = os.environ.get('TTS', '/tmp/claude-0/-home-user/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/tts/')
 K = '/home/user/print/black-friday-kit/'
-OUT = K + 'reels-pedido-virada-cartorio.mp4'
+OUT = K + os.environ.get('OUTNAME', 'reels-pedido-virada-cartorio.mp4')
+IDEA = os.environ.get('IDEA') == '1'
 PREV = [float(x) for x in sys.argv[1:]]
 W, H, FPS = 1080, 1920, 30
 IV = (246, 242, 235); INK = (58, 45, 34); BR = (132, 101, 46); SOFT = (112, 103, 93)
@@ -159,18 +161,18 @@ def frame(t):
         for lay, y, t0 in words: put(im, lay, W / 2, y, eout((lt - t0 + 0.2) / 0.35))
     elif i == 1:
         k = eout(lt / 0.3)
-        put(im, ink('Então presta', F_BIG, INK), W / 2, 760, k, scale=0.8 + 0.2 * back(lt / 0.35), rise=0)
-        put(im, gtx('atenção', script_font(200)), W / 2, 860, eout((lt - 0.3) / 0.3), scale=0.8 + 0.2 * back((lt - 0.3) / 0.35), rise=0)
-        e = emoji('👀', 110); paste_obj(im, e, W / 2, 1210, eout((lt - 0.6) / 0.3))
+        put(im, ink('Deixa eu te dar' if IDEA else 'Então presta', F_BIG, INK), W / 2, 760, k, scale=0.8 + 0.2 * back(lt / 0.35), rise=0)
+        put(im, gtx('uma ideia' if IDEA else 'atenção', script_font(200)), W / 2, 860, eout((lt - 0.3) / 0.3), scale=0.8 + 0.2 * back((lt - 0.3) / 0.35), rise=0)
+        e = emoji('💡' if IDEA else '👀', 110); paste_obj(im, e, W / 2, 1210, eout((lt - 0.6) / 0.3))
     elif i == 2:
         put(im, ink('NA SHIMMER, VOCÊ LEVA', caps_font(40, 700), BR, 6), W / 2, 300, eout(lt / 0.4))
         paste_obj(im, KIT, W / 2, 760, eout((lt - 0.15) / 0.6), 0.9)
         put(im, ink('o par de alianças em ouro 18k', F_TXT, INK), W / 2, 1150, eout((lt - 0.8) / 0.4))
-        put(im, gtx('+ ganha o solitário', script_font(120)), W / 2, 1220, eout((lt - 3.0) / 0.4), scale=0.85 + 0.15 * back((lt - 3.0) / 0.4))
+        put(im, gtx('+ solitário de presente' if IDEA else '+ ganha o solitário', script_font(120)), W / 2, 1220, eout((lt - 3.0) / 0.4), scale=0.85 + 0.15 * back((lt - 3.0) / 0.4))
     elif i == 3:
         calendar(im, W / 2, 300, eout(lt / 0.45), 'DEZEMBRO', '31')
         paste_obj(im, SOL, W / 2, 1060, eout((lt - 0.5) / 0.5))
-        put(im, ink('na virada:', F_TXT, SOFT), W / 2, 1360, eout((lt - 0.9) / 0.4))
+        put(im, ink('no Réveillon:' if IDEA else 'na virada:', F_TXT, SOFT), W / 2, 1360, eout((lt - 0.9) / 0.4))
         put(im, gtx('o pedido', script_font(130)), W / 2, 1410, eout((lt - 1.1) / 0.4))
     elif i == 4:
         if lt < 0.25: m, d_, flip = 'DEZEMBRO', '31', 1 - ease(lt / 0.25)
@@ -179,7 +181,7 @@ def frame(t):
         put(im, ink('ela disse sim', F_TXT, SOFT), W / 2, 760, eout((lt - 0.3) / 0.4))
         s = gold_stroke(lambda d, k: doc_icon(d, k, W / 2, 1100), eout((lt - 0.9) / 1.2))
         if s: im.alpha_composite(s)
-        put(im, gtx('e já marcam o cartório', script_font(104)), W / 2, 1330, eout((lt - 1.6) / 0.4))
+        put(im, gtx('e é só marcar o cartório' if IDEA else 'e já marcam o cartório', script_font(104)), W / 2, 1330, eout((lt - 1.6) / 0.4))
     elif i == 5:
         put(im, ink('E AS ALIANÇAS?', caps_font(46, 700), BR, 6), W / 2, 300, eout(lt / 0.35))
         paste_obj(im, ALI, W / 2, 790, eout((lt - 0.4) / 0.5), 0.88)
@@ -210,7 +212,7 @@ def frame(t):
         put(im, ink('ALIANÇAS + SOLITÁRIO · OURO 18K · ATÉ 18/12', caps_font(24, 600), BR, 3), W / 2, 1240, eout((lt - 3.0) / 0.4))
         kp = eout((lt - 4.6) / 0.4)
         if kp > 0.01:
-            tx = ink('Agende pelo WhatsApp · link na bio', sans(36, 700), (255, 253, 248)); tw, th = ink_size(tx)
+            tx = ink(('Chama no WhatsApp' if IDEA else 'Agende pelo WhatsApp') + ' · link na bio', sans(36, 700), (255, 253, 248)); tw, th = ink_size(tx)
             box = [W / 2 - tw / 2 - 46, 1330, W / 2 + tw / 2 + 46, 1330 + th + 48]
             pl = L(); ImageDraw.Draw(pl).rounded_rectangle(box, radius=(th + 48) // 2, fill=(40, 32, 25, int(255 * kp)))
             im.alpha_composite(pl)
