@@ -1,6 +1,7 @@
 import { m, useReducedMotion } from 'framer-motion'
 import { EVENT, BACKGROUNDS, TEXT_ART } from '../config/event.js'
 import Float from './Float.jsx'
+import { scrollToSection } from '../lib/scrollTo.js'
 import { POSTER } from './Unicorn3D.jsx'
 import Reveal from './Reveal.jsx'
 import { Rainbow, DriftCloud, Twinkles, Cloud, Heart } from './Decor.jsx'
@@ -65,7 +66,7 @@ export default function Finale() {
               </m.span>
             ))}
           </div>
-          <a href="#abertura" className="btn-ghost mt-8 inline-flex min-h-[48px] px-6">Voltar ao início ↑</a>
+          <a href="#abertura" onClick={(e) => { e.preventDefault(); scrollToSection('abertura') }} className="btn-ghost mt-8 inline-flex min-h-[48px] px-6">Voltar ao início ↑</a>
         </Reveal>
       </div>
     </section>

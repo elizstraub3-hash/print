@@ -6,6 +6,7 @@ import MusicFab from './components/MusicFab.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import StoryIntro from './components/StoryIntro.jsx'
 import useMusic from './lib/useMusic.js'
+import { scrollToSection } from './lib/scrollTo.js'
 import { setSfxEnabled } from './lib/sfx.js'
 import { MUSIC, SOUND_EFFECTS, STORY } from './config/event.js'
 
@@ -28,18 +29,7 @@ const saveUnlocked = () => {
   }
 }
 
-const scrollToId = (id) => {
-  const el = document.getElementById(id)
-  if (!el) return false
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
-  const heading = el.querySelector('h2')
-  if (heading) {
-    heading.setAttribute('tabindex', '-1')
-    heading.focus({ preventScroll: true })
-  }
-  return true
-}
+const scrollToId = (id) => scrollToSection(id)
 /** rola quando o elemento existir (o corpo do convite é carregado sob demanda) */
 const scrollWhenReady = (id, tries = 40) => {
   if (scrollToId(id) || tries <= 0) return

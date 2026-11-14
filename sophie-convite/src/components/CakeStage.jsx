@@ -3,7 +3,6 @@ import { useRef, useState } from 'react'
 import { EVENT, CAKE } from '../config/event.js'
 import { burstFrom, rain } from '../lib/glitter.js'
 import { chime, fanfare, sparkle } from '../lib/sfx.js'
-import useShake from '../lib/useShake.js'
 
 /** Velinha listrada (cores fortes para destacar no bolo pastel) */
 function Candle({ lit, hue }) {
@@ -82,7 +81,6 @@ export default function CakeStage() {
   const cakeRef = useRef(null)
   const candleRefs = useRef([])
   const [lit, setLit] = useState(() => CAKE.candles.map(() => true))
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const litCount = lit.filter(Boolean).length
   const allOut = litCount === 0
 
@@ -109,34 +107,37 @@ export default function CakeStage() {
       fanfare()
       burstFrom(cakeRef.current, { count: 130, speed: 11 })
       rain({ count: 200, duration: 1300 })
-      shake.disable()
     }
   }
-
-  const shake = useShake(() => blowOne())
 
   const relight = () => {
     sparkle()
     setLit(CAKE.candles.map(() => true))
   }
 
-  const onMove = (e) => {
-    if (reduce || e.pointerType === 'touch') return
-    const r = stageRef.current.getBoundingClientRect()
-    setTilt({ x: ((e.clientY - r.top) / r.height - 0.5) * -6, y: ((e.clientX - r.left) / r.width - 0.5) * 14 })
+  /** toque em qualquer ponto do bolo apaga a velinha acesa mais próxima */
+  const tapCake = (e) => {
+    const L = litRef.current
+    if (!L.some(Boolean)) return
+    const r = e.currentTarget.getBoundingClientRect()
+    const fx = (e.clientX - r.left) / r.width
+    const fy = (e.clientY - r.top) / r.height
+    let best = -1
+    let bd = Infinity
+    CAKE.candles.forEach(([x, y], k) => {
+      if (!L[k]) return
+      const d = (x - fx) ** 2 + (y - 0.1 - fy) ** 2
+      if (d < bd) (bd = d), (best = k)
+    })
+    if (best >= 0) blowOne(best)
   }
 
   return (
     <div className="relative mx-auto w-[min(100%,22rem)]">
       <p className="mb-3 font-script text-[clamp(1.9rem,8.5vw,2.4rem)] font-bold leading-tight text-rosaForte">Venha soprar as velinhas comigo!</p>
 
-      <div ref={stageRef} onPointerMove={onMove} onPointerLeave={() => setTilt({ x: 0, y: 0 })} className="relative" style={{ perspective: '900px' }}>
-        <m.div
-          className="relative"
-          style={{ transformStyle: 'preserve-3d' }}
-          animate={reduce ? undefined : { rotateX: tilt.x, rotateY: tilt.y }}
-          transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-        >
+      <div ref={stageRef} className="relative">
+        <div className="relative">
           {/* mesa redonda com toalha */}
           <div className="absolute inset-x-[-6%] bottom-[-2%] h-[28%]" aria-hidden="true">
             <div className="absolute inset-x-[3%] bottom-0 top-[42%] rounded-b-[46%] bg-gradient-to-b from-[#FCE4F0] to-[#F5C6DE] shadow-[0_18px_30px_-14px_rgba(160,90,140,.55)]">
@@ -149,17 +150,21 @@ export default function CakeStage() {
           <div className="absolute bottom-[9%] left-1/2 h-[6%] w-[72%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse,rgba(120,60,110,.38),transparent_70%)]" aria-hidden="true" />
 
           {/* bolo */}
-          <div ref={cakeRef} className="relative mx-auto w-[84%] pb-[13%]" style={{ transform: 'translateZ(30px)' }}>
-            <div className="relative" style={{ aspectRatio: `${CAKE.w} / ${CAKE.h}` }}>
+          <div ref={cakeRef} className="relative mx-auto w-[84%] pb-[13%]">
+            <div className="relative cursor-pointer" style={{ aspectRatio: `${CAKE.w} / ${CAKE.h}`, touchAction: 'manipulation' }} onClick={tapCake}>
               <img src={CAKE.src} alt={CAKE.alt} width={CAKE.w} height={CAKE.h} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full drop-shadow-[0_10px_10px_rgba(120,60,110,.25)]" />
               {CAKE.candles.map(([x, y], k) => (
                 <button
                   key={k}
                   ref={(el) => (candleRefs.current[k] = el)}
                   type="button"
-                  onClick={() => (lit[k] ? blowOne(k) : allOut && relight())}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (lit[k]) blowOne(k)
+                    else tapCake(e.nativeEvent ? { currentTarget: e.currentTarget.parentElement, clientX: e.clientX, clientY: e.clientY } : e)
+                  }}
                   aria-label={lit[k] ? `Assoprar a velinha ${k + 1}` : `Velinha ${k + 1} apagada`}
-                  className="absolute z-10 h-[21%] w-[10.5%] -translate-x-1/2 -translate-y-full drop-shadow-[0_4px_4px_rgba(90,40,100,.35)] before:absolute before:-inset-x-3 before:-inset-y-1 before:content-['']"
+                  className="absolute z-10 h-[21%] w-[10.5%] -translate-x-1/2 -translate-y-full drop-shadow-[0_4px_4px_rgba(90,40,100,.35)]"
                   style={{ left: `${x * 100}%`, top: `${y * 100}%`, touchAction: 'manipulation' }}
                 >
                   <Candle lit={lit[k]} hue={HUES[k % HUES.length]} />
@@ -168,7 +173,7 @@ export default function CakeStage() {
               ))}
             </div>
           </div>
-        </m.div>
+        </div>
       </div>
 
       {/* instruções / estado */}
@@ -181,32 +186,13 @@ export default function CakeStage() {
                 Acender as velinhas de novo
               </button>
             </m.div>
-          ) : shake.status === 'listening' ? (
-            <m.div key="shake" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <m.p
-                className="font-sans text-lg font-semibold text-ameixa"
-                animate={reduce ? undefined : { rotate: [-4, 4, -4] }}
-                transition={{ duration: 0.4, repeat: Infinity }}
-              >
-                📳 Chacoalhe o celular!
+          ) : (
+            <m.div key="start" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <m.p className="font-sans text-lg font-semibold text-ameixa" animate={reduce ? undefined : { scale: [1, 1.05, 1] }} transition={{ duration: 1.6, repeat: Infinity }}>
+                👆 Toque nas velinhas para assoprar!
               </m.p>
               <p className="font-sans text-sm text-ameixaSoft">
                 Faltam {litCount} {litCount === 1 ? 'velinha' : 'velinhas'}
-              </p>
-            </m.div>
-          ) : (
-            <m.div key="start" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              {shake.status === 'idle' && (
-                <button type="button" onClick={shake.enable} className="btn-magic min-h-[56px] px-7 text-lg">
-                  📳 Chacoalhar o celular
-                </button>
-              )}
-              <p className="mt-2 font-sans text-sm text-ameixaSoft">
-                {shake.status === 'idle'
-                  ? 'Toque no botão e chacoalhe — ou toque em cada velinha.'
-                  : shake.status === 'denied'
-                  ? 'Sem acesso ao movimento do celular: toque em cada velinha para assoprar.'
-                  : 'Toque em cada velinha para assoprar!'}
               </p>
             </m.div>
           )}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { MUSIC } from '../config/event.js'
 import { MusicIcon } from './Icons.jsx'
+import { scrollToSection } from '../lib/scrollTo.js'
 
 export const PLAY_YT_EVENT = 'convite:tocar-musica'
 const ID = String(MUSIC.youtubeId || '').replace(/[^\w-]/g, '')
@@ -17,7 +18,7 @@ export default function MusicCard() {
   useEffect(() => {
     const play = () => {
       setOn(true)
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      scrollToSection('musica')
     }
     window.addEventListener(PLAY_YT_EVENT, play)
     return () => window.removeEventListener(PLAY_YT_EVENT, play)

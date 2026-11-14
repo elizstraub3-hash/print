@@ -181,9 +181,9 @@ export const CAKE = {
   candles: [
     [0.225, 0.476], // 2º andar, à esquerda do unicórnio
     [0.595, 0.472], // 2º andar, entre o unicórnio e o 5
-    [0.135, 0.676], // 1º andar, esquerda
-    [0.785, 0.676], // 1º andar, direita
-    [0.88, 0.68], //  1º andar, ponta direita
+    [0.12, 0.676], // 1º andar, esquerda
+    [0.5, 0.672], //  1º andar, centro (atrás do laço)
+    [0.88, 0.676], // 1º andar, direita
   ],
 }
 
