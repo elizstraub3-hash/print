@@ -115,4 +115,6 @@
   75% { transform: scale(0.97, 1.04) skewX(2deg); }
 }
 .candle-flame { animation: flame 0.9s ease-in-out infinite; transform-box: fill-box; }
-@media (prefers-reduced-motion: reduce) { .candle-flame { animation: none; } }
+@keyframes halo { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+.candle-halo { animation: halo 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .candle-flame, .candle-halo { animation: none; } }

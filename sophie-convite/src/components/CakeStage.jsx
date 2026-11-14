@@ -5,34 +5,53 @@ import { burstFrom, rain } from '../lib/glitter.js'
 import { chime, fanfare, sparkle } from '../lib/sfx.js'
 import useShake from '../lib/useShake.js'
 
-/** Velinha listrada com chama animada */
+/** Velinha listrada (cores fortes para destacar no bolo pastel) */
 function Candle({ lit, hue }) {
+  const id = hue.replace('#', '')
   return (
-    <svg viewBox="0 0 40 120" className="h-full w-full overflow-visible" aria-hidden="true">
+    <svg viewBox="0 0 40 130" className="h-full w-full overflow-visible" aria-hidden="true">
       <defs>
-        <pattern id={`cd-st-${hue}`} width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
-          <rect width="14" height="14" fill="#FFF6FB" />
+        <pattern id={`cd-st-${id}`} width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+          <rect width="14" height="14" fill="#FFFFFF" />
           <rect width="7" height="14" fill={hue} />
         </pattern>
+        <linearGradient id="cd-shade" x1="0" x2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity=".55" />
+          <stop offset=".35" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor="#5E2A6E" stopOpacity=".25" />
+        </linearGradient>
         <radialGradient id="cd-glow">
-          <stop offset="0" stopColor="#FFF3B0" stopOpacity=".9" />
-          <stop offset="1" stopColor="#FFE58F" stopOpacity="0" />
+          <stop offset="0" stopColor="#FFF6C2" stopOpacity="1" />
+          <stop offset=".45" stopColor="#FFD86B" stopOpacity=".55" />
+          <stop offset="1" stopColor="#FFC94D" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="cd-flame" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" stopColor="#FF9F43" />
-          <stop offset=".45" stopColor="#FFD166" />
+          <stop offset="0" stopColor="#FF7A2F" />
+          <stop offset=".4" stopColor="#FFC23D" />
           <stop offset="1" stopColor="#FFF8D6" />
         </linearGradient>
+        <linearGradient id="cd-gold" x1="0" x2="1">
+          <stop offset="0" stopColor="#FFF1B9" />
+          <stop offset=".5" stopColor="#E3B65C" />
+          <stop offset="1" stopColor="#B88832" />
+        </linearGradient>
       </defs>
-      <rect x="11" y="46" width="18" height="72" rx="5" fill={`url(#cd-st-${hue})`} stroke="#fff" strokeWidth="2" />
-      <rect x="13" y="48" width="4" height="66" rx="2" fill="#fff" opacity=".6" />
-      <path d="M20 46 V36" stroke="#5E4466" strokeWidth="2" strokeLinecap="round" />
+      {/* corpo */}
+      <rect x="9" y="50" width="22" height="76" rx="6" fill={`url(#cd-st-${id})`} stroke="#fff" strokeWidth="3" />
+      <rect x="9" y="50" width="22" height="76" rx="6" fill="url(#cd-shade)" />
+      <rect x="9" y="50" width="22" height="76" rx="6" fill="none" stroke="#9B4F96" strokeOpacity=".45" strokeWidth="1" />
+      {/* anel dourado da base */}
+      <rect x="6" y="118" width="28" height="9" rx="4.5" fill="url(#cd-gold)" stroke="#fff" strokeWidth="1.5" />
+      {/* pavio */}
+      <path d="M20 50 V39" stroke="#4A2E55" strokeWidth="2.4" strokeLinecap="round" />
       {lit && (
-        <g className="candle-flame" style={{ transformOrigin: '20px 36px' }}>
-          <circle cx="20" cy="22" r="24" fill="url(#cd-glow)" />
-          <path d="M20 4 C27 16 28 26 20 36 C12 26 13 16 20 4 Z" fill="url(#cd-flame)" />
-          <path d="M20 18 C23 24 23 29 20 33 C17 29 17 24 20 18 Z" fill="#fff" opacity=".85" />
-        </g>
+        <>
+          <circle className="candle-halo" cx="20" cy="24" r="30" fill="url(#cd-glow)" />
+          <g className="candle-flame" style={{ transformOrigin: '20px 39px' }}>
+            <path d="M20 3 C29 16 30 28 20 39 C10 28 11 16 20 3 Z" fill="url(#cd-flame)" stroke="#FFE8A3" strokeWidth="1" />
+            <path d="M20 19 C24 26 24 31 20 36 C16 31 16 26 20 19 Z" fill="#fff" opacity=".9" />
+          </g>
+        </>
       )}
     </svg>
   )
@@ -55,7 +74,7 @@ function Smoke() {
   )
 }
 
-const HUES = ['#F7A8CF', '#C9B5F2', '#A9DCF2', '#FFE58F', '#B9EBD2']
+const HUES = ['#EC5FA3', '#9B6BDB', '#3FA7D6', '#F2A900', '#E85FA0']
 
 export default function CakeStage() {
   const reduce = useReducedMotion()
@@ -140,7 +159,7 @@ export default function CakeStage() {
                   type="button"
                   onClick={() => (lit[k] ? blowOne(k) : allOut && relight())}
                   aria-label={lit[k] ? `Assoprar a velinha ${k + 1}` : `Velinha ${k + 1} apagada`}
-                  className="absolute z-10 h-[15%] w-[8%] -translate-x-1/2 -translate-y-full before:absolute before:-inset-x-3 before:-inset-y-1 before:content-['']"
+                  className="absolute z-10 h-[21%] w-[10.5%] -translate-x-1/2 -translate-y-full drop-shadow-[0_4px_4px_rgba(90,40,100,.35)] before:absolute before:-inset-x-3 before:-inset-y-1 before:content-['']"
                   style={{ left: `${x * 100}%`, top: `${y * 100}%`, touchAction: 'manipulation' }}
                 >
                   <Candle lit={lit[k]} hue={HUES[k % HUES.length]} />

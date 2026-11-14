@@ -176,12 +176,14 @@ export const CAKE = {
   w: 696,
   h: 1100,
   alt: 'Bolo de dois andares com unicórnio, arco-íris, laço rosa, número 5 e topo escrito Sophie',
+  // [x, y] da base de cada velinha (frações da imagem)
+  // 2º andar (rosa, em cima): topo em y≈0.47 · 1º andar (lilás): chantili em y≈0.67
   candles: [
-    [0.1, 0.49],
-    [0.17, 0.478],
-    [0.245, 0.482],
-    [0.585, 0.48],
-    [0.85, 0.5],
+    [0.225, 0.476], // 2º andar, à esquerda do unicórnio
+    [0.595, 0.472], // 2º andar, entre o unicórnio e o 5
+    [0.135, 0.676], // 1º andar, esquerda
+    [0.785, 0.676], // 1º andar, direita
+    [0.88, 0.68], //  1º andar, ponta direita
   ],
 }
 
