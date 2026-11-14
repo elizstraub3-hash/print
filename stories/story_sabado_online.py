@@ -83,7 +83,7 @@ def compose(src, t):
     return np.clip(f, 0, 255).astype(np.uint8)
 
 
-PHOTO = '/home/user/print/solitario-helena/fotos/59.webp'
+PHOTO = '/home/user/print/stories/fotos/37.webp'
 IV = np.array([246, 242, 235], np.float32)
 src = Image.open(PHOTO).convert('RGB'); iw, ih = src.size
 crisp = np.asarray(src.crop(((iw - W) // 2, 0, (iw - W) // 2 + W, ih)), np.float32)        # native pixels
