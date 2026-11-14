@@ -43,25 +43,27 @@ export const TITLE_ART = {
 
 /**
  * Historinha de abertura — "O Reino Encantado da Sophie" (só para assistir).
- * 9 cenas em vídeo 3D (render dos 6 elementos oficiais: Sophie, Layla, Castelo,
- * Vestido Mágico, Nuvens e 5 Estrelas). Gerar de novo: `npm run historia`.
+ * 9 cenas com as ilustrações do storyboard e movimento de câmera de cinema.
+ * (Opcional: vídeos 3D com `npm run historia`, ou vídeos de IA — coloque em `video`.)
  * Cada cena: video (MP4 9:16), poster (JPG), audio (narração MP3, opcional),
  * text (legenda — é também o texto da narração), stars (estrelas já reunidas).
  * A cena dura o tempo do vídeo ou da narração (o que for maior).
  */
-const V = (n) => ({ video: `/video/historia/cena-${n}.mp4`, poster: `/video/historia/cena-${n}.jpg` })
+// image: ilustração do storyboard · bg: fundo desfocado · cam: [escala, x%, y%] início → fim
+// video: quando houver um vídeo (ex.: animado com IA a partir da ilustração), ele substitui a imagem
+const V = (n, cam) => ({ image: `/img/historia/cena-${n}.webp`, bg: `/img/historia/fundo-${n}.webp`, video: '', poster: `/img/historia/cena-${n}.webp`, cam })
 export const STORY = {
   enabled: true,
   scenes: [
-    { ...V(1), seconds: 6, audio: '', stars: null, title: 'O Reino Encantado', text: 'Era uma vez, lá no alto das nuvens, um reino encantado cheio de arco-íris.' },
-    { ...V(2), seconds: 6, audio: '', stars: null, title: 'A Princesinha', text: 'Nele morava uma princesinha muito especial: a {nome}!' },
-    { ...V(3), seconds: 6, audio: '', stars: null, title: 'A Melhor Amiga', text: 'E a sua melhor amiga, a unicórnio Layla, estava sempre ao seu lado.' },
-    { ...V(4), seconds: 7, audio: '', stars: 0, title: 'O Vestido Mágico', text: 'Para o aniversário, havia um vestido mágico… que só brilharia com cinco estrelas douradas.' },
-    { ...V(5), seconds: 6, audio: '', stars: 1, title: 'A Primeira Estrela', text: 'A primeira estrelinha estava escondida dentro de uma flor!' },
-    { ...V(6), seconds: 7, audio: '', stars: 3, title: 'O Lago dos Sonhos', text: 'No lago dos sonhos, mais duas estrelas surgiram das águas.' },
-    { ...V(7), seconds: 6, audio: '', stars: 4, title: 'A Quarta Estrela', text: 'A quarta estrela brilhava lá no alto da árvore encantada.' },
-    { ...V(8), seconds: 9, audio: '', stars: 5, title: 'A Magia das Cinco Estrelas', text: 'Com as cinco estrelas reunidas… a magia aconteceu! O vestido dos sonhos ficou pronto!' },
-    { ...V(9), seconds: 8, audio: '', stars: 5, title: 'O Convite Real', text: 'Agora a festa vai começar… e a princesa {nome} convida você para comemorar os seus cinco aninhos!' },
+    { ...V(1, [[1.0,0,0],[1.22,0,6]]), seconds: 6, audio: '', stars: null, title: 'O Reino Encantado', text: 'Era uma vez, lá no alto das nuvens, um reino encantado cheio de arco-íris.' },
+    { ...V(2, [[1.05,0,4],[1.28,0,-3]]), seconds: 6, audio: '', stars: null, title: 'A Princesinha', text: 'Nele morava uma princesinha muito especial: a {nome}!' },
+    { ...V(3, [[1.12,-4,0],[1.12,4,0]]), seconds: 6, audio: '', stars: null, title: 'A Melhor Amiga', text: 'E a sua melhor amiga, a unicórnio Layla, estava sempre ao seu lado.' },
+    { ...V(4, [[1.28,16,4],[1.1,-2,0]]), seconds: 7, audio: '', stars: 0, title: 'O Vestido Mágico', text: 'Para o aniversário, havia um vestido mágico… que só brilharia com cinco estrelas douradas.' },
+    { ...V(5, [[1.3,-4,-8],[1.05,0,0]]), seconds: 6, audio: '', stars: 1, title: 'A Primeira Estrela', text: 'A primeira estrelinha estava escondida dentro de uma flor!' },
+    { ...V(6, [[1.15,4,-6],[1.03,0,0]]), seconds: 7, audio: '', stars: 3, title: 'O Lago dos Sonhos', text: 'No lago dos sonhos, mais duas estrelas surgiram das águas.' },
+    { ...V(7, [[1.05,0,6],[1.25,0,12]]), seconds: 6, audio: '', stars: 4, title: 'A Quarta Estrela', text: 'A quarta estrela brilhava lá no alto da árvore encantada.' },
+    { ...V(8, [[1.0,0,0],[1.25,0,4]]), seconds: 9, audio: '', stars: 5, title: 'A Magia das Cinco Estrelas', text: 'Com as cinco estrelas reunidas… a magia aconteceu! O vestido dos sonhos ficou pronto!' },
+    { ...V(9, [[1.0,6,0],[1.2,8,3]]), seconds: 8, audio: '', stars: 5, title: 'O Convite Real', text: 'Agora a festa vai começar… e a princesa {nome} convida você para comemorar os seus cinco aninhos!' },
   ],
 }
 

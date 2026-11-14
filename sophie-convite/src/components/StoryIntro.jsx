@@ -73,7 +73,7 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
       v.play?.().catch(() => {})
     }
     // se o vídeo não tocar (economia de bateria, rede), a cena segue pelo tempo
-    timers.push(setTimeout(() => ((videoOver = true), go()), (sc.seconds + 1.5) * 1000))
+    timers.push(setTimeout(() => ((videoOver = true), go()), (sc.video ? sc.seconds + 1.5 : sc.seconds) * 1000))
     const a = voiceRef.current
     if (sc.audio && a) {
       a.onended = () => ((audioOver = true), go())
@@ -175,17 +175,31 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
       <AnimatePresence>
         {sc && (
           <m.div key={i} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }}>
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
-              src={sc.video}
-              poster={sc.poster}
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-            />
+            {sc.video ? (
+              <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" src={sc.video} poster={sc.poster} autoPlay muted playsInline preload="auto" aria-hidden="true" />
+            ) : (
+              <>
+                {/* fundo desfocado preenchendo a tela vertical */}
+                <img src={sc.bg} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover" />
+                <div className="absolute inset-0 bg-[#1E1638]/25" aria-hidden="true" />
+                {/* ilustração com câmera lenta de cinema */}
+                <div className="absolute inset-x-0 top-[calc(9vh+3.2rem)] flex justify-center px-3">
+                  <div className="relative w-full max-w-[34rem] overflow-hidden rounded-[1.4rem] shadow-[0_24px_60px_-12px_rgba(0,0,0,.65)] ring-[3px] ring-white/80" style={{ aspectRatio: '4 / 3.4' }}>
+                    <m.img
+                      src={sc.image}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 h-full w-full object-cover [will-change:transform]"
+                      initial={{ scale: sc.cam?.[0][0] ?? 1, x: `${sc.cam?.[0][1] ?? 0}%`, y: `${sc.cam?.[0][2] ?? 0}%` }}
+                      animate={reduce ? undefined : { scale: sc.cam?.[1][0] ?? 1.15, x: `${sc.cam?.[1][1] ?? 0}%`, y: `${sc.cam?.[1][2] ?? 0}%` }}
+                      transition={{ duration: sc.seconds + 2, ease: 'easeInOut' }}
+                    />
+                    <div className="story-stars pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+                    {sc.stars === 5 && <div className="story-magic pointer-events-none absolute inset-0" aria-hidden="true" />}
+                  </div>
+                </div>
+              </>
+            )}
             {/* degradê para a legenda ficar legível */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-black/70 via-black/35 to-transparent" aria-hidden="true" />
             <div className="absolute inset-x-0 bottom-[calc(9vh+1.2rem)] px-6 text-center">
