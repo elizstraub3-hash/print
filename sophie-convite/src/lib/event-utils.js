@@ -1,4 +1,4 @@
-import { EVENT, RSVP_PHONE, GIFT_LIST } from '../config/event.js'
+import { EVENT, RSVP_PHONE, RSVP_CONTACT, GIFT_LIST } from '../config/event.js'
 
 export const START = new Date(EVENT.startsAt)
 export const END = new Date(START.getTime() + EVENT.durationHours * 3600 * 1000)
@@ -47,7 +47,7 @@ export function getRsvpPhone() {
 
 export function buildRsvpMessage({ name = '', adults = 1, kids = 0 } = {}) {
   const lines = [
-    `Olá! 🦄✨ Quero confirmar presença no aniversário de ${EVENT.age} anos da ${EVENT.childFirstName}!`,
+    `Olá${RSVP_CONTACT ? `, ${RSVP_CONTACT}` : ''}! 🦄✨ Quero confirmar presença no aniversário de ${EVENT.age} anos da ${EVENT.childFirstName}!`,
     `📅 ${DAY_MONTH} às ${TIME_LABEL} · ${EVENT.venueName}`,
     '',
     `Nome: ${name.trim() || '(seu nome)'}`,

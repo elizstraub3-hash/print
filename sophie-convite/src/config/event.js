@@ -104,7 +104,10 @@ export const SOUND_EFFECTS = true
  * Deixe '' (vazio) enquanto não tiver o número: o botão mostra
  * um estado "em configuração" em vez de um link quebrado.
  */
-export const RSVP_PHONE = ''
+export const RSVP_PHONE = '55 41 99834-6478'
+
+/** Nome de quem recebe as confirmações (aparece no botão e na mensagem) */
+export const RSVP_CONTACT = 'Mamãe Polli'
 
 /** Prazo para confirmar (opcional, texto livre). Ex.: '30/11/2026'. '' = não exibir */
 export const RSVP_DEADLINE = ''

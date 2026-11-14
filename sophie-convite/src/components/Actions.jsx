@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { GIFT_LIST, RSVP_DEADLINE } from '../config/event.js'
+import { GIFT_LIST, RSVP_DEADLINE, RSVP_CONTACT } from '../config/event.js'
 import { buildRsvpMessage, buildWhatsAppUrl, getRsvpPhone, getGiftUrl, getGiftStores, MAPS_URL, CALENDAR_URL } from '../lib/event-utils.js'
 import { AgendaIcon, InstagramIcon, WhatsIcon, PhoneIcon, PinIcon } from './Icons.jsx'
 import { EVENT } from '../config/event.js'
@@ -52,7 +52,7 @@ function Rsvp() {
       <ArtButton
         art="confirmar"
         className="mx-auto mt-4 w-[min(100%,20rem)]"
-        label={href ? 'Confirmar presença pelo WhatsApp (abre o WhatsApp)' : 'Confirmar presença — em breve'}
+        label={href ? `Confirmar presença pelo WhatsApp${RSVP_CONTACT ? ` com ${RSVP_CONTACT}` : ''} (abre o WhatsApp)` : 'Confirmar presença — em breve'}
         href={href || undefined}
         disabled={!href}
         note={href ? null : 'A confirmação pelo WhatsApp será liberada em breve.'}
@@ -62,7 +62,11 @@ function Rsvp() {
           Dev: defina <code>RSVP_PHONE</code> em <code>src/config/event.js</code>
         </p>
       )}
-      {href && <p className="mt-3 text-center font-sans text-xs text-ameixaSoft">Abre o WhatsApp com a mensagem pronta — é só enviar 💌</p>}
+      {href && (
+        <p className="mt-3 text-center font-sans text-sm text-ameixaSoft">
+          Abre o WhatsApp{RSVP_CONTACT ? <> da <strong className="font-semibold text-ameixa">{RSVP_CONTACT}</strong></> : null} com a mensagem pronta — é só enviar 💌
+        </p>
+      )}
     </div>
   )
 }
