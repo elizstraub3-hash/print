@@ -88,7 +88,7 @@ export default function Details() {
       <div className="relative mx-auto max-w-md text-center">
         <Reveal>
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.3em] text-ameixaSoft">Anote na agenda</p>
-          <h2 id="info-titulo" className="mt-2 font-script text-[clamp(2.4rem,11vw,3.2rem)] font-bold leading-tight text-rosaForte">
+          <h2 id="info-titulo" className="mt-2 font-bubble bubble-pink text-[clamp(1.9rem,8.6vw,2.5rem)] leading-tight">
             Quando e onde
           </h2>
         </Reveal>

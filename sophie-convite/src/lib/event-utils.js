@@ -47,12 +47,16 @@ export function getRsvpPhone() {
 
 export function buildRsvpMessage({ name = '', adults = 1, kids = 0 } = {}) {
   const lines = [
-    `Olá${RSVP_CONTACT ? `, ${RSVP_CONTACT}` : ''}! 🦄✨ Quero confirmar presença no aniversário de ${EVENT.age} anos da ${EVENT.childFirstName}!`,
+    `✨🦄 Olá${RSVP_CONTACT ? `, ${RSVP_CONTACT}` : ''}! 🦄✨`,
+    '',
+    `🌈 Quero confirmar presença no aniversário de ${EVENT.age} aninhos da ${EVENT.childFirstName}! 💖`,
     `📅 ${DAY_MONTH} às ${TIME_LABEL} · ${EVENT.venueName}`,
     '',
-    `Nome: ${name.trim() || '(seu nome)'}`,
-    `Adultos: ${adults}`,
-    `Crianças: ${kids}`,
+    `💌 Nome: ${name.trim() || '(seu nome)'}`,
+    `👩 Adultos: ${adults}`,
+    `🧒 Crianças: ${kids}`,
+    '',
+    'Mal posso esperar por esse dia mágico! ✨🦄🌟',
   ]
   return lines.join('\n')
 }
@@ -91,7 +95,7 @@ export function buildStoreMessage() {
   const sizes = (GIFT_LIST.sizes || []).map((z) => `${z.label.toLowerCase()} ${z.value}`).join(', ')
   const likes = (GIFT_LIST.likes || []).join(', ')
   return [
-    `Olá! 🦄 Vim pelo convite de aniversário de ${EVENT.age} anos da ${EVENT.childFirstName} e gostaria de ver opções de presente.`,
+    `✨🦄 Olá! Vim pelo convite de aniversário de ${EVENT.age} aninhos da ${EVENT.childFirstName} e gostaria de ver opções de presente! 🎁✨`,
     sizes && `Ela usa ${sizes}.`,
     likes && `Gosta muito de: ${likes}.`,
   ]

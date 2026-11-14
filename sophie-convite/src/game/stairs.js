@@ -234,7 +234,7 @@ export async function createStairs(canvas, { uniSrc, onJump, onMiss, onMilestone
     if (S.msg && S.msg.t > 0) {
       ctx.globalAlpha = Math.min(1, S.msg.t * 2)
       ctx.textAlign = 'center'
-      ctx.font = `700 ${S.msg.big ? 30 : 24}px "Dancing Script", cursive`
+      ctx.font = `700 ${S.msg.big ? 26 : 21}px Fredoka, system-ui, sans-serif`
       ctx.lineWidth = 6
       ctx.strokeStyle = '#fff'
       const y = 70 - (1.1 - S.msg.t) * 20

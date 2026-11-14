@@ -31,7 +31,7 @@ function Rsvp() {
 
   return (
     <div className="rounded-[2rem] bg-white/90 p-5 text-left shadow-soft ring-1 ring-white">
-      <h3 className="text-center font-script text-3xl font-bold text-rosaForte">Confirme sua presença</h3>
+      <h3 className="text-center font-bubble bubble-pink text-[1.6rem] leading-tight">Confirme sua presença</h3>
       {RSVP_DEADLINE && <p className="mt-1 text-center font-sans text-sm text-ameixaSoft">Por favor, confirme até {RSVP_DEADLINE}</p>}
 
       <div className="mt-4 grid gap-2.5">
@@ -99,7 +99,7 @@ export default function Actions() {
         {(giftUrl || stores.length > 0) && (
           <Reveal delay={0.1} className="mt-8">
             <div id="presentes" className="scroll-mt-4 rounded-[2rem] bg-white/90 p-5 text-center shadow-soft ring-1 ring-white">
-              <h3 className="font-script text-[2.2rem] font-bold leading-tight text-rosaForte">Lista de presentes</h3>
+              <h3 className="font-bubble bubble-pink text-[1.75rem] leading-tight">Lista de presentes</h3>
               <p className="mx-auto mt-1 max-w-[32ch] font-sans text-base font-medium text-ameixa">{GIFT_LIST.note.replaceAll('{nome}', EVENT.childFirstName)}</p>
 
               {/* tamanhos */}

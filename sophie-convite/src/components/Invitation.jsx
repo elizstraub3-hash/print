@@ -90,7 +90,7 @@ export default function Invitation({ music }) {
             <>
               <p className="mt-4 font-sans text-xs font-semibold uppercase tracking-[0.3em] text-ameixaSoft">Aniversário de</p>
               <h2 id="convite-titulo" className="mt-1">
-                <span className="sophie-lettering block font-script text-[clamp(3.2rem,15vw,4.6rem)] font-bold leading-none">{EVENT.childFirstName}</span>
+                <span className="block font-bubble bubble-pink text-[clamp(2.8rem,13vw,4rem)] leading-none">{EVENT.childFirstName}</span>
                 <span className="mt-2 block font-sans text-[clamp(1.05rem,4.6vw,1.3rem)] font-medium text-ameixa">{EVENT.childFullName}</span>
               </h2>
             </>
@@ -99,7 +99,7 @@ export default function Invitation({ music }) {
 
         <Reveal delay={0.2}>
           <div className="mx-auto mt-5 flex w-fit items-center gap-3 rounded-full bg-gradient-to-r from-amarelo via-white to-amarelo px-6 py-2 ring-1 ring-dourado/60">
-            <span className="font-script text-4xl font-bold leading-none text-douradoEscuro">{EVENT.age}</span>
+            <span className="font-bubble bubble-gold text-4xl leading-none">{EVENT.age}</span>
             <span className="font-sans text-lg font-semibold text-ameixa">anos de pura magia</span>
           </div>
         </Reveal>

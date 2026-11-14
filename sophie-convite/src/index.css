@@ -31,6 +31,31 @@
 }
 
 @layer components {
+  /* Letra "bolha" — arredondada, gordinha, com contorno branco e volume
+     (mesmo estilo das artes: TOQUE PARA COMEÇAR / ANOS DE PURA MAGIA) */
+  .font-bubble {
+    font-family: Fredoka, ui-rounded, system-ui, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    text-shadow:
+      0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff,
+      2px 2px 0 #fff, -2px 2px 0 #fff, 2px -2px 0 #fff, -2px -2px 0 #fff,
+      0 4px 0 #fff, 0 6px 0 rgba(214, 160, 205, 0.9), 0 8px 12px rgba(150, 80, 150, 0.35);
+  }
+  .bubble-pink { color: #E0479A; }
+  .bubble-purple { color: #8A3FA6; }
+  .bubble-gold { color: #C78A1E; }
+  /* na historinha (céu escuro): letra branca com contorno roxo */
+  .bubble-story {
+    color: #fff;
+    text-shadow:
+      0 2px 0 #8A3FA6, 0 -2px 0 #8A3FA6, 2px 0 0 #8A3FA6, -2px 0 0 #8A3FA6,
+      2px 2px 0 #8A3FA6, -2px 2px 0 #8A3FA6, 2px -2px 0 #8A3FA6, -2px -2px 0 #8A3FA6,
+      0 5px 0 #5E2A78, 0 8px 16px rgba(20, 5, 40, 0.5);
+  }
+
   /* Lettering "Sophie": degradê pastel com contorno branco e brilho dourado */
   .sophie-lettering {
     background: linear-gradient(100deg, #e58db8 0%, #c39be8 38%, #7fc4e0 70%, #e2b45c 100%);

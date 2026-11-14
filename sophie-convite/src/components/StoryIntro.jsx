@@ -221,7 +221,7 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
             <SceneArt art={scenes[i].art} />
             <div className="absolute inset-x-0 top-[13%] px-7 text-center">
               <m.p
-                className="mx-auto max-w-[19ch] text-balance font-script text-[clamp(2rem,9vw,3rem)] font-bold leading-[1.15] [text-shadow:0_2px_0_rgba(80,30,90,.55),0_0_10px_rgba(120,40,120,.45)]"
+                className="mx-auto max-w-[19ch] text-balance font-bubble bubble-story normal-case text-[clamp(1.5rem,6.6vw,2.1rem)] leading-[1.2]"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.3 }}
@@ -240,7 +240,7 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
             Uma historinha mágica
           </m.p>
           <m.p
-            className="relative mt-3 font-script text-[clamp(2.6rem,12vw,3.6rem)] font-bold leading-tight [text-shadow:0_2px_0_rgba(80,30,90,.55)]"
+            className="relative mt-3 font-bubble bubble-story text-[clamp(1.9rem,8.6vw,2.7rem)] leading-tight"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.6, delay: 0.3 }}

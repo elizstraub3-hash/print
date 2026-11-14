@@ -16,7 +16,7 @@ function TextTitle() {
   return (
     <>
       <p className="font-sans text-[clamp(1.2rem,5.4vw,1.6rem)] font-medium text-ameixa">O Mundo Encantado da</p>
-      <span className="sophie-lettering block font-script text-[clamp(4.2rem,22vw,7rem)] font-bold leading-[0.95]">{EVENT.childFirstName}</span>
+      <span className="block font-bubble bubble-pink text-[clamp(3.4rem,17vw,5.5rem)] leading-[0.95]">{EVENT.childFirstName}</span>
       <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/75 px-5 py-1.5 font-sans text-lg font-semibold text-ameixa shadow-soft">
         <Heart className="h-4 w-4" fill="#E58DB8" /> {EVENT.age} aninhos <Heart className="h-4 w-4" fill="#E58DB8" />
       </span>

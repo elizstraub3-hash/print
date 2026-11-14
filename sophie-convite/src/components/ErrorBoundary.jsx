@@ -15,7 +15,7 @@ export default class ErrorBoundary extends Component {
     if (!this.state.error) return this.props.children
     return (
       <section className="bg-[#FFFAFC] px-6 py-16 text-center font-sans text-ameixa">
-        <h2 className="font-script text-4xl font-bold text-rosaForte">{EVENT.childFirstName} · {EVENT.age} anos</h2>
+        <h2 className="font-bubble bubble-pink text-3xl">{EVENT.childFirstName} · {EVENT.age} anos</h2>
         <p className="mt-4 text-lg">{DATE_LONG} · {TIME_LABEL}</p>
         <p className="mt-1">{EVENT.venueName}</p>
         <a className="btn-soft mt-6" href={MAPS_URL} target="_blank" rel="noopener noreferrer">{SHORT_ADDRESS}</a>

@@ -14,7 +14,7 @@ export default function Gallery() {
       <Pattern opacity={0.2} />
       <div className="relative mx-auto max-w-md text-center">
         <Reveal>
-          <h2 id="fotos-titulo" className="font-script text-[clamp(2.2rem,10vw,3rem)] font-bold text-rosaForte">
+          <h2 id="fotos-titulo" className="font-bubble bubble-pink text-[clamp(1.75rem,8vw,2.4rem)]">
             Momentos da {EVENT.childFirstName}
           </h2>
         </Reveal>
@@ -29,7 +29,7 @@ export default function Gallery() {
               transition={{ type: 'spring', stiffness: 90, damping: 14, delay: (i % 2) * 0.1 }}
             >
               <img src={p.src} alt={p.alt || `Foto da ${EVENT.childFirstName}`} loading="lazy" decoding="async" className="aspect-[4/5] w-full rounded-xl object-cover" />
-              {p.caption && <figcaption className="mt-2 font-script text-xl font-bold text-ameixa">{p.caption}</figcaption>}
+              {p.caption && <figcaption className="mt-2 font-bubble text-lg text-ameixa normal-case">{p.caption}</figcaption>}
             </m.figure>
           ))}
         </div>

@@ -214,7 +214,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
       <DriftCloud className="right-[-16%] top-6 h-16 w-40 opacity-80" distance={-16} duration={10} />
 
       <div className="relative mx-auto max-w-md text-center">
-        <p className="font-script text-[clamp(2.2rem,10vw,2.8rem)] font-bold leading-none text-rosaForte">Ei, convidado!</p>
+        <p className="font-bubble bubble-pink text-[clamp(1.9rem,8.8vw,2.5rem)] leading-none">Ei, convidado!</p>
         <h2 id="jogo-titulo" className="mx-auto mt-2 max-w-[22ch] text-balance font-sans text-[clamp(1.25rem,5.4vw,1.6rem)] font-semibold leading-snug text-ameixa">
           Você precisa desbloquear o convite da {EVENT.childFirstName}!
         </h2>
@@ -307,7 +307,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
                   animate={reduce ? { y: 0, scale: 1 } : { y: [30, -20, 0], scale: [0.6, 1.1, 1], rotate: [0, -8, 8, 0] }}
                   transition={{ duration: 0.9, delay: 0.3 }}
                 />
-                <p className="mt-1 font-script text-[2.6rem] font-bold leading-none text-rosaForte">Parabéns!</p>
+                <p className="mt-1 font-bubble bubble-pink text-[2.1rem] leading-none">Parabéns!</p>
                 <p className="mt-1 font-sans text-xl font-semibold text-ameixa">Você desbloqueou o convite!</p>
                 <button type="button" onClick={onContinue} className="btn-magic mt-4 min-h-[56px] px-8 text-lg">
                   Ver o convite <span aria-hidden="true">✨</span>

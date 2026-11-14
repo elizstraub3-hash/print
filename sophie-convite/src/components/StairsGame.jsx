@@ -105,7 +105,7 @@ export default function StairsGame() {
       <Pattern opacity={0.18} />
       <div className="relative mx-auto max-w-md text-center">
         <Reveal>
-          <h2 id="pulos-titulo" className="font-script text-[clamp(2.3rem,10.5vw,3.1rem)] font-bold leading-tight text-rosaForte">
+          <h2 id="pulos-titulo" className="font-bubble bubble-purple text-[clamp(1.75rem,8vw,2.4rem)] leading-tight">
             Escadinha do Unicórnio
           </h2>
           <p className="mx-auto mt-1 max-w-[30ch] font-sans text-base font-medium text-ameixa">

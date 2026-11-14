@@ -33,7 +33,7 @@ export default function Finale() {
               </Float>
             </h2>
           ) : (
-            <h2 id="final-titulo" className="mx-auto max-w-[16ch] text-balance font-script text-[clamp(2.3rem,10.5vw,3.2rem)] font-bold leading-[1.1] text-ameixa">
+            <h2 id="final-titulo" className="mx-auto max-w-[16ch] text-balance font-bubble bubble-purple text-[clamp(1.7rem,7.8vw,2.4rem)] leading-[1.1]">
               {EVENT.finalMessage}
             </h2>
           )}

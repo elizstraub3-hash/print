@@ -134,7 +134,7 @@ export default function CakeStage() {
 
   return (
     <div className="relative mx-auto w-[min(100%,22rem)]">
-      <p className="mb-3 font-script text-[clamp(1.9rem,8.5vw,2.4rem)] font-bold leading-tight text-rosaForte">Venha soprar as velinhas comigo!</p>
+      <p className="mb-3 font-bubble bubble-pink text-[clamp(1.45rem,6.6vw,1.9rem)] leading-tight">Venha soprar as velinhas comigo!</p>
 
       <div ref={stageRef} className="relative">
         <div className="relative">
@@ -181,7 +181,7 @@ export default function CakeStage() {
         <>
           {allOut ? (
             <m.div key="done" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
-              <p className="font-script text-4xl font-bold text-rosaForte">Parabéns, {EVENT.childFirstName}! 🎉</p>
+              <p className="font-bubble bubble-pink text-[clamp(1.7rem,7.6vw,2.2rem)]">Parabéns, {EVENT.childFirstName}! 🎉</p>
               <button type="button" onClick={relight} className="mt-2 min-h-[44px] px-4 font-sans text-sm font-medium text-ameixaSoft underline underline-offset-4">
                 Acender as velinhas de novo
               </button>

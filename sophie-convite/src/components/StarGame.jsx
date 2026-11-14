@@ -167,7 +167,7 @@ export default function StarGame({ onFinish }) {
                 >
                   {!reduce && <Particles count={22} radius={170} />}
                   <p className="text-4xl" aria-hidden="true">🌟</p>
-                  <p className="mt-2 font-script text-3xl font-bold text-rosaForte">Parabéns!</p>
+                  <p className="mt-2 font-bubble bubble-pink text-3xl">Parabéns!</p>
                   <p className="mt-1 font-sans text-lg font-medium leading-snug text-ameixa">
                     Você encontrou a magia da {EVENT.childFirstName}!
                   </p>
