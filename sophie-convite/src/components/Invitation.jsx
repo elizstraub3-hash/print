@@ -2,7 +2,7 @@ import { m, useReducedMotion } from 'framer-motion'
 import { EVENT } from '../config/event.js'
 import Unicorn from './Unicorn.jsx'
 import Reveal from './Reveal.jsx'
-import { Divider, Rainbow, Twinkles, DriftCloud, Cloud } from './Decor.jsx'
+import { Divider, Twinkles, DriftCloud, Cloud } from './Decor.jsx'
 import Pattern from './Pattern.jsx'
 
 export default function Invitation() {
@@ -17,7 +17,9 @@ export default function Invitation() {
       <div className="relative mx-auto max-w-md text-center">
         {/* unicórnio sobre o arco-íris */}
         <div className="relative mx-auto w-[min(78vw,300px)]">
-          <Rainbow className="absolute -top-2 left-1/2 w-[125%] -translate-x-1/2 opacity-70" />
+          {/* halo suave no lugar do arco-íris: o unicórnio vira o protagonista */}
+          <div aria-hidden="true" className="absolute left-1/2 top-[8%] aspect-square w-[92%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_50%_45%,#FFF0B9_0%,#F8CDE3_42%,rgba(220,204,247,.55)_64%,rgba(220,204,247,0)_72%)]" />
+          <div aria-hidden="true" className="absolute left-1/2 top-[8%] aspect-square w-[92%] -translate-x-1/2 rounded-full ring-1 ring-dourado/50" />
           <m.div
             initial={{ opacity: 0, y: 40, scale: 0.85 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
