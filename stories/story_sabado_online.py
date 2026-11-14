@@ -30,8 +30,8 @@ NOTE = Image.new('RGBA', (SW, SH), (0, 0, 0, 0))
 d = ImageDraw.Draw(NOTE); fn = sans(40, 700)
 lines = ['mas dá tempo de', 'pedir a aliança dela, tá?']
 for i, s in enumerate(lines):
-    d.text((TX * 2, TY * 2 - 26 + i * 52), s, font=fn, fill=INK + (255,), anchor='mm')
-e = emoji('😉', 44); NOTE.alpha_composite(e, (int(TX * 2 + fn.getlength(lines[1]) / 2 + 10), int(TY * 2 + 26 - 24)))
+    d.text((TX * 2 - 30, TY * 2 - 26 + i * 52), s, font=fn, fill=INK + (255,), anchor='mm')
+e = emoji('😉', 44); NOTE.alpha_composite(e, (int(TX * 2 - 30 + fn.getlength(lines[1]) / 2 + 10), int(TY * 2 + 26 - 24)))
 NOTEA = np.asarray(NOTE, np.float32)
 
 # closing call to action
