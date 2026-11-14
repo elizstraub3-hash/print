@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 0;
+  }
+  html,
+  body {
+    overflow-x: clip; /* sem rolagem horizontal (sem quebrar position: sticky) */
+    max-width: 100%;
+  }
+  body {
+    margin: 0;
+    background: #fffafc;
+    color: #5e4466;
+    font-family: Fredoka, ui-rounded, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+  }
+  :focus-visible {
+    outline: 3px solid #e58db8;
+    outline-offset: 3px;
+    border-radius: 999px;
+  }
+  h2:focus { outline: none; }
+  code { font-size: 0.9em; }
+}
+
+@layer components {
+  /* Lettering "Sophie": degradê pastel com contorno branco e brilho dourado */
+  .sophie-lettering {
+    background: linear-gradient(100deg, #e58db8 0%, #c39be8 38%, #7fc4e0 70%, #e2b45c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 0 #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 8px 14px rgba(200, 140, 190, 0.35));
+    padding: 0 0.12em 0.08em; /* evita corte do traço cursivo */
+  }
+
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-sans font-semibold transition-[transform,box-shadow,background-color] duration-200 select-none;
+    min-height: 52px;
+    touch-action: manipulation;
+  }
+  .btn-magic {
+    @apply btn-base text-white;
+    background: linear-gradient(135deg, #f0a3c8 0%, #c9a6ee 55%, #9fd3e6 100%);
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.6), 0 16px 30px -12px rgba(200, 120, 180, 0.8);
+    text-shadow: 0 1px 2px rgba(120, 70, 120, 0.35);
+  }
+  .btn-whats {
+    @apply btn-base px-6 text-lg text-white;
+    background: linear-gradient(135deg, #2fbf71, #25a35f);
+    box-shadow: 0 12px 24px -12px rgba(37, 163, 95, 0.9);
+  }
+  .btn-whats:active { transform: scale(0.97); }
+  .btn-soft {
+    @apply btn-base w-full bg-white/90 px-6 text-lg text-ameixa ring-1 ring-white;
+    box-shadow: 0 10px 24px -14px rgba(150, 100, 160, 0.6);
+  }
+  .btn-soft:hover { @apply bg-white; }
+  .btn-soft:active { transform: scale(0.97); }
+  .btn-ghost {
+    @apply btn-base bg-white/55 text-base text-ameixa ring-1 ring-white/90 backdrop-blur-sm;
+  }
+  .btn-ghost:hover { @apply bg-white/80; }
+  .btn-disabled {
+    @apply btn-base w-full cursor-not-allowed bg-white/50 px-6 text-lg text-ameixaSoft border-2 border-dashed border-ameixaSoft/30;
+  }
+  .stepper-btn {
+    @apply grid h-11 w-11 place-items-center rounded-full bg-rosa text-xl font-semibold text-ameixa transition active:scale-90 disabled:opacity-40;
+    touch-action: manipulation;
+  }
+  .star-btn { touch-action: manipulation; }
+  .star-btn:disabled { cursor: default; }
+
+  .skip-link {
+    @apply absolute left-3 top-3 z-[60] -translate-y-24 rounded-full bg-white px-4 py-3 font-sans font-semibold text-ameixa shadow-soft transition focus:translate-y-0;
+  }
+
+  /* mini equalizador do botão de música */
+  .eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 14px; }
+  .eq i { width: 3px; background: #e58db8; border-radius: 2px; animation: eq 0.9s ease-in-out infinite; }
+  .eq i:nth-child(2) { animation-delay: 0.2s; }
+  .eq i:nth-child(3) { animation-delay: 0.4s; }
+}
+
+@keyframes eq {
+  0%, 100% { height: 4px; }
+  50% { height: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

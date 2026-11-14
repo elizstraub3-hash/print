@@ -1,0 +1,4 @@
+Coloque aqui o MP3 da música (com direito de uso: composição própria,
+trilha royalty-free/licenciada ou gravada pela família).
+Depois edite src/config/event.js:  MUSIC.src = '/audio/nome-do-arquivo.mp3'
+Dica: exporte em 96–128 kbps mono/estéreo, até ~2 MB, para carregar rápido no 4G.
