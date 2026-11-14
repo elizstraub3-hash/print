@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "og": "node scripts/generate-og.mjs",
     "model": "node scripts/optimize-model.mjs",
-    "poster": "node scripts/render-poster.mjs"
+    "poster": "node scripts/render-poster.mjs",
+    "historia": "node scripts/render-historia.mjs"
   },
   "dependencies": {
     "@fontsource/dancing-script": "5.3.0",

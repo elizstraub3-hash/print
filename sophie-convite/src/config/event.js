@@ -42,39 +42,26 @@ export const TITLE_ART = {
 }
 
 /**
- * Historinha de abertura — "O Reino Encantado da Sophie" (9 cenas do storyboard).
- * Cada cena aceita:
- *   image: quadro do storyboard (usado enquanto não houver vídeo)
- *   video: MP4 vertical 1080x1920 SEM textos (quando tiver, ele substitui a imagem)
- *   audio: narração da cena (MP3). Sem áudio, a cena dura `seconds`.
- *   cam:   movimento de câmera sobre a imagem [escala, x%, y%] de → para
- *   stars: estrelas que o convidado toca nessa cena (posição em % do quadro)
- *   showSlots: mostra o contador ⭐ x/5 a partir desta cena
- * {nome} = nome da criança.
+ * Historinha de abertura — "O Reino Encantado da Sophie" (só para assistir).
+ * 9 cenas em vídeo 3D (render dos 6 elementos oficiais: Sophie, Layla, Castelo,
+ * Vestido Mágico, Nuvens e 5 Estrelas). Gerar de novo: `npm run historia`.
+ * Cada cena: video (MP4 9:16), poster (JPG), audio (narração MP3, opcional),
+ * text (legenda — é também o texto da narração), stars (estrelas já reunidas).
+ * A cena dura o tempo do vídeo ou da narração (o que for maior).
  */
+const V = (n) => ({ video: `/video/historia/cena-${n}.mp4`, poster: `/video/historia/cena-${n}.jpg` })
 export const STORY = {
   enabled: true,
-  secondsPerScene: 5.5,
-  starTimeout: 9, // segundos até a estrela "se coletar sozinha" (nunca trava)
   scenes: [
-    { title: 'O Reino Encantado', image: '/img/historia/cena-1.webp', video: '', audio: '/audio/narracao/cena-1.mp3', seconds: 6,
-      cam: [[1.0, 0, 0], [1.25, 0, 6]], text: 'Era uma vez, lá no alto das nuvens, um reino mágico cheio de arco-íris…' },
-    { title: 'A Princesinha', image: '/img/historia/cena-2.webp', video: '', audio: '/audio/narracao/cena-2.mp3', seconds: 6,
-      cam: [[1.05, 0, 4], [1.3, 0, -2]], text: 'Lá vivia uma princesinha muito especial chamada {nome}.' },
-    { title: 'O Melhor Amigo', image: '/img/historia/cena-3.webp', video: '', audio: '/audio/narracao/cena-3.mp3', seconds: 6,
-      cam: [[1.15, -4, 0], [1.15, 4, 0]], text: 'Ela vai fazer cinco aninhos, e o seu unicórnio mágico ganhou uma missão…' },
-    { title: 'O Vestido dos Sonhos', image: '/img/historia/cena-4.webp', video: '', audio: '', seconds: 7, showSlots: true,
-      cam: [[1.3, 18, 4], [1.15, -2, 0]], text: 'Encontrar as 5 estrelinhas mágicas que dão brilho ao vestido dos sonhos!' },
-    { title: 'A Primeira Estrela', image: '/img/historia/cena-5.webp', video: '', audio: '', seconds: 6, showSlots: true,
-      cam: [[1.35, -4, -10], [1.05, 0, 0]], stars: [[61, 70]], text: 'A primeira estrelinha estava escondida na flor… toque nela!' },
-    { title: 'O Lago dos Sonhos', image: '/img/historia/cena-6.webp', video: '', audio: '', seconds: 7, showSlots: true,
-      cam: [[1.1, 0, -4], [1.02, 0, 0]], stars: [[57, 79], [84, 79]], text: 'No lago dos sonhos, mais duas estrelinhas! Pegue as duas!' },
-    { title: 'A Quarta Estrela', image: '/img/historia/cena-7.webp', video: '', audio: '', seconds: 6, showSlots: true,
-      cam: [[1.05, 0, 6], [1.3, 0, 14]], stars: [[52, 19]], text: 'A quarta estrelinha brilha lá no alto da árvore… alcance ela!' },
-    { title: 'A Magia das Cinco Estrelas', image: '/img/historia/cena-8.webp', video: '', audio: '', seconds: 9, showSlots: true, magic: true,
-      cam: [[1.0, 0, 0], [1.12, 0, 4]], stars: [[50, 12]], text: 'Com as cinco estrelas, a magia acontece!' },
-    { title: 'O Convite Real', image: '/img/historia/cena-9.webp', video: '', audio: '', seconds: 8, showSlots: true,
-      cam: [[1.0, 6, 0], [1.25, 10, 4]], text: 'A festa está pronta… e a princesa {nome} convida você! 💌' },
+    { ...V(1), seconds: 6, audio: '', stars: null, title: 'O Reino Encantado', text: 'Era uma vez, lá no alto das nuvens, um reino encantado cheio de arco-íris.' },
+    { ...V(2), seconds: 6, audio: '', stars: null, title: 'A Princesinha', text: 'Nele morava uma princesinha muito especial: a {nome}!' },
+    { ...V(3), seconds: 6, audio: '', stars: null, title: 'A Melhor Amiga', text: 'E a sua melhor amiga, a unicórnio Layla, estava sempre ao seu lado.' },
+    { ...V(4), seconds: 7, audio: '', stars: 0, title: 'O Vestido Mágico', text: 'Para o aniversário, havia um vestido mágico… que só brilharia com cinco estrelas douradas.' },
+    { ...V(5), seconds: 6, audio: '', stars: 1, title: 'A Primeira Estrela', text: 'A primeira estrelinha estava escondida dentro de uma flor!' },
+    { ...V(6), seconds: 7, audio: '', stars: 3, title: 'O Lago dos Sonhos', text: 'No lago dos sonhos, mais duas estrelas surgiram das águas.' },
+    { ...V(7), seconds: 6, audio: '', stars: 4, title: 'A Quarta Estrela', text: 'A quarta estrela brilhava lá no alto da árvore encantada.' },
+    { ...V(8), seconds: 9, audio: '', stars: 5, title: 'A Magia das Cinco Estrelas', text: 'Com as cinco estrelas reunidas… a magia aconteceu! O vestido dos sonhos ficou pronto!' },
+    { ...V(9), seconds: 8, audio: '', stars: 5, title: 'O Convite Real', text: 'Agora a festa vai começar… e a princesa {nome} convida você para comemorar os seus cinco aninhos!' },
   ],
 }
 

@@ -98,9 +98,9 @@ function roundRect(ctx, x, y, w, h, r) {
 
 export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, onGoal, onJump }) {
   const ctx = canvas.getContext('2d')
-  const [head, bg] = await Promise.all([loadImg(headSrc), loadImg(bgSrc).catch(() => null)])
+  let [head, bg] = await Promise.all([loadImg(headSrc), loadImg(bgSrc).catch(() => null)])
   const stars = STAR_TINTS.map((t) => makeStarSprite(t))
-  const headW = (HEAD_H * head.width) / head.height
+  let headW = (HEAD_H * head.width) / head.height
 
   let dpr = 1
   let scale = 1
@@ -233,11 +233,9 @@ export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, o
           S.parts.push({ x: it.x, y: it.y, vx: Math.cos(a) * 160, vy: Math.sin(a) * 160 - 60, life: 0.7, c: STAR_TINTS[i % 5] })
         }
         const r = canvas.getBoundingClientRect()
-        onStar?.(Math.min(S.got, goal), r.left + (it.x - S.dist) * scale, r.top + it.y * scale)
-        if (S.got >= goal && !S.done) {
-          S.done = true
-          setTimeout(() => onGoal?.(), 450)
-        }
+        onStar?.(S.got, r.left + (it.x - S.dist) * scale, r.top + it.y * scale)
+        // modo infinito: a meta só avisa (uma vez); o jogo continua
+        if (S.got === goal) setTimeout(() => onGoal?.(), 350)
       }
     }
     // partículas
@@ -430,6 +428,12 @@ export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, o
     },
     reset() {
       reset()
+      draw()
+    },
+    /** troca o personagem (Sophie ou Layla) */
+    async setHead(src) {
+      head = await loadImg(src)
+      headW = (HEAD_H * head.width) / head.height
       draw()
     },
     dispose() {

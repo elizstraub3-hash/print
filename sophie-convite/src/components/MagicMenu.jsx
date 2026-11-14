@@ -14,7 +14,7 @@ export default function MagicMenu({ music }) {
     { art: 'sobre', label: 'Sobre a festa: data, horário e local', onClick: go('informacoes') },
     { art: 'confirmar', label: 'Confirmar presença', onClick: go('confirmar') },
     { art: 'localizacao', label: 'Ver localização no Google Maps (abre em nova aba)', href: MAPS_URL },
-    { art: 'joguinho', label: 'Mini joguinho: Escadinha do Unicórnio', onClick: go('pulos') },
+    { art: 'joguinho', label: 'Mini joguinho: pule e pegue estrelinhas', onClick: go('jogo') },
     music.available && {
       art: 'musica',
       label: playing ? 'Desligar música' : 'Ligar música',

@@ -1,0 +1,401 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<body><script type="module">
+/**
+ * "O Reino Encantado da Sophie" — 9 cenas 3D com os 6 elementos oficiais
+ * (Princesa Sophie, unicórnio Layla, Castelo, Vestido Mágico, Nuvens, 5 Estrelas).
+ * Render determinístico: window.renderFrame(cena, t) → desenha o quadro no tempo t.
+ */
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+
+const Q = new URLSearchParams(location.search)
+const W = Number(Q.get('w') || 720), H = Number(Q.get('h') || 1280)
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: Q.has('alpha') })
+renderer.setPixelRatio(1); renderer.setSize(W, H)
+renderer.outputColorSpace = THREE.SRGBColorSpace
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.82
+document.body.appendChild(renderer.domElement)
+const pm = new THREE.PMREMGenerator(renderer)
+const ENV = pm.fromScene(new RoomEnvironment(), 0.04).texture
+
+// ---------- utilidades ----------
+const ease = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t))
+const seg = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)))
+const lerp = (a, b, k) => a + (b - a) * k
+const v3 = (x, y, z) => new THREE.Vector3(x, y, z)
+const lerpV = (a, b, k) => a.clone().lerp(b, k)
+let seed = 7
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+
+const BASE = '/tools/source/kit3d/'
+const loader = new GLTFLoader()
+async function load(name, opts = {}) {
+  const g = await loader.loadAsync(BASE + name + '.glb')
+  const wrap = new THREE.Group()
+  g.scene.rotation.x = -Math.PI / 2 // Z-up (Blender) → Y-up
+  wrap.add(g.scene)
+  wrap.traverse((o) => {
+    if (!o.isMesh) return
+    o.geometry.computeVertexNormals()
+    o.material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: opts.rough ?? 0.5, metalness: opts.metal ?? 0, envMapIntensity: 0.45 })
+  })
+  return wrap
+}
+function texRadial(inner, outer) {
+  const c = document.createElement('canvas'); c.width = c.height = 128
+  const g = c.getContext('2d'); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64)
+  gr.addColorStop(0, inner); gr.addColorStop(1, outer); g.fillStyle = gr; g.fillRect(0, 0, 128, 128)
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t
+}
+const GLOW = texRadial('rgba(255,236,160,1)', 'rgba(255,214,107,0)')
+const SPARK = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d')
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.25, 'rgba(255,240,200,.9)'); gr.addColorStop(1, 'rgba(255,220,240,0)')
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); g.fillStyle = '#fff'; g.fillRect(30, 4, 4, 56); g.fillRect(4, 30, 56, 4)
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t
+})()
+const SHADOW = texRadial('rgba(120,60,130,.45)', 'rgba(120,60,130,0)')
+
+function sky(top, mid, bottom) {
+  const m = new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false,
+    uniforms: { a: { value: new THREE.Color(top) }, b: { value: new THREE.Color(mid) }, c: { value: new THREE.Color(bottom) } },
+    vertexShader: 'varying vec3 p; void main(){ p = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+    fragmentShader: 'uniform vec3 a,b,c; varying vec3 p; void main(){ float y=p.y; vec3 col = y>0.? mix(b,a,smoothstep(0.,.6,y)) : mix(b,c,smoothstep(0.,-.4,y)); gl_FragColor=vec4(col,1.);\n#include <colorspace_fragment>\n}',
+  })
+  return new THREE.Mesh(new THREE.SphereGeometry(200, 32, 16), m)
+}
+function sparkles(n, box, color = 0xffffff, size = 0.35) {
+  const g = new THREE.BufferGeometry(); const p = new Float32Array(n * 3); const ph = new Float32Array(n)
+  for (let i = 0; i < n; i++) { p[i * 3] = lerp(box[0], box[3], rnd()); p[i * 3 + 1] = lerp(box[1], box[4], rnd()); p[i * 3 + 2] = lerp(box[2], box[5], rnd()); ph[i] = rnd() * 6.28 }
+  g.setAttribute('position', new THREE.BufferAttribute(p, 3))
+  const m = new THREE.PointsMaterial({ map: SPARK, color, size, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true })
+  const pts = new THREE.Points(g, m); pts.userData.base = p.slice(); pts.userData.ph = ph; return pts
+}
+function shadowBlob(r = 1.4) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), new THREE.MeshBasicMaterial({ map: SHADOW, transparent: true, depthWrite: false }))
+  m.rotation.x = -Math.PI / 2; m.position.y = 0.02; return m
+}
+function glowSprite(scale = 2) {
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }))
+  s.scale.setScalar(scale); return s
+}
+function islandTop(r = 5, color = 0xcdeed8) {
+  const g = new THREE.Group()
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.96, 0.5, 48), new THREE.MeshStandardMaterial({ color, roughness: 0.8 }))
+  top.position.y = -0.25; g.add(top)
+  const rock = new THREE.Mesh(new THREE.ConeGeometry(r * 0.95, r * 0.9, 9), new THREE.MeshStandardMaterial({ color: 0xc9b3ea, roughness: 0.9, flatShading: true }))
+  rock.rotation.x = Math.PI; rock.position.y = -0.5 - r * 0.45; g.add(rock)
+  const colors = [0xf7a8cf, 0xffe58f, 0xffffff, 0xd9c6f7]
+  for (let i = 0; i < 70; i++) {
+    const a = rnd() * 6.28, d = Math.sqrt(rnd()) * r * 0.93
+    const f = new THREE.Mesh(new THREE.SphereGeometry(0.09 + rnd() * 0.07, 8, 6), new THREE.MeshStandardMaterial({ color: colors[i % 4], roughness: 0.6 }))
+    f.position.set(Math.cos(a) * d, 0.05, Math.sin(a) * d); g.add(f)
+  }
+  return g
+}
+function rainbow(R = 9) {
+  const g = new THREE.Group(); const cols = [0xf7a8cf, 0xffd7b5, 0xffe58f, 0xc8ebd6, 0xa9dcf2, 0xc9b5f2]
+  cols.forEach((c, i) => { const t = new THREE.Mesh(new THREE.TorusGeometry(R - i * 0.42, 0.22, 10, 64, Math.PI), new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: c, emissiveIntensity: 0.15 })); g.add(t) })
+  return g
+}
+function lights(scene, warm = 0xfff3e8, hemi = [0xffffff, 0xd9c6f2, 0.55], key = 1.35) {
+  scene.add(new THREE.HemisphereLight(hemi[0], hemi[1], hemi[2]))
+  const d = new THREE.DirectionalLight(warm, key); d.position.set(4, 8, 6); scene.add(d)
+  const r = new THREE.DirectionalLight(0xf8cde3, 0.8); r.position.set(-6, 4, -5); scene.add(r)
+}
+
+// ---------- elementos oficiais ----------
+const A = {
+  princess: await load('01_Princesa_Sophie'),
+  layla: await load('02_Unicornio_Layla'),
+  castle: await load('03_Castelo_Encantado'),
+  dress: await load('04_Vestido_Magico', { rough: 0.35 }),
+  clouds: await load('05_Nuvens_Pastel', { rough: 0.9 }),
+  starsAll: await load('06_Cinco_Estrelas', { rough: 0.3, metal: 0.4 }),
+}
+// estrelas individuais (estrela_1..5), centradas
+const STAR = []
+for (let k = 1; k <= 5; k++) {
+  const g = new THREE.Group(); const parts = []
+  A.starsAll.traverse((o) => { if (o.isMesh && o.name.startsWith(`estrela_${k}_`)) parts.push(o) })
+  A.starsAll.updateMatrixWorld(true)
+  parts.forEach((o) => { const m = new THREE.Mesh(o.geometry.clone().applyMatrix4(o.matrixWorld), new THREE.MeshStandardMaterial({ color: 0xffd36b, emissive: 0xffb93d, emissiveIntensity: 0.55, roughness: 0.3, metalness: 0.45 })); g.add(m) })
+  const c = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3()); g.children.forEach((m) => m.geometry.translate(-c.x, -c.y, -c.z))
+  STAR.push(g)
+}
+function star(scale = 1, lit = true) {
+  const g = STAR[0].clone(true); g.scale.setScalar(scale * 1.4)
+  if (!lit) g.traverse((o) => o.isMesh && (o.material = new THREE.MeshStandardMaterial({ color: 0xb9a8cf, roughness: 0.6, transparent: true, opacity: 0.6 })))
+  const glow = glowSprite(1.3); glow.material = glow.material.clone(); glow.material.opacity = 0.55; g.add(glow); glow.visible = lit; g.userData.glow = glow
+  return g
+}
+const FACE = (() => {
+  const g = new THREE.Group()
+  const smile = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.018, 8, 16, Math.PI), new THREE.MeshStandardMaterial({ color: 0xc0587e, roughness: 0.6 }))
+  smile.rotation.z = Math.PI; smile.position.set(0, 2.47, 0.395); g.add(smile)
+  for (const x of [-0.25, 0.25]) { const c = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 8), new THREE.MeshStandardMaterial({ color: 0xf6a2c4, roughness: 0.8, transparent: true, opacity: 0.75 })); c.scale.set(1, 0.6, 0.35); c.position.set(x, 2.55, 0.355); g.add(c) }
+  return g
+})()
+const princess = () => { const p = A.princess.clone(true); p.add(FACE.clone(true)); p.add(shadowBlob(1.5)); return p }
+const layla = () => { const l = A.layla.clone(true); l.add(shadowBlob(1.7)); return l }
+/** princesa com o vestido mágico (troca as saias) */
+function princessGown() {
+  const p = princess()
+  p.traverse((o) => { if (o.isMesh && /^dress_layer/.test(o.name)) o.visible = false })
+  const d = A.dress.clone(true)
+  d.traverse((o) => { if (o.isMesh && /^(bodice|sleeve)/.test(o.name)) o.visible = false })
+  d.position.y = -0.33; p.add(d); p.userData.gown = d
+  return p
+}
+const clouds = () => A.clouds.clone(true)
+
+// ---------- cenas ----------
+const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 500)
+const SCENES = []
+function S(dur, build) { SCENES.push({ dur, build, inst: null }) }
+
+// 1 — O Reino Encantado
+S(6, () => {
+  const sc = newScene(); lights(sc, 0xffe7c2)
+  sc.add(sky(0x9fd0f0, 0xf6dff0, 0xffe3c9))
+  const isl = islandTop(6.5); sc.add(isl)
+  const c = A.castle.clone(true); c.scale.setScalar(1.05); sc.add(c)
+  const rb = rainbow(11); rb.position.set(0, 0, -8); sc.add(rb)
+  const cl = [[-9, 1, 3, 1.3], [8, 2.5, -2, 1.6], [-6, 6, -10, 2.2], [7, 7.5, -12, 2], [0, -3, 6, 2.4]].map(([x, y, z, s]) => { const k = clouds(); k.position.set(x, y, z); k.scale.setScalar(s); sc.add(k); return k })
+  const sp = sparkles(120, [-10, 0, -10, 10, 12, 8], 0xfff3c2, 0.35); sc.add(sp)
+  return (t) => {
+    const k = ease(t / 6)
+    camera.position.copy(lerpV(v3(-6, 12, 30), v3(0, 5.5, 15), k)); camera.lookAt(lerpV(v3(0, 3, 0), v3(0, 4, 0), k))
+    cl.forEach((o, i) => (o.position.x += Math.sin(i) * 0.004 + 0.006))
+    rb.children.forEach((r, i) => (r.material.emissiveIntensity = 0.15 + 0.1 * Math.sin(t * 2 + i)))
+    twinkle(sp, t)
+  }
+})
+// 2 — A Princesinha
+S(6, () => {
+  const sc = newScene(); lights(sc, 0xffe2c8)
+  sc.add(sky(0xc9a6ee, 0xf8cde3, 0xffe9c9))
+  const isl = islandTop(4); sc.add(isl)
+  const c = A.castle.clone(true); c.position.set(3, -1, -12); c.scale.setScalar(1.2); sc.add(c)
+  const p = princess(); sc.add(p)
+  const k1 = clouds(); k1.position.set(-6, 1, -6); k1.scale.setScalar(1.5); sc.add(k1)
+  const sp = sparkles(80, [-5, 0, -6, 5, 7, 2], 0xffffff, 0.25); sc.add(sp)
+  return (t) => {
+    const k = ease(t / 6)
+    camera.position.copy(lerpV(v3(1.2, 2.6, 10), v3(0.3, 2.9, 5.2), k)); camera.lookAt(v3(0, lerp(2.0, 2.6, k), 0))
+    p.rotation.z = Math.sin(t * 1.6) * 0.04; p.position.y = Math.abs(Math.sin(t * 1.6)) * 0.06
+    p.rotation.y = lerp(0.25, -0.15, k) + Math.sin(t) * 0.05
+    twinkle(sp, t)
+  }
+})
+// 3 — A Melhor Amiga (Layla)
+S(6, () => {
+  const sc = newScene(); lights(sc, 0xffe2c0)
+  sc.add(sky(0xa9dcf2, 0xf8cde3, 0xffe9c9))
+  sc.add(islandTop(6))
+  const c = A.castle.clone(true); c.position.set(-4, -1, -13); sc.add(c)
+  const p = princess(); p.position.set(-1.3, 0, 0); sc.add(p)
+  const l = layla(); l.rotation.y = Math.PI; sc.add(l)
+  const hearts = sparkles(40, [-1, 1.5, -0.5, 1.5, 4, 0.5], 0xff8fc5, 0.45); hearts.visible = false; sc.add(hearts)
+  return (t) => {
+    const enter = ease(seg(t, 0, 2.6))
+    l.position.set(lerp(7, 1.9, enter), Math.abs(Math.sin(t * 7)) * 0.35 * (1 - enter) + Math.abs(Math.sin(t * 2.4)) * 0.06 * enter, 0.2)
+    p.rotation.y = lerp(0.1, 0.55, ease(seg(t, 1.5, 3)))
+    p.position.y = Math.abs(Math.sin(t * 2.4)) * 0.08
+    if (t > 2.6) { l.rotation.z = Math.sin((t - 2.6) * 3) * 0.06 }
+    hearts.visible = t > 2.8; if (hearts.visible) rise(hearts, t - 2.8)
+    const a = lerp(-0.35, 0.3, ease(t / 6))
+    camera.position.set(Math.sin(a) * 9.5, 2.6, Math.cos(a) * 9.5); camera.lookAt(0.2, 1.8, 0)
+  }
+})
+// 4 — O Vestido dos Sonhos
+S(7, () => {
+  const sc = newScene(); lights(sc, 0xfff0e0, [0xffffff, 0xd9c6f7, 1])
+  sc.add(sky(0x7f5fb8, 0xd9b8ef, 0xf8cde3))
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(12, 48), new THREE.MeshStandardMaterial({ color: 0xf3e2f7, roughness: 0.25, metalness: 0.2 })); floor.rotation.x = -Math.PI / 2; sc.add(floor)
+  for (const x of [-5.5, 5.5]) { const cur = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.6, 12, 16, 1, true), new THREE.MeshStandardMaterial({ color: 0xf7b8d6, roughness: 0.8, side: THREE.DoubleSide })); cur.position.set(x, 6, -3); sc.add(cur) }
+  const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.3, 0.6, 32), new THREE.MeshStandardMaterial({ color: 0xebcb85, roughness: 0.3, metalness: 0.6 })); ped.position.set(1.2, 0.3, -0.5); sc.add(ped)
+  const d = A.dress.clone(true); d.position.set(1.2, 0.6, -0.5); sc.add(d)
+  const dg = glowSprite(6); dg.position.set(1.2, 2.2, -0.6); dg.material.opacity = 0.5; sc.add(dg)
+  const p = princess(); p.position.set(-2.1, 0, 1); p.rotation.y = 0.75; sc.add(p)
+  const slots = [0, 1, 2, 3, 4].map((i) => { const s = star(0.5, false); const a = Math.PI * (0.15 + 0.175 * i); s.position.set(1.2 - Math.cos(a) * 2.2, 4 + Math.sin(a) * 1.1, -0.5); sc.add(s); return s })
+  const sp = sparkles(90, [-4, 0, -4, 5, 7, 2], 0xffe9ff, 0.3); sc.add(sp)
+  return (t) => {
+    d.rotation.y = t * 0.7; d.position.y = 0.6 + Math.sin(t * 1.4) * 0.12
+    slots.forEach((s, i) => { const k = ease(seg(t, 1.5 + i * 0.35, 2.3 + i * 0.35)); s.scale.setScalar(0.7 * k + 0.0001); s.rotation.y = t * 0.8 })
+    p.position.y = Math.abs(Math.sin(t * 1.8)) * 0.05
+    const k = ease(seg(t, 0, 5))
+    camera.position.copy(lerpV(v3(-3.5, 3, 5.5), v3(0.6, 2.8, 9.5), k)); camera.lookAt(lerpV(v3(-2.1, 2.7, 1), v3(0.6, 2.6, -0.5), k))
+    twinkle(sp, t)
+  }
+})
+// estrela que nasce e voa até a Sophie
+function flyStar(sc, from, to, t0, t1, t2) {
+  const s = star(0.55); sc.add(s); s.visible = false
+  const trail = sparkles(30, [-0.2, -0.2, -0.2, 0.2, 0.2, 0.2], 0xffe58f, 0.3); sc.add(trail)
+  return (t, target) => {
+    s.visible = t > t0 && t < t2 + 0.25; trail.visible = s.visible
+    if (!s.visible) return
+    const rise = ease(seg(t, t0, t1)), fly = ease(seg(t, t1 + 0.4, t2))
+    const p1 = from.clone().add(v3(0, 1.4 * rise, 0))
+    const end = target || to
+    const pos = lerpV(p1, end, fly); pos.y += Math.sin(fly * Math.PI) * 1.2
+    s.position.copy(pos); s.rotation.y = t * 3; s.scale.setScalar(0.77 * (0.3 + 0.7 * rise) * (1 - 0.6 * seg(t, t2 - 0.2, t2 + 0.25)))
+    s.userData.glow.material.opacity = 0.45 + 0.2 * Math.sin(t * 9)
+    trail.position.copy(pos); twinkle(trail, t)
+  }
+}
+// 5 — A Primeira Estrela
+S(6, () => {
+  const sc = newScene(); lights(sc, 0xffe5c0)
+  sc.add(sky(0xa9dcf2, 0xf6dcef, 0xd6eedc))
+  sc.add(islandTop(7, 0xbfe6c9))
+  const p = princess(); p.position.set(-1.8, 0, -0.4); p.rotation.y = 0.5; sc.add(p)
+  const l = layla(); l.position.set(2.3, 0, -0.8); l.rotation.y = Math.PI * 0.82; sc.add(l)
+  const flower = new THREE.Group(); flower.position.set(0.2, 0, 1.6); sc.add(flower)
+  const petals = []
+  for (let i = 0; i < 7; i++) { const pv = new THREE.Group(); pv.rotation.y = (i / 7) * 6.28; const pe = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), new THREE.MeshStandardMaterial({ color: i % 2 ? 0xf7a8cf : 0xf48cc0, roughness: 0.5 })); pe.scale.set(0.55, 1.2, 0.25); pe.position.set(0, 0.6, 0.25); pv.add(pe); flower.add(pv); petals.push(pv) }
+  const fc = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 12), new THREE.MeshStandardMaterial({ color: 0xffe58f, emissive: 0xffc94d, emissiveIntensity: 0.4 })); fc.position.y = 0.45; flower.add(fc)
+  const fly = flyStar(sc, v3(0.2, 0.9, 1.6), v3(-1.8, 2.4, -0.2), 1.6, 2.8, 4.6)
+  const burst = sparkles(60, [-1, -1, -1, 1, 1, 1], 0xfff3c2, 0.35); burst.visible = false; sc.add(burst)
+  return (t) => {
+    const open = ease(seg(t, 0.3, 1.8)); petals.forEach((pv) => (pv.children[0].rotation.x = lerp(-0.1, -1.0, open)))
+    fly(t)
+    burst.visible = t > 4.4 && t < 5.6; if (burst.visible) { burst.position.set(-1.8, 2.4, -0.2); explode(burst, t - 4.4) }
+    p.position.y = t > 4.4 ? Math.abs(Math.sin((t - 4.4) * 6)) * 0.25 * (1 - seg(t, 4.4, 5.6)) : 0
+    l.position.y = Math.abs(Math.sin(t * 2.2)) * 0.06
+    const k = ease(t / 6)
+    camera.position.copy(lerpV(v3(0.6, 1.6, 6.5), v3(0, 3, 10), k)); camera.lookAt(lerpV(v3(0.2, 0.9, 1.6), v3(0, 1.8, 0), k))
+  }
+})
+// 6 — O Lago dos Sonhos
+S(7, () => {
+  const sc = newScene(); lights(sc, 0xffd9e8, [0xe6e0fa, 0x9fb7e6, 0.9])
+  sc.add(sky(0x6f73c9, 0xc9a6ee, 0xf8cde3))
+  sc.add(islandTop(9, 0xbfe6c9))
+  const lake = new THREE.Mesh(new THREE.CircleGeometry(4.2, 48), new THREE.MeshStandardMaterial({ color: 0x8cc7e6, roughness: 0.08, metalness: 0.5 })); lake.rotation.x = -Math.PI / 2; lake.position.set(0.3, 0.03, 1.8); sc.add(lake)
+  const pads = [[-1, 2.6], [1.7, 1.9]].map(([x, z]) => { const pd = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.06, 24), new THREE.MeshStandardMaterial({ color: 0x8fd1a3, roughness: 0.5 })); pd.position.set(x, 0.06, z); sc.add(pd); return pd })
+  const p = princess(); p.position.set(-1.1, 0, -2.8); p.rotation.y = 0.25; sc.add(p)
+  const l = layla(); l.position.set(2.2, 0, -3.2); l.rotation.y = Math.PI * 0.85; sc.add(l)
+  const f1 = flyStar(sc, v3(-1, 0.2, 2.6), v3(-1.1, 2.6, -2.6), 0.8, 2.2, 4.4)
+  const f2 = flyStar(sc, v3(1.7, 0.2, 1.9), v3(-0.9, 2.8, -2.6), 1.4, 2.8, 5.1)
+  const lan = sparkles(50, [-6, 0.4, -6, 6, 3, 4], 0xffe58f, 0.4); sc.add(lan)
+  return (t) => {
+    f1(t); f2(t)
+    lake.material.roughness = 0.08 + 0.04 * Math.sin(t * 3)
+    pads.forEach((pd, i) => (pd.position.y = 0.06 + Math.sin(t * 2 + i) * 0.02))
+    p.position.y = t > 4.2 ? Math.abs(Math.sin((t - 4.2) * 6)) * 0.2 * (1 - seg(t, 4.2, 6)) : 0
+    const k = ease(t / 7)
+    camera.position.copy(lerpV(v3(0.4, 0.8, 9.5), v3(0.3, 2.2, 6.2), k)); camera.lookAt(lerpV(v3(0.3, 0.6, 1.5), v3(0.2, 1.9, -2.6), k))
+    twinkle(lan, t)
+  }
+})
+// 7 — A Quarta Estrela
+S(6, () => {
+  const sc = newScene(); lights(sc, 0xfff0c8)
+  sc.add(sky(0x9fd0f0, 0xf6dff0, 0xd6eedc))
+  sc.add(islandTop(8, 0xbfe6c9))
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.55, 4.5, 12), new THREE.MeshStandardMaterial({ color: 0xa8775a, roughness: 0.9 })); trunk.position.set(0.9, 2.25, -1.4); sc.add(trunk)
+  const crown = new THREE.Group(); crown.position.set(0.9, 5, -1.4); sc.add(crown)
+  ;[[0, 0, 0, 1.8], [-1.4, -0.3, 0.3, 1.2], [1.4, -0.2, 0.2, 1.3], [0.3, 1.1, -0.2, 1.3], [-0.6, 0.6, 0.9, 1], [0.8, 0.5, 0.9, 1.1]].forEach(([x, y, z, r], i) => { const b = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), new THREE.MeshStandardMaterial({ color: i % 2 ? 0xf7b8d6 : 0xf3a0c8, roughness: 0.7 })); b.position.set(x, y, z); crown.add(b) })
+  const p = princess(); p.position.set(-0.9, 0, 0.8); p.rotation.y = 0.35; sc.add(p)
+  const l = layla(); l.position.set(2.6, 0, 0.6); l.rotation.y = Math.PI * 0.8; sc.add(l)
+  const st = star(0.6); st.position.set(0.9, 6.9, -0.5); sc.add(st)
+  const burst = sparkles(60, [-1, -1, -1, 1, 1, 1], 0xfff3c2, 0.35); burst.visible = false; sc.add(burst)
+  const rays = sparkles(60, [-3, 2, -3, 5, 8, 2], 0xfff6d6, 0.3); sc.add(rays)
+  return (t) => {
+    const jump = Math.max(0, Math.sin(seg(t, 1.6, 2.4) * Math.PI)) + Math.max(0, Math.sin(seg(t, 2.6, 3.4) * Math.PI))
+    p.position.y = jump * 0.9
+    const down = ease(seg(t, 3.2, 4.5))
+    st.position.copy(lerpV(v3(0.9, 6.9, -0.5), v3(-0.9, 2.9, 0.9), down)); st.rotation.y = t * 2.5; st.visible = t < 4.6
+    st.userData.glow.material.opacity = 0.45 + 0.2 * Math.sin(t * 8)
+    burst.visible = t > 4.5 && t < 5.8; if (burst.visible) { burst.position.set(-0.9, 2.9, 0.9); explode(burst, t - 4.5) }
+    const look = t < 1.5 ? lerp(4.6, 5.6, ease(t / 1.5)) : lerp(5.6, 2.6, ease(seg(t, 3, 5)))
+    camera.position.set(lerp(-1.5, 0.5, ease(t / 6)), lerp(4.6, 3.2, ease(t / 6)), 15); camera.lookAt(0.6, look, 0)
+    twinkle(rays, t)
+  }
+})
+// 8 — A Magia das Cinco Estrelas
+S(9, () => {
+  const sc = newScene(); lights(sc, 0xffe6ff, [0xc9b5f2, 0x2a1f4a, 0.9], 1.2)
+  sc.add(sky(0x140e30, 0x3d2a6e, 0x8e5fa8))
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(10, 48), new THREE.MeshStandardMaterial({ color: 0x5b4687, roughness: 0.15, metalness: 0.6 })); floor.rotation.x = -Math.PI / 2; sc.add(floor)
+  const night = sparkles(220, [-40, 6, -40, 40, 40, -10], 0xffffff, 0.45); sc.add(night)
+  const p = princess(); sc.add(p)
+  const g = princessGown(); g.visible = false; sc.add(g)
+  const ss = [0, 1, 2, 3, 4].map(() => { const s = star(0.5); sc.add(s); return s })
+  const swirl = sparkles(260, [-0.2, 0, -0.2, 0.2, 0.2, 0.2], 0xffe58f, 0.32); sc.add(swirl)
+  const flash = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({ color: 0xfff6e0, transparent: true, opacity: 0, depthTest: false })); flash.renderOrder = 99; sc.add(flash)
+  const halo = glowSprite(7); halo.position.set(0, 2, 0); sc.add(halo)
+  return (t) => {
+    const R = lerp(2.4, 1.6, ease(seg(t, 3, 5.5)))
+    ss.forEach((s, i) => { const a = t * 1.6 + (i / 5) * 6.28; const h = lerp(0.8, 3.4, (Math.sin(t * 1.2 + i) + 1) / 2); s.position.set(Math.cos(a) * R, h, Math.sin(a) * R); s.rotation.y = t * 3; s.visible = t < 5.7 || t > 7.2 })
+    // espiral de brilho
+    const pos = swirl.geometry.attributes.position, n = pos.count, power = ease(seg(t, 1, 5.5))
+    for (let i = 0; i < n; i++) { const u = (i / n + t * 0.25) % 1; const a = u * 6.28 * 4 + t * 2; const r = (0.6 + 1.6 * (1 - u)) * (0.4 + 0.6 * power); pos.setXYZ(i, Math.cos(a) * r, u * 4, Math.sin(a) * r) }
+    pos.needsUpdate = true; swirl.material.opacity = 0.3 + 0.7 * power
+    halo.material.opacity = 0.3 + 0.6 * power
+    const changed = t > 5.8; p.visible = !changed; g.visible = changed
+    if (changed) { const k = ease(seg(t, 5.8, 6.8)); g.userData.gown.scale.setScalar(lerp(0.6, 1, k)); g.rotation.y = (t - 5.8) * 0.8; g.position.y = Math.abs(Math.sin((t - 5.8) * 3)) * 0.1 }
+    else p.rotation.y = t * 0.4
+    flash.material.opacity = Math.max(0, 1 - Math.abs(t - 5.8) / 0.55) * 0.95
+    const a = lerp(-1.1, 0.25, ease(seg(t, 0, 7))); const d = lerp(10, 7, ease(seg(t, 6, 9)))
+    camera.position.set(Math.sin(a) * d, lerp(3.2, 2.6, ease(t / 9)), Math.cos(a) * d); camera.lookAt(0, 1.9, 0)
+    flash.position.copy(camera.position).add(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(1)); flash.quaternion.copy(camera.quaternion)
+    twinkle(night, t)
+  }
+})
+// 9 — O Convite Real
+S(8, () => {
+  const sc = newScene(); lights(sc, 0xffe0c8)
+  sc.add(sky(0xc9a6ee, 0xf8cde3, 0xffe9c9))
+  sc.add(islandTop(9))
+  const c = A.castle.clone(true); c.position.set(0, 0, -9.5); c.scale.setScalar(1.15); sc.add(c)
+  const g = princessGown(); g.position.set(-0.9, 0, 1.2); g.rotation.y = 0.15; sc.add(g)
+  const l = layla(); l.position.set(2, 0, 0.6); l.rotation.y = Math.PI * 0.78; sc.add(l)
+  const bcol = [0xf7a8cf, 0xc9b5f2, 0xa9dcf2, 0xffe58f, 0xf48cc0, 0xc8ebd6]
+  const balloons = []
+  ;[[-4, 4.5, -2], [-3.2, 5.6, -3], [-4.6, 6.2, -4], [4.2, 4.8, -2], [3.4, 6, -3.5], [4.8, 6.6, -4.5]].forEach(([x, y, z], i) => {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.55, 20, 16), new THREE.MeshStandardMaterial({ color: bcol[i], roughness: 0.25, metalness: 0.1 })); b.scale.y = 1.2; b.position.set(x, y, z)
+    const str = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, y, 4), new THREE.MeshBasicMaterial({ color: 0xffffff })); str.position.y = -y / 2; b.add(str); sc.add(b); balloons.push(b)
+  })
+  const ring = [0, 1, 2, 3, 4].map(() => { const s = star(0.38); sc.add(s); return s })
+  const conf = sparkles(180, [-7, 0, -6, 7, 12, 4], 0xffffff, 0.3); sc.add(conf)
+  return (t) => {
+    g.position.y = Math.abs(Math.sin(t * 2.2)) * 0.08; l.position.y = Math.abs(Math.sin(t * 2.2 + 1)) * 0.08
+    l.rotation.z = Math.sin(t * 1.5) * 0.05
+    balloons.forEach((b, i) => { b.position.y += Math.sin(t * 1.3 + i) * 0.004 })
+    ring.forEach((s, i) => { const a = t * 0.9 + (i / 5) * 6.28; s.position.set(-0.9 + Math.cos(a) * 1.6, 4.4 + Math.sin(a * 2) * 0.15, 1.2 + Math.sin(a) * 1.6); s.rotation.y = t * 2 })
+    fall(conf, t)
+    const k = ease(t / 8)
+    camera.position.copy(lerpV(v3(0, 6, 19), v3(0.2, 3, 9.5), k)); camera.lookAt(lerpV(v3(0, 3.5, -2), v3(0.3, 2.2, 0.8), k))
+  }
+})
+
+// ---------- animações de partículas ----------
+function twinkle(pts, t) { pts.material.opacity = 0.65 + 0.35 * Math.sin(t * 3) }
+function rise(pts, t) { const p = pts.geometry.attributes.position, b = pts.userData.base; for (let i = 0; i < p.count; i++) p.setY(i, b[i * 3 + 1] + ((t * 0.8 + pts.userData.ph[i]) % 2.5)); p.needsUpdate = true }
+function fall(pts, t) { const p = pts.geometry.attributes.position, b = pts.userData.base; for (let i = 0; i < p.count; i++) { p.setY(i, 12 - ((12 - b[i * 3 + 1] + t * 1.6) % 12)); p.setX(i, b[i * 3] + Math.sin(t * 2 + pts.userData.ph[i]) * 0.3) } p.needsUpdate = true; const cols = [0xf7a8cf, 0xffe58f, 0xa9dcf2]; pts.material.color.setHex(cols[Math.floor(t * 2) % 3]) }
+function explode(pts, t) { const p = pts.geometry.attributes.position, b = pts.userData.base; for (let i = 0; i < p.count; i++) p.setXYZ(i, b[i * 3] * t * 3, b[i * 3 + 1] * t * 3 + t * 0.6, b[i * 3 + 2] * t * 3); p.needsUpdate = true; pts.material.opacity = Math.max(0, 1 - t / 1.2) }
+
+let lastScene = null
+function newScene() { const sc = new THREE.Scene(); sc.environment = ENV; lastScene = sc; return sc }
+let current = -1, scene = null, update = null
+window.SCENES = SCENES.map((s) => s.dur)
+window.renderFrame = (idx, t) => {
+  if (idx !== current) { seed = 7 + idx * 31; update = SCENES[idx].build(); scene = lastScene; current = idx }
+  update(t); renderer.render(scene, camera)
+}
+window.renderLayla = () => {
+  const sc = new THREE.Scene(); sc.environment = ENV; lights(sc)
+  const l = A.layla.clone(true); l.rotation.y = 0.35; sc.add(l)
+  const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 100); cam.position.set(0.6, 1.9, 9.5); cam.lookAt(0.1, 1.45, 0)
+  renderer.setClearColor(0x000000, 0); renderer.render(sc, cam)
+}
+window.frameJPEG = (q = 0.9) => renderer.domElement.toDataURL('image/jpeg', q)
+window.framePNG = () => renderer.domElement.toDataURL('image/png')
+window.ready = true
+</script></body>

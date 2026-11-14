@@ -8,7 +8,18 @@ import Pattern from './Pattern.jsx'
 
 const GOAL = 5
 const TINTS = ['#D9B8FF', '#A9DCF2', '#FFE58F', '#B9EBD2', '#FFC9A8']
-const HEAD = CHILD_IMAGES.gameHead || '/img/unicornio-3d.webp'
+const PLAYERS = [
+  { id: 'sophie', name: EVENT.childFirstName, img: CHILD_IMAGES.gameHead || '/img/unicornio-3d.webp' },
+  { id: 'layla', name: 'Layla', img: '/img/layla-jogador.webp', desc: 'a unicórnio' },
+]
+const REC_KEY = 'sophie-jogo-recorde'
+const readRec = () => {
+  try {
+    return Number(localStorage.getItem(REC_KEY)) || 0
+  } catch {
+    return 0
+  }
+}
 const BG = BACKGROUNDS.game
 
 export function PuffyStar({ tint, id, face = true }) {
@@ -119,35 +130,47 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
   const wrapRef = useRef(null)
   const lockRef = useRef(null)
   const gameRef = useRef(null)
-  const [got, setGot] = useState(unlocked ? GOAL : 0)
-  const [phase, setPhase] = useState(unlocked ? 'won' : 'ready') // ready | playing | won
+  const [player, setPlayer] = useState(PLAYERS[0])
+  const [got, setGot] = useState(0)
+  const [best, setBest] = useState(readRec)
+  const [phase, setPhase] = useState('ready') // ready | playing | won
   const [failed, setFailed] = useState(false)
   const phaseRef = useRef(phase)
   phaseRef.current = phase
+  const unlockedRef = useRef(unlocked)
+  unlockedRef.current = unlocked
 
-  // cria o motor do jogo (carregado sob demanda)
   useEffect(() => {
     let dead = false
     let io
-    const onVis = () => {
-      const g = gameRef.current
-      if (!g) return
-      if (document.hidden) g.pause()
-    }
+    const onVis = () => document.hidden && gameRef.current?.pause()
     import('../game/runner.js')
       .then(({ createRunner }) =>
         createRunner(canvasRef.current, {
-          headSrc: HEAD,
+          headSrc: PLAYERS[0].img,
           bgSrc: BG,
           goal: GOAL,
-          onJump: () => {},
           onStar: (n, x, y) => {
-            chime(n - 1)
+            chime((n - 1) % 6)
             burst(x, y, { count: 24, speed: 6, size: [2, 5], life: [35, 60] })
             navigator.vibrate?.(15)
             setGot(n)
+            setBest((b) => {
+              if (n <= b) return b
+              try {
+                localStorage.setItem(REC_KEY, String(n))
+              } catch {
+                /* ok */
+              }
+              return n
+            })
+            if (n > GOAL && n % 5 === 0) {
+              fanfare()
+              burstFrom(lockRef.current, { count: 70, speed: 9 })
+            }
           },
           onGoal: () => {
+            if (unlockedRef.current) return
             gameRef.current?.pause()
             fanfare()
             burstFrom(lockRef.current, { count: 140, speed: 13 })
@@ -160,7 +183,6 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
       .then((g) => {
         if (dead) return g.dispose()
         gameRef.current = g
-        // pausa quando sai da tela; retoma sozinho só se estava jogando
         io = new IntersectionObserver(([e]) => {
           if (!e.isIntersecting) g.pause()
           else if (phaseRef.current === 'playing' && !document.hidden) g.start()
@@ -179,34 +201,41 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const choose = (pl) => {
+    setPlayer(pl)
+    gameRef.current?.setHead(pl.img)
+    sparkle()
+  }
+
   const play = useCallback(() => {
     const g = gameRef.current
     if (!g) return
-    if (phaseRef.current === 'won') {
-      g.reset()
-      setGot(0)
-    }
+    g.reset()
+    setGot(0)
     setPhase('playing')
     sparkle()
     g.start()
   }, [])
+
+  const keepPlaying = () => {
+    setPhase('playing')
+    gameRef.current?.start()
+    requestAnimationFrame(() => wrapRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }))
+  }
 
   const press = (e) => {
     if (phaseRef.current !== 'playing') return
     e.preventDefault()
     const g = gameRef.current
     if (!g) return
-    if (!g.running && !document.hidden) g.start() // voltou de outra aba
+    if (!g.running && !document.hidden) g.start()
     g.jump()
   }
   const onKey = (e) => {
-    if ([' ', 'Enter', 'ArrowUp', 'w', 'W'].includes(e.key)) {
-      if (phaseRef.current === 'ready' || phaseRef.current === 'won') return
-      press(e)
-    }
+    if ([' ', 'Enter', 'ArrowUp', 'w', 'W'].includes(e.key)) press(e)
   }
 
-  const done = phase === 'won'
+  const toUnlock = Math.max(0, GOAL - got)
   return (
     <section id="jogo" aria-labelledby="jogo-titulo" className="relative overflow-hidden bg-gradient-to-b from-rosa via-[#EADCF8] to-azul px-4 pb-14 pt-12">
       <Pattern opacity={0.2} />
@@ -215,35 +244,54 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
 
       <div className="relative mx-auto max-w-md text-center">
         <p className="font-bubble bubble-pink text-[clamp(1.9rem,8.8vw,2.5rem)] leading-none">Ei, convidado!</p>
-        <h2 id="jogo-titulo" className="mx-auto mt-2 max-w-[22ch] text-balance font-sans text-[clamp(1.25rem,5.4vw,1.6rem)] font-semibold leading-snug text-ameixa">
-          Você precisa desbloquear o convite da {EVENT.childFirstName}!
+        <h2 id="jogo-titulo" className="mx-auto mt-2 max-w-[24ch] text-balance font-sans text-[clamp(1.2rem,5.2vw,1.5rem)] font-semibold leading-snug text-ameixa">
+          {unlocked ? `Desafie a ${EVENT.childFirstName} na festa! 🏆` : `Pegue 5 estrelinhas para desbloquear o convite da ${EVENT.childFirstName}!`}
         </h2>
-        <p className="mt-2 font-sans text-base text-ameixaSoft">
-          Ajude a {EVENT.childFirstName} a pular nos tijolinhos e pegar <strong className="font-semibold text-ameixa">5 estrelinhas</strong>.
-        </p>
 
-        {/* placar: cadeado-coração + estrelinhas */}
-        <div className="mt-4 flex items-center justify-center gap-3">
-          <div ref={lockRef} className="h-14 w-12">
-            <m.div animate={done && !reduce ? { scale: [1, 1.3, 1], rotate: [0, -10, 10, 0] } : {}} transition={{ duration: 0.8 }}>
-              <HeartLock filled={got} total={GOAL} open={done} />
-            </m.div>
-          </div>
-          <ol className="flex gap-1" aria-hidden="true">
-            {Array.from({ length: GOAL }, (_, i) => (
-              <m.li
-                key={i}
-                className="h-9 w-9"
-                initial={false}
-                animate={i < got ? { scale: [1.6, 1], opacity: 1, filter: 'grayscale(0)' } : { scale: 1, opacity: 0.45, filter: 'grayscale(1)' }}
-                transition={{ duration: 0.4 }}
+        {/* escolha do jogador */}
+        <p className="mt-4 font-sans text-sm font-bold uppercase tracking-[0.18em] text-ameixaSoft">Qual jogador você quer ser?</p>
+        <div className="mt-2 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Escolha o jogador">
+          {PLAYERS.map((pl) => {
+            const on = pl.id === player.id
+            return (
+              <button
+                key={pl.id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => choose(pl)}
+                className={`relative flex min-h-[7.5rem] flex-col items-center justify-center rounded-3xl bg-white/85 p-2 shadow-soft transition ${on ? 'ring-4 ring-rosaForte' : 'ring-1 ring-white opacity-80'}`}
               >
-                <PuffyStar tint={TINTS[i]} id={`hud${i}`} face={false} />
-              </m.li>
-            ))}
-          </ol>
+                <img src={pl.img} alt="" className="h-20 w-auto object-contain" />
+                <span className="mt-1 font-bubble bubble-purple text-lg leading-none">{pl.name}</span>
+                {on && <span className="absolute right-2 top-2 rounded-full bg-rosaForte px-2 py-0.5 font-sans text-xs font-bold text-white">✓</span>}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* placar */}
+        <div className="mt-4 flex items-stretch justify-center gap-2">
+          <div ref={lockRef} className="flex min-w-[6.5rem] flex-col items-center justify-center rounded-2xl bg-white/90 px-3 py-1.5 shadow-soft">
+            <span className="font-sans text-[0.65rem] font-bold uppercase tracking-[0.15em] text-ameixaSoft">Estrelas</span>
+            <m.span key={got} initial={reduce ? false : { scale: 1.5 }} animate={{ scale: 1 }} className="font-sans text-2xl font-bold tabular-nums text-ameixa">
+              ⭐ {got}
+            </m.span>
+          </div>
+          <div className="flex min-w-[6.5rem] flex-col items-center justify-center rounded-2xl bg-amarelo/85 px-3 py-1.5 shadow-soft ring-1 ring-dourado/50">
+            <span className="font-sans text-[0.65rem] font-bold uppercase tracking-[0.15em] text-ameixaSoft">Recorde</span>
+            <span className="font-sans text-2xl font-bold tabular-nums text-ameixa">🏆 {best}</span>
+          </div>
+          {!unlocked && (
+            <div className="flex w-16 flex-col items-center justify-center rounded-2xl bg-white/90 px-2 py-1 shadow-soft">
+              <div className="h-9 w-8">
+                <HeartLock filled={Math.min(got, GOAL)} total={GOAL} open={false} />
+              </div>
+              <span className="font-sans text-[0.65rem] font-bold text-ameixaSoft">faltam {toUnlock}</span>
+            </div>
+          )}
           <p className="sr-only" role="status" aria-live="polite">
-            {got} de {GOAL} estrelinhas
+            {got} estrelinhas
           </p>
         </div>
 
@@ -251,7 +299,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
         <div
           ref={wrapRef}
           role="application"
-          aria-label="Jogo: toque na tela ou aperte espaço para a Sophie pular"
+          aria-label={`Jogo: toque na tela ou aperte espaço para ${player.name} pular`}
           tabIndex={0}
           onPointerDown={press}
           onKeyDown={onKey}
@@ -267,12 +315,12 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
             </p>
           )}
 
-          {/* tela inicial */}
           <AnimatePresence>
             {phase === 'ready' && (
               <m.div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/45 p-6 backdrop-blur-[1px]" exit={{ opacity: 0 }}>
                 <m.img
-                  src={HEAD}
+                  key={player.id}
+                  src={player.img}
                   alt=""
                   aria-hidden="true"
                   className="h-28 w-auto drop-shadow-[0_8px_10px_rgba(150,100,160,.35)]"
@@ -280,16 +328,15 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
                   transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 <button type="button" onClick={play} disabled={failed} className="btn-magic mt-4 min-h-[60px] px-9 text-xl">
-                  ▶ Jogar
+                  ▶ Jogar com {player.name}
                 </button>
                 {failed && <p className="mt-2 text-sm text-ameixa">Não foi possível carregar o jogo. Use “Pular o jogo” abaixo.</p>}
               </m.div>
             )}
           </AnimatePresence>
 
-          {/* vitória */}
           <AnimatePresence>
-            {done && (
+            {phase === 'won' && (
               <m.div
                 className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/75 p-5 backdrop-blur-[2px]"
                 initial={{ opacity: 0 }}
@@ -299,7 +346,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
                 onPointerDown={(e) => e.stopPropagation()}
               >
                 <m.img
-                  src={HEAD}
+                  src={player.img}
                   alt=""
                   aria-hidden="true"
                   className="h-28 w-auto drop-shadow-[0_8px_10px_rgba(150,100,160,.35)]"
@@ -312,16 +359,22 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
                 <button type="button" onClick={onContinue} className="btn-magic mt-4 min-h-[56px] px-8 text-lg">
                   Ver o convite <span aria-hidden="true">✨</span>
                 </button>
-                <button type="button" onClick={play} className="mt-2 min-h-[44px] px-4 font-sans text-sm font-medium text-ameixaSoft underline underline-offset-4">
-                  Jogar de novo
+                <button type="button" onClick={keepPlaying} className="mt-2 min-h-[44px] px-4 font-sans text-sm font-semibold text-ameixaSoft underline underline-offset-4">
+                  Continuar jogando e bater o recorde
                 </button>
               </m.div>
             )}
           </AnimatePresence>
         </div>
 
-        {!done && (
-          <button type="button" onClick={onSkip} className="mt-5 min-h-[44px] px-4 font-sans text-sm font-medium text-ameixaSoft underline decoration-rosaForte/60 underline-offset-4">
+        {phase === 'playing' && (
+          <button type="button" onClick={() => { gameRef.current?.pause(); setPhase('ready') }} className="mt-3 min-h-[44px] px-4 font-sans text-sm font-semibold text-ameixaSoft underline underline-offset-4">
+            Trocar jogador / recomeçar
+          </button>
+        )}
+        <p className="mt-2 font-sans text-sm font-semibold text-ameixa">Desafie a {EVENT.childFirstName} na festa: quem pega mais estrelas? ⭐</p>
+        {!unlocked && (
+          <button type="button" onClick={onSkip} className="mt-3 min-h-[44px] px-4 font-sans text-sm font-medium text-ameixaSoft underline decoration-rosaForte/60 underline-offset-4">
             Prefiro pular o jogo
           </button>
         )}
