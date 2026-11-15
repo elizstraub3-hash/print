@@ -99,6 +99,13 @@ export const CHILD_IMAGES = {
   gameHead: '/img/sophie-cabeca.webp',
 }
 
+/** Antes e depois do vestido encantado (seção "A transformação") */
+export const TRANSFORM = {
+  enabled: true,
+  before: { src: '/img/sophie-fantasia.webp', w: 541, h: 1100, label: 'Antes do vestido encantado' },
+  after: { src: '/img/sophie-vestido-encantado.webp', w: 900, h: 1200, label: 'Com o vestido encantado' },
+}
+
 /** Patterns de fundo (imagens em /public/img). '' = usa o pattern desenhado em código */
 export const BACKGROUNDS = {
   opening: '/img/pattern-lilas.webp',
