@@ -1,4 +1,6 @@
 import { m, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { burstFrom } from '../lib/glitter.js'
 import { EVENT, BACKGROUNDS, TEXT_ART } from '../config/event.js'
 import Float from './Float.jsx'
 import { scrollToSection } from '../lib/scrollTo.js'
@@ -6,8 +8,42 @@ import Reveal from './Reveal.jsx'
 import { Rainbow, DriftCloud, Twinkles, Cloud, Heart } from './Decor.jsx'
 import Pattern, { PhotoPattern } from './Pattern.jsx'
 
+const LAYLA_AUDIO = '/audio/layla-final.mp3'
+
 export default function Finale() {
   const reduce = useReducedMotion()
+  const laylaRef = useRef(null)
+  const audioRef = useRef(null)
+  const [neigh, setNeigh] = useState(0)
+
+  // Layla "relincha" (fala) quando o convidado chega ao fim do convite
+  const play = () => {
+    const a = audioRef.current || (audioRef.current = new Audio(LAYLA_AUDIO))
+    a.currentTime = 0
+    a.play().catch(() => {}) // se o navegador bloquear, fica o toque na Layla
+    setNeigh((n) => n + 1)
+    burstFrom(laylaRef.current, { count: 60, speed: 9 })
+  }
+  useEffect(() => {
+    const el = laylaRef.current
+    if (!el) return
+    let done = false
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !done) {
+          done = true
+          setTimeout(play, 400)
+        }
+      },
+      { threshold: 0.6 }
+    )
+    io.observe(el)
+    return () => {
+      io.disconnect()
+      audioRef.current?.pause()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return (
     <section id="final" aria-labelledby="final-titulo" className="relative overflow-hidden bg-gradient-to-b from-amarelo/60 via-rosa to-lilas px-5 pb-10 pt-16 text-center">
       {BACKGROUNDS.finale ? <PhotoPattern src={BACKGROUNDS.finale} veil={0.62} /> : <Pattern opacity={0.22} />}
@@ -47,11 +83,25 @@ export default function Finale() {
             viewport={{ once: true }}
             transition={{ type: 'spring', stiffness: 80, damping: 14 }}
           >
-            <m.div animate={reduce ? undefined : { y: [0, -10, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}>
-              <img src="/img/layla/layla-sentada.webp" alt="Layla, a unicórnio da Sophie" loading="lazy" decoding="async" width="355" height="501" className="h-auto w-full drop-shadow-[0_16px_20px_rgba(190,140,190,.35)]" />
-            </m.div>
+            <button ref={laylaRef} type="button" onClick={play} aria-label="Layla, a unicórnio da Sophie — toque para ouvir" className="relative block w-full" style={{ touchAction: 'manipulation' }}>
+              <m.img
+                key={neigh}
+                src="/img/layla/layla-rindo.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="351"
+                height="471"
+                draggable="false"
+                className="pointer-events-none h-auto w-full origin-bottom drop-shadow-[0_16px_20px_rgba(190,140,190,.35)]"
+                initial={false}
+                animate={reduce ? undefined : neigh ? { rotate: [0, -10, 4, -6, 0], y: [0, -26, 0, -12, 0], scaleY: [1, 1.06, 0.95, 1.03, 1] } : { y: [0, -10, 0] }}
+                transition={neigh ? { duration: 1.4, ease: 'easeOut' } : { duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </button>
           </m.div>
-          <Cloud className="relative -mt-12 h-auto w-full drop-shadow-md" />
+          <Cloud className="pointer-events-none relative -mt-12 h-auto w-full drop-shadow-md" />
+          <p className="relative -mt-14 font-sans text-sm font-bold text-ameixa">Toque na Layla 💕</p>
         </div>
 
         <Reveal delay={0.1}>
