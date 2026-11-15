@@ -99,6 +99,12 @@ export const CHILD_IMAGES = {
   gameHead: '/img/sophie-cabeca.webp',
 }
 
+/** Rodapé — crédito de quem criou o convite (WhatsApp: código do país + DDD + número) */
+export const CREDIT = {
+  name: 'Elis Straub',
+  whatsapp: '', // ex.: '55 41 99999-9999'
+}
+
 /** Antes e depois do vestido encantado (seção "A transformação") */
 export const TRANSFORM = {
   enabled: true,

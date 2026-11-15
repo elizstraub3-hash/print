@@ -4,6 +4,7 @@ import Transformation from './Transformation.jsx'
 import Details from './Details.jsx'
 import Actions from './Actions.jsx'
 import Finale from './Finale.jsx'
+import Footer from './Footer.jsx'
 import ScratchCards from './ScratchCards.jsx'
 
 export default function InviteBody({ music }) {
@@ -16,6 +17,7 @@ export default function InviteBody({ music }) {
       <Actions />
       <ScratchCards />
       <Finale />
+      <Footer />
     </>
   )
 }
