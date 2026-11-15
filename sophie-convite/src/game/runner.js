@@ -106,14 +106,16 @@ export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, o
   let scale = 1
   let VW = 320
   const resize = () => {
-    dpr = Math.min(window.devicePixelRatio || 1, 2)
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5)
     const w = canvas.clientWidth || 320
     const h = canvas.clientHeight || 400
     canvas.width = Math.round(w * dpr)
     canvas.height = Math.round(h * dpr)
     scale = h / VH
     VW = w / scale
+    cache = null // refaz os desenhos pré-prontos no novo tamanho
   }
+  let cache = null
   resize()
   const ro = new ResizeObserver(() => {
     resize()
@@ -250,49 +252,89 @@ export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, o
   }
 
   // ---------- desenho ----------
-  function drawBg() {
+  // ---------- desenhos pré-prontos (feitos uma vez, só copiados a cada quadro) ----------
+  function mk(w, h) {
+    const c = document.createElement('canvas')
+    c.width = Math.ceil(w * dpr * scale)
+    c.height = Math.ceil(h * dpr * scale)
+    const g = c.getContext('2d')
+    g.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0)
+    return { c, g, w, h }
+  }
+  function buildCache() {
+    // fundo: 2 tiles (normal + espelhado) já com o véu claro
+    let bgc = null
     if (bg) {
-      const tileH = VH
-      const tileW = (bg.width / bg.height) * tileH
-      const off = -((S.dist * 0.3) % (tileW * 2))
-      for (let x = off, i = 0; x < VW; x += tileW, i++) {
-        ctx.save()
-        if (i % 2) {
-          // espelha tile sim/tile não: some a emenda do pattern
-          ctx.translate(x + tileW, 0)
-          ctx.scale(-1, 1)
-          ctx.drawImage(bg, 0, 0, tileW, tileH)
-        } else ctx.drawImage(bg, x, 0, tileW, tileH)
-        ctx.restore()
-      }
-      ctx.fillStyle = 'rgba(255,252,254,.66)'
-      ctx.fillRect(0, 0, VW, VH)
+      const tileW = (bg.width / bg.height) * VH
+      bgc = mk(tileW * 2, VH)
+      bgc.g.drawImage(bg, 0, 0, tileW, VH)
+      bgc.g.save()
+      bgc.g.translate(tileW * 2, 0)
+      bgc.g.scale(-1, 1)
+      bgc.g.drawImage(bg, 0, 0, tileW, VH)
+      bgc.g.restore()
+      bgc.g.fillStyle = 'rgba(255,252,254,.66)'
+      bgc.g.fillRect(0, 0, tileW * 2, VH)
     } else {
-      const g = ctx.createLinearGradient(0, 0, 0, VH)
-      g.addColorStop(0, '#CDECF7')
-      g.addColorStop(1, '#F8CDE3')
-      ctx.fillStyle = g
-      ctx.fillRect(0, 0, VW, VH)
+      bgc = mk(VW, VH)
+      const gr = bgc.g.createLinearGradient(0, 0, 0, VH)
+      gr.addColorStop(0, '#CDECF7')
+      gr.addColorStop(1, '#F8CDE3')
+      bgc.g.fillStyle = gr
+      bgc.g.fillRect(0, 0, VW, VH)
     }
+    // chão de nuvens: faixa que repete a cada 46
+    const period = 46
+    const gw = Math.ceil(VW / period + 3) * period
+    const gnd = mk(gw, VH - GROUND + 20)
+    const gy = 20 // deslocamento interno
+    gnd.g.fillStyle = '#FFFFFF'
+    gnd.g.fillRect(0, gy + 12, gw, VH)
+    gnd.g.fillStyle = '#F3EAF8'
+    for (let x = 0; x <= gw + period; x += period) {
+      gnd.g.beginPath()
+      gnd.g.arc(x, gy + 18, 26, Math.PI, 0)
+      gnd.g.fill()
+    }
+    gnd.g.fillStyle = '#FFFFFF'
+    for (let x = 0; x <= gw + period; x += period) {
+      gnd.g.beginPath()
+      gnd.g.arc(x + 4, gy + 22, 25, Math.PI, 0)
+      gnd.g.fill()
+    }
+    // tijolinhos: um por cor
+    const bricks = BRICK_COLORS.map(([fill, edge]) => {
+      const b = mk(BRICK, 30)
+      const g = b.g
+      roundRect(g, 1, 1, BRICK - 2, 26, 7)
+      g.fillStyle = edge
+      g.fill()
+      roundRect(g, 1, 1, BRICK - 2, 21, 7)
+      g.fillStyle = fill
+      g.fill()
+      g.fillStyle = 'rgba(255,255,255,.65)'
+      roundRect(g, 6, 4, BRICK - 14, 4, 2)
+      g.fill()
+      g.strokeStyle = '#fff'
+      g.lineWidth = 2
+      roundRect(g, 1, 1, BRICK - 2, 26, 7)
+      g.stroke()
+      return b
+    })
+    cache = { bgc, gnd, gy, period, bricks }
+  }
+
+  function drawBg() {
+    const { bgc } = cache
+    const w = bgc.w
+    const off = bg ? -((S.dist * 0.3) % w) : 0
+    for (let x = off; x < VW; x += w) ctx.drawImage(bgc.c, x, 0, w, bgc.h)
   }
 
   function drawGround() {
-    const period = 46
-    const off = -(S.dist % period)
-    ctx.fillStyle = '#FFFFFF'
-    ctx.fillRect(0, GROUND + 12, VW, VH)
-    ctx.fillStyle = '#F3EAF8'
-    for (let x = off - period; x < VW + period; x += period) {
-      ctx.beginPath()
-      ctx.arc(x, GROUND + 18, 26, Math.PI, 0)
-      ctx.fill()
-    }
-    ctx.fillStyle = '#FFFFFF'
-    for (let x = off - period; x < VW + period; x += period) {
-      ctx.beginPath()
-      ctx.arc(x + 4, GROUND + 22, 25, Math.PI, 0)
-      ctx.fill()
-    }
+    const { gnd, gy, period } = cache
+    const off = -(S.dist % period) - period
+    ctx.drawImage(gnd.c, off, GROUND - gy, gnd.w, gnd.h)
   }
 
   function drawBricks() {
@@ -300,21 +342,8 @@ export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, o
       const sx = p.x - S.dist
       if (sx > VW + 10 || sx + p.n * BRICK < -10) continue
       for (let i = 0; i < p.n; i++) {
-        const [fill, edge] = BRICK_COLORS[(p.c + i) % BRICK_COLORS.length]
-        const x = sx + i * BRICK
-        roundRect(ctx, x + 1, p.y + 1, BRICK - 2, 26, 7)
-        ctx.fillStyle = edge
-        ctx.fill()
-        roundRect(ctx, x + 1, p.y + 1, BRICK - 2, 21, 7)
-        ctx.fillStyle = fill
-        ctx.fill()
-        ctx.fillStyle = 'rgba(255,255,255,.65)'
-        roundRect(ctx, x + 6, p.y + 4, BRICK - 14, 4, 2)
-        ctx.fill()
-        ctx.strokeStyle = '#fff'
-        ctx.lineWidth = 2
-        roundRect(ctx, x + 1, p.y + 1, BRICK - 2, 26, 7)
-        ctx.stroke()
+        const b = cache.bricks[(p.c + i) % BRICK_COLORS.length]
+        ctx.drawImage(b.c, sx + i * BRICK, p.y, BRICK, 30)
       }
     }
   }
@@ -366,16 +395,13 @@ export async function createRunner(canvas, { headSrc, bgSrc, goal = 5, onStar, o
     for (const p of S.parts) {
       ctx.globalAlpha = Math.max(0, p.life / 0.7)
       ctx.fillStyle = p.c
-      ctx.save()
-      ctx.translate(p.x - S.dist, p.y)
-      ctx.rotate(p.life * 8)
-      ctx.fillRect(-3, -3, 6, 6)
-      ctx.restore()
+      ctx.fillRect(p.x - S.dist - 3, p.y - 3, 6, 6)
     }
     ctx.globalAlpha = 1
   }
 
   function draw() {
+    if (!cache) buildCache()
     ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0)
     drawBg()
     drawGround()

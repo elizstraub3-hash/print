@@ -167,10 +167,10 @@ export const RSVP_DEADLINE = ''
  * A música NUNCA toca sozinha: só depois de um toque do convidado.
  */
 export const MUSIC = {
-  src: '',
+  src: '/audio/musica.mp3',
   // Sem MP3, toca a "caixinha de música mágica" original (sintetizada, sem direitos autorais).
-  title: 'Caixinha de música mágica',
-  volume: 0.32,
+  title: 'Música da festa',
+  volume: 0.4,
   // Começar a tocar quando o convidado tocar em "Abrir convite mágico"
   // (é uma interação do usuário, então os navegadores permitem).
   startOnOpen: true,

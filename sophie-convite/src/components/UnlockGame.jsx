@@ -11,7 +11,6 @@ const GOAL = 5
 const TINTS = ['#D9B8FF', '#A9DCF2', '#FFE58F', '#B9EBD2', '#FFC9A8']
 const PLAYERS = [
   { id: 'sophie', name: EVENT.childFirstName, img: CHILD_IMAGES.gameHead || '/img/unicornio-3d.webp' },
-  { id: 'layla', name: 'Layla', img: '/img/layla-jogador.webp', desc: 'a unicórnio' },
 ]
 const REC_KEY = 'sophie-jogo-recorde'
 const readRec = () => {
@@ -258,28 +257,6 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
           {unlocked ? `Desafie a ${EVENT.childFirstName} na festa: quem pega mais estrelas? 🏆` : `Pegue 5 estrelinhas para desbloquear o convite da ${EVENT.childFirstName}!`}
         </h2>
 
-        {/* escolha do jogador */}
-        <p className="mt-4 font-sans text-sm font-bold uppercase tracking-[0.18em] text-ameixaSoft">Qual jogador você quer ser?</p>
-        <div className="mt-2 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Escolha o jogador">
-          {PLAYERS.map((pl) => {
-            const on = pl.id === player.id
-            return (
-              <button
-                key={pl.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => choose(pl)}
-                className={`relative flex min-h-[7.5rem] flex-col items-center justify-center rounded-3xl bg-white/85 p-2 shadow-soft transition ${on ? 'ring-4 ring-rosaForte' : 'ring-1 ring-white opacity-80'}`}
-              >
-                <img src={pl.img} alt="" className="h-20 w-auto object-contain" />
-                <span className="mt-1 font-bubble bubble-purple text-lg leading-none">{pl.name}</span>
-                {on && <span className="absolute right-2 top-2 rounded-full bg-rosaForte px-2 py-0.5 font-sans text-xs font-bold text-white">✓</span>}
-              </button>
-            )
-          })}
-        </div>
-
         {/* placar */}
         <div className="mt-4 flex items-stretch justify-center gap-2">
           <div ref={lockRef} className="flex min-w-[6.5rem] flex-col items-center justify-center rounded-2xl bg-white/90 px-3 py-1.5 shadow-soft">
@@ -405,7 +382,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
 
         {phase === 'playing' && (
           <button type="button" onClick={() => { gameRef.current?.pause(); setPhase('ready') }} className="mt-3 min-h-[44px] px-4 font-sans text-sm font-semibold text-ameixaSoft underline underline-offset-4">
-            Trocar jogador / recomeçar
+            Recomeçar
           </button>
         )}
         {!unlocked && <p className="mt-3 font-sans text-sm font-semibold text-ameixa">Desafie a {EVENT.childFirstName} na festa: quem pega mais estrelas? ⭐</p>}

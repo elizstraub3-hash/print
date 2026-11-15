@@ -17,11 +17,21 @@ export default function useMusic() {
     if (src) {
       const a = new Audio(src)
       a.loop = true
-      a.preload = 'none'
+      a.preload = 'auto'
       a.volume = MUSIC.volume ?? 0.5
+      let fallback = null // se o MP3 falhar, toca a caixinha de música
       engine.current = {
-        play: () => a.play(),
-        pause: () => a.pause(),
+        play: () =>
+          fallback
+            ? fallback.play()
+            : a.play().catch((err) => {
+                if (a.error) {
+                  fallback = createMusicBox(0.32)
+                  return fallback.play()
+                }
+                throw err
+              }),
+        pause: () => (fallback ? fallback.pause() : a.pause()),
         audio: a,
       }
     } else {
