@@ -1,8 +1,6 @@
 import { MAPS_URL, hasGifts } from '../lib/event-utils.js'
 import ArtButton from './ArtButton.jsx'
 import { scrollToSection } from '../lib/scrollTo.js'
-import { MUSIC } from '../config/event.js'
-import { PLAY_YT_EVENT } from './MusicCard.jsx'
 import Reveal from './Reveal.jsx'
 
 const go = (id) => () => scrollToSection(id)
@@ -22,11 +20,6 @@ export default function MagicMenu({ music }) {
       pressed: playing,
       badge: playing ? '♪ tocando' : 'desligada',
       glitter: !playing,
-    },
-    !music.available && !MUSIC.src && MUSIC.youtubeId && {
-      art: 'musica',
-      label: 'Ouvir a música da festa',
-      onClick: () => window.dispatchEvent(new Event(PLAY_YT_EVENT)),
     },
     hasGifts() && { art: 'presentes', label: 'Lista de presentes: lojas sugeridas', onClick: go('presentes') },
   ].filter(Boolean)

@@ -253,7 +253,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
       <div className="relative mx-auto max-w-md text-center">
         <p className="font-bubble bubble-pink text-[clamp(1.9rem,8.8vw,2.5rem)] leading-none">Ei, convidado!</p>
         <h2 id="jogo-titulo" className="mx-auto mt-2 max-w-[24ch] text-balance font-sans text-[clamp(1.2rem,5.2vw,1.5rem)] font-semibold leading-snug text-ameixa">
-          {unlocked ? `Desafie a ${EVENT.childFirstName} na festa! 🏆` : `Pegue 5 estrelinhas para desbloquear o convite da ${EVENT.childFirstName}!`}
+          {unlocked ? `Desafie a ${EVENT.childFirstName} na festa: quem pega mais estrelas? 🏆` : `Pegue 5 estrelinhas para desbloquear o convite da ${EVENT.childFirstName}!`}
         </h2>
 
         {/* escolha do jogador */}
@@ -325,7 +325,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
 
           <AnimatePresence>
             {phase === 'ready' && (
-              <m.div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/45 p-6 backdrop-blur-[1px]" exit={{ opacity: 0 }}>
+              <m.div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 p-6 backdrop-blur-[2px]" exit={{ opacity: 0 }}>
                 <m.img
                   key={player.id}
                   src={player.img}
@@ -406,7 +406,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
             Trocar jogador / recomeçar
           </button>
         )}
-        <p className="mt-2 font-sans text-sm font-semibold text-ameixa">Desafie a {EVENT.childFirstName} na festa: quem pega mais estrelas? ⭐</p>
+        {!unlocked && <p className="mt-3 font-sans text-sm font-semibold text-ameixa">Desafie a {EVENT.childFirstName} na festa: quem pega mais estrelas? ⭐</p>}
         {!unlocked && phase === 'playing' && (
           <button type="button" onClick={onSkip} className="mt-3 min-h-[44px] px-4 font-sans text-sm font-medium text-ameixaSoft underline decoration-rosaForte/60 underline-offset-4">
             Jogar depois e ver o convite

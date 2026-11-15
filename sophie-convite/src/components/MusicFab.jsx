@@ -11,7 +11,7 @@ export default function MusicFab({ music }) {
       onClick={music.toggle}
       aria-pressed={playing}
       aria-label={playing ? 'Desligar música' : 'Ligar música'}
-      className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 grid h-14 w-14 place-items-center rounded-full bg-white/90 text-ameixa shadow-glow backdrop-blur"
+      className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 grid h-12 w-12 place-items-center rounded-full bg-white/90 text-ameixa shadow-glow backdrop-blur"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       whileTap={{ scale: 0.9 }}

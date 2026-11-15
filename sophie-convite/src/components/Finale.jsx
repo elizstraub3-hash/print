@@ -100,12 +100,12 @@ export default function Finale() {
               />
             </button>
           </m.div>
-          <Cloud className="pointer-events-none relative -mt-12 h-auto w-full drop-shadow-md" />
-          <p className="relative -mt-14 font-sans text-sm font-bold text-ameixa">Toque na Layla 💕</p>
+          <Cloud className="pointer-events-none relative -mt-10 h-auto w-full drop-shadow-md" />
         </div>
+        <p className="mt-3 font-sans text-sm font-bold text-ameixa">Toque na Layla 💕</p>
 
         <Reveal delay={0.1}>
-          <p className="mt-2 font-sans text-lg font-medium text-ameixa">
+          <p className="mt-6 font-sans text-lg font-semibold text-ameixa">
             Com amor, família da {EVENT.childFirstName}
           </p>
           <div className="mt-3 flex justify-center gap-2" aria-hidden="true">

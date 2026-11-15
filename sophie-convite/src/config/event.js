@@ -68,11 +68,11 @@ export const STORY = {
     { image: H('v5-flor'), audio: '/audio/historia/cena-5.mp3', seconds: 5, cam: [[1.06, 0, 0], [1.0, 0, 0]], count: 0, stars: [[53, 60]],
       text: 'A primeira estrelinha está escondida na flor. Toque nela! ⭐' },
     { image: H('v6-lago'), audio: '/audio/historia/cena-6.mp3', seconds: 5, cam: [[1.06, 0, 0], [1.0, 0, 0]], count: 1, stars: [[49, 61], [81, 59]],
-      text: 'No lago dos sonhos tem mais duas! Toque nas estrelinhas! ⭐⭐' },
+      text: 'No lago dos sonhos, tem mais duas! Toque nas estrelinhas! ⭐⭐' },
     { image: '/img/historia/cena-7.webp', bg: '/img/historia/fundo-7.webp', audio: '/audio/historia/cena-7.mp3', seconds: 5, cam: [[1.05, 0, 4], [1.15, 0, 8]], count: 3, stars: [[52, 19]],
       text: 'A quarta estrelinha brilha lá no alto da árvore. Alcance ela! ⭐' },
     { image: '/img/historia/cena-8.webp', bg: '/img/historia/fundo-8.webp', audio: '/audio/historia/cena-8.mp3', seconds: 5, cam: [[1.0, 0, 0], [1.1, 0, 3]], count: 4, stars: [[50, 12]], magic: true,
-      text: 'Falta só uma! Toque na última estrelinha para a magia acontecer! ⭐' },
+      text: 'Falta só uma! Toque na última estrelinha, para a magia acontecer! ⭐' },
     { image: '/img/historia/cena-9.webp', bg: '/img/historia/fundo-9.webp', audio: '/audio/historia/cena-9.mp3', seconds: 7, cam: [[1.0, 6, 0], [1.15, 8, 3]], count: 5, celebrate: true,
       text: 'Parabéns! Você ajudou a {nome} a ganhar o vestido dos sonhos! Venha ver como ela ficou linda na festa… 💖' },
   ],
@@ -101,7 +101,7 @@ export const CHILD_IMAGES = {
 
 /** Rodapé — crédito de quem criou o convite (WhatsApp: código do país + DDD + número) */
 export const CREDIT = {
-  name: 'Elis Straub',
+  name: 'Eliz Straub',
   whatsapp: '', // ex.: '55 41 99999-9999'
 }
 
@@ -152,11 +152,9 @@ export const RSVP_DEADLINE = ''
  */
 export const MUSIC = {
   src: '',
-  // Vídeo do YouTube (player incorporado, oficial). Usado quando não há MP3.
-  // O ID é o trecho depois de youtu.be/  →  https://youtu.be/hm9lp5CsRMs
-  youtubeId: 'hm9lp5CsRMs',
-  title: 'Trilha mágica',
-  volume: 0.45,
+  // Sem MP3, toca a "caixinha de música mágica" original (sintetizada, sem direitos autorais).
+  title: 'Caixinha de música mágica',
+  volume: 0.32,
   // Começar a tocar quando o convidado tocar em "Abrir convite mágico"
   // (é uma interação do usuário, então os navegadores permitem).
   startOnOpen: true,

@@ -137,9 +137,9 @@ export default function Actions() {
               {stores.length > 0 && (
                 <>
                   <p className="mt-5 font-sans text-sm font-semibold uppercase tracking-[0.18em] text-ameixaSoft">Lojas que ela ama</p>
-                  <ul className="mt-2 grid gap-3 text-left">
+                  <ul className="mt-3 grid gap-4 text-center">
                     {stores.map((st) => (
-                      <li key={st.name} className="rounded-3xl bg-white p-4 shadow-soft ring-1 ring-rosa/50">
+                      <li key={st.name} className="rounded-3xl bg-white px-4 py-5 shadow-soft ring-1 ring-rosa/50">
                         <p className="font-sans text-lg font-semibold leading-tight text-ameixa">{st.name}</p>
                         {st.place && <p className="font-sans text-sm text-ameixaSoft">{st.place}</p>}
                         <div className="mt-3 grid grid-cols-2 gap-2">

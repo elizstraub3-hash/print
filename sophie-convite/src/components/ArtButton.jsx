@@ -59,7 +59,7 @@ export default function ArtButton({ art, label, href, onClick, disabled, note, b
           className={`pointer-events-none h-auto w-full select-none drop-shadow-[0_10px_14px_rgba(190,120,170,.28)] ${disabled ? 'opacity-50 grayscale-[60%]' : ''}`}
         />
         {badge && (
-          <span className="absolute right-[6%] top-[6%] rounded-full bg-white/95 px-2.5 py-0.5 font-sans text-xs font-semibold text-ameixa shadow-soft ring-1 ring-rosa" aria-hidden="true">
+          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/95 px-2.5 py-0.5 font-sans text-[0.7rem] font-bold text-ameixa shadow-soft ring-1 ring-rosa" aria-hidden="true">
             {badge}
           </span>
         )}

@@ -9,7 +9,6 @@ import Reveal from './Reveal.jsx'
 import { Divider, Twinkles, DriftCloud, Cloud } from './Decor.jsx'
 import Pattern from './Pattern.jsx'
 import MagicMenu from './MagicMenu.jsx'
-import MusicCard from './MusicCard.jsx'
 
 export default function Invitation({ music }) {
   const uniRef = useRef(null)
@@ -114,7 +113,6 @@ export default function Invitation({ music }) {
           </p>
         </Reveal>
         <MagicMenu music={music} />
-        <MusicCard />
       </div>
     </section>
   )

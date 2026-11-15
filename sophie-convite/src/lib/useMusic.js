@@ -1,53 +1,59 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MUSIC } from '../config/event.js'
+import { createMusicBox } from './musicBox.js'
 
 /**
- * Áudio controlado pelo convidado. Só chama play() dentro de um
- * clique/toque (exigência de autoplay de iOS/Android/Chrome).
- * status: 'unavailable' | 'paused' | 'loading' | 'playing' | 'error'
+ * Música do convite. Com MUSIC.src (MP3) toca o arquivo; sem MP3 toca a
+ * "caixinha de música mágica" original sintetizada. Só começa após um toque.
+ * status: 'paused' | 'loading' | 'playing'
  */
 export default function useMusic() {
   const src = (MUSIC.src || '').trim()
-  const audioRef = useRef(null)
-  const [status, setStatus] = useState(src ? 'paused' : 'unavailable')
+  const engine = useRef(null)
+  const [status, setStatus] = useState('paused')
 
-  const getAudio = () => {
-    if (!src) return null
-    if (!audioRef.current) {
+  const get = () => {
+    if (engine.current) return engine.current
+    if (src) {
       const a = new Audio(src)
       a.loop = true
       a.preload = 'none'
       a.volume = MUSIC.volume ?? 0.5
-      a.addEventListener('playing', () => setStatus('playing'))
-      a.addEventListener('pause', () => setStatus((s) => (s === 'error' ? s : 'paused')))
-      a.addEventListener('waiting', () => setStatus('loading'))
-      a.addEventListener('error', () => setStatus('error'))
-      audioRef.current = a
+      engine.current = {
+        play: () => a.play(),
+        pause: () => a.pause(),
+        audio: a,
+      }
+    } else {
+      engine.current = createMusicBox(MUSIC.volume ?? 0.35)
     }
-    return audioRef.current
+    return engine.current
   }
 
   const play = useCallback(() => {
-    const a = getAudio()
-    if (!a) return
+    const e = get()
     setStatus('loading')
-    const p = a.play()
-    if (p && p.catch) p.catch(() => setStatus(a.error ? 'error' : 'paused'))
+    Promise.resolve()
+      .then(() => e.play())
+      .then(() => setStatus('playing'))
+      .catch(() => setStatus('paused'))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src])
 
-  const pause = useCallback(() => audioRef.current?.pause(), [])
-  const toggle = useCallback(() => (status === 'playing' || status === 'loading' ? pause() : play()), [status, play, pause])
+  const pause = useCallback(() => {
+    engine.current?.pause()
+    setStatus('paused')
+  }, [])
+  const toggle = useCallback(() => (status === 'paused' ? play() : pause()), [status, play, pause])
 
-  // pausa quando o convidado sai da aba/app; não retoma sozinho
   useEffect(() => {
-    const onHide = () => document.hidden && audioRef.current?.pause()
+    const onHide = () => document.hidden && pause()
     document.addEventListener('visibilitychange', onHide)
     return () => {
       document.removeEventListener('visibilitychange', onHide)
-      audioRef.current?.pause()
+      engine.current?.pause()
     }
-  }, [])
+  }, [pause])
 
-  return { status, play, pause, toggle, available: status !== 'unavailable' && status !== 'error' }
+  return { status, play, pause, toggle, available: true }
 }

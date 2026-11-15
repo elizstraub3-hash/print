@@ -4,7 +4,7 @@ import { CREDIT } from '../config/event.js'
 export default function Footer() {
   if (!CREDIT?.name) return null
   const digits = String(CREDIT.whatsapp || '').replace(/\D/g, '')
-  const wa = digits.length >= 10 ? `https://wa.me/${digits.length <= 11 ? '55' + digits : digits}?text=${encodeURIComponent('Olá, Elis! Vi o convite digital da Sophie e quero um assim também! ✨🦄')}` : null
+  const wa = digits.length >= 10 ? `https://wa.me/${digits.length <= 11 ? '55' + digits : digits}?text=${encodeURIComponent('Olá, Eliz! Vi o convite digital da Sophie e quero um assim também! ✨🦄')}` : null
   return (
     <footer className="bg-lilas/60 px-5 py-5 text-center font-sans text-sm text-ameixa">
       <p>

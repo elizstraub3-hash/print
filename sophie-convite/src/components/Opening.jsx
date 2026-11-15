@@ -57,7 +57,7 @@ export default function Opening({ opened, onOpen }) {
     <section
       id="abertura"
       aria-label="Abertura do convite"
-      className="relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-azul via-[#E6E0FA] to-rosa px-4 pb-14 pt-[max(1.5rem,env(safe-area-inset-top))] text-center"
+      className="relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-azul via-[#E6E0FA] to-rosa px-4 pb-14 pt-[max(4.25rem,calc(env(safe-area-inset-top)+3.5rem))] text-center"
     >
       {BACKGROUNDS.opening ? <PhotoPattern src={BACKGROUNDS.opening} veil={0.62} /> : <Pattern opacity={0.2} />}
       <div aria-hidden="true" className="absolute left-1/2 top-[30%] h-80 w-80 -translate-x-1/2 rounded-full bg-white/50 blur-3xl" />

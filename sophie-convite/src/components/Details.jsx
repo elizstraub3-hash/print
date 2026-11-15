@@ -13,7 +13,7 @@ const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 function InfoCard({ icon: Icon, label, children, tint, delay }) {
   return (
     <Reveal delay={delay}>
-      <div className="flex items-start gap-4 rounded-3xl bg-white/90 p-5 text-left shadow-soft ring-1 ring-white">
+      <div className="flex flex-col items-center gap-2 rounded-3xl bg-white/90 px-5 py-5 text-center shadow-soft ring-1 ring-white">
         <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${tint} text-ameixa`}>
           <Icon className="h-6 w-6" />
         </span>
@@ -87,22 +87,22 @@ export default function Details() {
       <Pattern opacity={0.2} />
       <div className="relative mx-auto max-w-md text-center">
         <Reveal>
+          <CakeStage />
+        </Reveal>
+
+        <Reveal className="mt-16">
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.3em] text-ameixaSoft">Anote na agenda</p>
           <h2 id="info-titulo" className="mt-2 font-bubble bubble-pink text-[clamp(1.9rem,8.6vw,2.5rem)] leading-tight">
             Quando e onde
           </h2>
         </Reveal>
 
-        <Reveal className="mt-6">
-          <CakeStage />
-        </Reveal>
-
-        <div className="mt-8 grid gap-3">
+        <div className="mt-6 grid gap-4">
           <InfoCard icon={CalendarIcon} label="Data" tint="bg-rosa" delay={0.05}>
             {cap(DATE_LONG)}
           </InfoCard>
           <InfoCard icon={ClockIcon} label="Horário" tint="bg-amarelo" delay={0.1}>
-            {TIME_LABEL} · almoço e tarde de alegria
+            {TIME_LABEL} · almoço e uma tarde de alegria
           </InfoCard>
           <InfoCard icon={PinIcon} label="Local" tint="bg-menta" delay={0.15}>
             <span className="block">{EVENT.venueName}</span>
@@ -115,7 +115,7 @@ export default function Details() {
         <Reveal delay={0.2} className="mt-8">
           <div className="flex items-center justify-center gap-2 pb-3" aria-hidden="true">
             <Heart className="h-3 w-3" fill="#E58DB8" />
-            <span className="font-sans text-sm text-ameixaSoft">{getCountdown().phase === 'before' ? 'contagem regressiva · horário de Brasília' : 'horário de Brasília'}</span>
+            <span className="font-sans text-sm text-ameixaSoft">{getCountdown().phase === 'before' ? 'contagem regressiva (horário de Brasília)' : 'horário de Brasília'}</span>
             <Heart className="h-3 w-3" fill="#E58DB8" />
           </div>
           <Countdown />
