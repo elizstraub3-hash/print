@@ -36,8 +36,8 @@ function TapStar({ x, y, idx, onTap }) {
         onTap(ref.current)
       }}
       aria-label="Pegar a estrelinha mágica"
-      className="absolute z-20 grid h-24 w-24 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full"
-      style={{ left: `${x}%`, top: `${y}%`, touchAction: 'manipulation' }}
+      className="pointer-events-auto absolute z-20 grid h-24 w-24 place-items-center rounded-full"
+      style={{ left: `${x}%`, top: `${y}%`, x: '-50%', y: '-50%', touchAction: 'manipulation' }}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 2.4, opacity: 0, transition: { duration: 0.45 } }}
@@ -83,6 +83,7 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
   const [pending, setPending] = useState([])
   const [timeDone, setTimeDone] = useState(false)
   const [magic, setMagic] = useState(false)
+  const [segDur, setSegDur] = useState(6)
   const voiceRef = useRef(null)
   const iRef = useRef(i)
   iRef.current = i
@@ -129,9 +130,11 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
     if (i < 0 || leaving) return
     const sc = scenes[i]
     if (sc.count != null) {
-      countRef.current = Math.max(countRef.current, sc.count)
-      setCount(countRef.current)
+      countRef.current = sc.count
+      setCount(sc.count)
     }
+    setMagic(false)
+    setSegDur(sc.seconds)
     pendingRef.current = (sc.stars || []).map((_, k) => k)
     setPending(pendingRef.current)
     setTimeDone(false)
@@ -142,8 +145,13 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
     const a = voiceRef.current
     if (sc.audio && a) {
       a.onended = a.onerror = () => ((audioOver = true), check())
-      if (!(i === 0 && a.dataset.started === '1')) {
+      a.onloadedmetadata = () => a.duration && isFinite(a.duration) && setSegDur(Math.max(sc.seconds, a.duration))
+      if (a.dataset.started === '1') {
+        a.dataset.started = '0' // já começou dentro do toque inicial
+        if (a.duration) setSegDur(Math.max(sc.seconds, a.duration))
+      } else {
         a.src = sc.audio
+        a.currentTime = 0
         a.play().catch(() => ((audioOver = true), check()))
       }
       timers.push(setTimeout(() => ((audioOver = true), check()), (sc.seconds + 12) * 1000))
@@ -152,9 +160,56 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
     if (sc.celebrate) timers.push(setTimeout(() => (fanfare(), rain({ count: 200, duration: 1400 })), 600))
     return () => {
       timers.forEach(clearTimeout)
-      if (a) a.onended = a.onerror = null
+      if (a) {
+        a.onended = a.onerror = a.onloadedmetadata = null
+        a.pause()
+      }
     }
   }, [i, leaving, scenes, collect])
+
+  // ---- navegação estilo Stories ----
+  const goTo = useCallback(
+    (k) => {
+      if (k < 0) k = 0
+      if (k >= scenes.length) return finish()
+      // ao pular uma cena com estrelas, elas contam como pegas
+      if (k > iRef.current) {
+        const cur = scenes[iRef.current]
+        if (cur?.stars?.length) pendingRef.current = []
+      }
+      setPending([])
+      setI(k)
+    },
+    [scenes, finish]
+  )
+  const swipe = useRef(null)
+  const onTapZone = (dir) => (e) => {
+    e.stopPropagation()
+    goTo(iRef.current + dir)
+  }
+  const onTouchStart = (e) => (swipe.current = { x: e.touches[0].clientX, y: e.touches[0].clientY })
+  const onTouchEnd = (e) => {
+    const st = swipe.current
+    swipe.current = null
+    if (!st) return
+    const dx = e.changedTouches[0].clientX - st.x
+    const dy = e.changedTouches[0].clientY - st.y
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(iRef.current + (dx < 0 ? 1 : -1))
+  }
+  useEffect(() => {
+    const k = (e) => {
+      if (iRef.current < 0) return
+      if (e.key === 'ArrowRight') goTo(iRef.current + 1)
+      if (e.key === 'ArrowLeft') goTo(iRef.current - 1)
+    }
+    window.addEventListener('keydown', k)
+    const vis = () => document.hidden && voiceRef.current?.pause()
+    document.addEventListener('visibilitychange', vis)
+    return () => {
+      window.removeEventListener('keydown', k)
+      document.removeEventListener('visibilitychange', vis)
+    }
+  }, [goTo])
 
   // avança quando o tempo acabou e não há estrelas pendentes
   useEffect(() => {
@@ -191,7 +246,6 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
       a.dataset.started = '1'
       a.play().catch(() => {})
     } else sparkle()
-    onFirstTap?.()
     setI(0)
   }
 
@@ -239,9 +293,12 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
       {/* cena */}
       <AnimatePresence>
         {sc && (
-          <m.div key={i} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }}>
+          <m.div key={i} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+            {/* toque à esquerda = voltar · à direita = avançar (como Stories) */}
+            <button type="button" onClick={onTapZone(-1)} aria-label="Cena anterior" className="absolute inset-y-0 left-0 z-10 w-[30%]" style={{ touchAction: 'manipulation' }} />
+            <button type="button" onClick={onTapZone(1)} aria-label="Próxima cena" className="absolute inset-y-0 right-0 z-10 w-[70%]" style={{ touchAction: 'manipulation' }} />
             {vertical ? (
-              <div ref={boxRef} className="absolute inset-0">
+              <div ref={boxRef} className="pointer-events-none absolute inset-0 z-[15]">
                 <CoverBox ratio={RATIO_V} cam={sc.cam} dur={sc.seconds} reduce={reduce}>
                   <img src={sc.image} alt="" className="absolute inset-0 h-full w-full" draggable="false" />
                   <AnimatePresence>{(sc.stars || []).map(([x, y], k) => pending.includes(k) && <TapStar key={k} idx={k} x={x} y={y} onTap={(el) => collect(k, el)} />)}</AnimatePresence>
@@ -250,7 +307,7 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
             ) : (
               <>
                 <img src={sc.bg} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover" />
-                <div className="absolute inset-x-0 top-[calc(4.5rem)] flex justify-center px-3">
+                <div className="pointer-events-none absolute inset-x-0 top-[6.5rem] z-[15] flex justify-center px-3">
                   <div ref={boxRef} className="relative w-full max-w-[34rem] overflow-hidden rounded-[1.4rem] shadow-[0_24px_60px_-12px_rgba(0,0,0,.55)] ring-[3px] ring-white/85" style={{ aspectRatio: '4 / 3.4' }}>
                     <m.div
                       className="absolute inset-0 [will-change:transform]"
@@ -269,7 +326,7 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
             {magic && sc.magic && vertical && <div className="story-magic pointer-events-none absolute inset-0" aria-hidden="true" />}
 
             {/* legenda */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-[4.6rem] px-5 text-center">
+            <div className="pointer-events-none absolute inset-x-0 bottom-[max(1.6rem,calc(env(safe-area-inset-bottom)+1rem))] z-20 px-5 text-center">
               <m.p key={`t${i}`} className="story-caption mx-auto max-w-[28ch] text-[clamp(1.15rem,5vw,1.45rem)]" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.25 }} aria-live="polite">
                 {fill(sc.text)}
               </m.p>
@@ -279,22 +336,32 @@ export default function StoryIntro({ onDone, onLeave, onFirstTap }) {
       </AnimatePresence>
 
       {sc && sc.count != null && (
-        <div className="absolute inset-x-0 top-[max(0.9rem,env(safe-area-inset-top))] z-30 flex justify-center">
+        <div className="pointer-events-none absolute inset-x-0 top-[calc(max(0.6rem,env(safe-area-inset-top))+4.2rem)] z-30 flex justify-center">
           <Slots count={count} />
         </div>
       )}
 
-      {/* progresso + pular */}
+      {/* barras estilo Stories + pular */}
       {sc && (
-        <div className="absolute inset-x-0 bottom-0 z-40 flex h-16 items-center justify-between gap-3 bg-gradient-to-t from-black/45 to-transparent px-4 pb-[env(safe-area-inset-bottom)]">
-          <div className="flex flex-1 gap-1" aria-hidden="true">
+        <div className="absolute inset-x-0 top-0 z-40 bg-gradient-to-b from-black/40 to-transparent px-3 pb-6 pt-[max(0.6rem,env(safe-area-inset-top))]">
+          <div className="flex gap-1" aria-hidden="true">
             {scenes.map((_, k) => (
-              <span key={k} className={`h-1.5 flex-1 rounded-full ${k <= i ? 'bg-white' : 'bg-white/40'}`} />
+              <span key={k} className="h-1 flex-1 overflow-hidden rounded-full bg-white/40">
+                {k < i && <span className="block h-full w-full bg-white" />}
+                {k === i && !leaving && (
+                  <m.span key={`p${i}-${segDur}`} className="block h-full bg-white" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: segDur, ease: 'linear' }} />
+                )}
+              </span>
             ))}
           </div>
-          <button type="button" onClick={finish} className="min-h-[44px] rounded-full bg-black/25 px-4 font-sans text-sm font-semibold text-white ring-1 ring-white/60">
-            Pular ›
-          </button>
+          <div className="mt-2 flex items-center justify-between">
+            <span className="font-sans text-xs font-bold text-white [text-shadow:0_1px_2px_rgba(0,0,0,.5)]">
+              {i + 1}/{scenes.length} · toque para avançar ›
+            </span>
+            <button type="button" onClick={finish} className="min-h-[40px] rounded-full bg-black/25 px-4 font-sans text-sm font-semibold text-white ring-1 ring-white/60">
+              Pular história ›
+            </button>
+          </div>
         </div>
       )}
     </m.div>
