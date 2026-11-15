@@ -20,6 +20,16 @@ const CROWNS = [
   { name: 'Coroa do Céu Azul', c: ['#FFE58F', '#3FA7D6', '#E9F6FD'] },
 ]
 
+import { DRESSUP } from '../config/event.js'
+
+/** vestido n (0 = principal) da lista do guarda-roupa */
+export function dressPrize(n) {
+  const list = DRESSUP?.dresses || []
+  if (!list.length) return drawPrize('dress')
+  const d = list[n % list.length]
+  return { kind: 'dress', name: d.name, img: d.src }
+}
+
 export function drawPrize(kind, avoid) {
   const list = kind === 'crown' ? CROWNS : DRESSES
   let p
@@ -36,6 +46,7 @@ function Deco({ type, x, y, s, fill }) {
 
 export function PrizeArt({ prize, className = '' }) {
   if (!prize) return null
+  if (prize.img) return <img src={prize.img} alt={prize.name} className={`object-contain ${className}`} draggable="false" />
   if (prize.kind === 'crown') {
     const [base, gem, shine] = prize.c
     return (

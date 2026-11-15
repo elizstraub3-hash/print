@@ -115,7 +115,16 @@ export const DRESSUP = {
   enabled: true,
   doll: { src: '/img/sophie-fantasia.webp', w: 541, h: 1100 },
   fit: { top: 0.215, height: 0.55, centerX: 0.5 },
-  dresses: [{ src: '/img/vestido-1.webp', w: 600, h: 622, name: 'Vestido Encantado' }],
+  // o 1º é o vestido principal (prêmio das 5 primeiras estrelas no jogo)
+  dresses: [
+    { src: '/img/vestidos/vestido-encantado.webp', w: 560, h: 581, name: 'Vestido Encantado' },
+    { src: '/img/vestidos/vestido-unicornio-azul.webp', w: 542, h: 600, name: 'Vestido Unicórnio Azul' },
+    { src: '/img/vestidos/vestido-unicornio-lilas.webp', w: 501, h: 600, name: 'Vestido Unicórnio Lilás' },
+    { src: '/img/vestidos/vestido-arco-iris.webp', w: 560, h: 596, name: 'Vestido Arco-íris' },
+    { src: '/img/vestidos/vestido-princesa-rosa.webp', w: 560, h: 530, name: 'Vestido Princesa Rosa' },
+    { src: '/img/vestidos/vestido-algodao-doce.webp', w: 560, h: 509, name: 'Vestido Algodão-Doce' },
+    { src: '/img/vestidos/vestido-estrelinhas.webp', w: 560, h: 596, name: 'Vestido Estrelinhas' },
+  ],
   reveal: { src: '/img/sophie-vestido-encantado.webp', w: 900, h: 1200 },
 }
 

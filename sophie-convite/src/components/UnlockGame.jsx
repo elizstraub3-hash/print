@@ -5,7 +5,7 @@ import { chime, fanfare, sparkle } from '../lib/sfx.js'
 import { burst, burstFrom, rain } from '../lib/glitter.js'
 import { DriftCloud } from './Decor.jsx'
 import Pattern from './Pattern.jsx'
-import { PrizeArt, drawPrize } from './Prize.jsx'
+import { PrizeArt, drawPrize, dressPrize } from './Prize.jsx'
 
 const GOAL = 5
 const TINTS = ['#D9B8FF', '#A9DCF2', '#FFE58F', '#B9EBD2', '#FFC9A8']
@@ -140,6 +140,8 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
   const [toast, setToast] = useState(null)
   const playerRef = useRef(PLAYERS[0])
   const prizeKind = () => (playerRef.current.id === 'layla' ? 'crown' : 'dress')
+  // Sophie: 5 estrelas = vestido principal; a cada +5, o próximo vestido do guarda-roupa
+  const prizeFor = (n, avoid) => (prizeKind() === 'dress' ? dressPrize(Math.floor(n / GOAL) - 1) : drawPrize('crown', avoid))
   const phaseRef = useRef(phase)
   phaseRef.current = phase
   const unlockedRef = useRef(unlocked)
@@ -172,13 +174,13 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
             if (n > GOAL && n % 5 === 0) {
               fanfare()
               burstFrom(lockRef.current, { count: 70, speed: 9 })
-              setToast((t) => drawPrize(prizeKind(), t?.name))
+              setToast((t) => prizeFor(n, t?.name))
               setTimeout(() => setToast(null), 3200)
             }
           },
           onGoal: () => {
             gameRef.current?.pause()
-            setPrize(drawPrize(prizeKind()))
+            setPrize(prizeFor(GOAL))
             fanfare()
             burstFrom(lockRef.current, { count: 140, speed: 13 })
             rain({ count: 260 })
@@ -360,7 +362,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
               >
                 <PrizeArt prize={toast} className="h-14 w-14 shrink-0" />
                 <div className="text-left">
-                  <p className="font-sans text-xs font-bold uppercase tracking-wider text-ameixaSoft">Novo look desbloqueado!</p>
+                  <p className="font-sans text-xs font-bold uppercase tracking-wider text-ameixaSoft">{toast.kind === "crown" ? "Nova coroa desbloqueada!" : "Novo vestido desbloqueado!"}</p>
                   <p className="font-bubble bubble-purple text-sm leading-tight">{toast.name}</p>
                 </div>
               </m.div>

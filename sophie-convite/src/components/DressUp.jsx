@@ -13,6 +13,8 @@ export default function DressUp() {
   const [worn, setWorn] = useState(null) // índice do vestido vestido
   const [drag, setDrag] = useState(null) // { i, x, y, over }
   const [showReal, setShowReal] = useState(false)
+  const [slide, setSlide] = useState(0)
+  const swipeRef = useRef(null)
   const dollRef = useRef(null)
   if (!DRESSUP?.enabled) return null
   const { doll, fit, dresses, reveal } = DRESSUP
@@ -65,7 +67,7 @@ export default function DressUp() {
             Vista a {EVENT.childFirstName}!
           </h2>
           <p className="story-caption mx-auto mt-3 max-w-[28ch] text-lg">
-            {worn == null ? 'Abra o guarda-roupa e arraste o vestido encantado até a Sophie! 👗' : 'Que linda! A Sophie ganhou o vestido encantado! 💖'}
+            {worn == null ? `Abra o guarda-roupa e arraste um vestido até a ${EVENT.childFirstName}! 👗` : `Que linda! A ${EVENT.childFirstName} está com o ${dresses[worn].name}! 💖`}
           </p>
         </Reveal>
 
@@ -101,7 +103,10 @@ export default function DressUp() {
             </button>
           ) : (
             <>
-              {reveal?.src && (
+              <button type="button" onClick={() => setOpen(true) || setWorn(null)} className="btn-ghost min-h-[48px] px-6">
+                👗 Trocar de vestido
+              </button>
+              {reveal?.src && worn === 0 && (
                 <button type="button" onClick={() => setShowReal(true)} className="btn-magic min-h-[56px] px-8 text-lg">
                   ✨ Ver a {EVENT.childFirstName} de verdade
                 </button>
@@ -125,25 +130,51 @@ export default function DressUp() {
             >
               <div className="mx-auto mb-3 h-1.5 w-3/4 rounded-full bg-dourado/70" aria-hidden="true" />
               <p className="font-sans text-sm font-bold text-ameixa">Arraste o vestido até a {EVENT.childFirstName} (ou toque nele)</p>
-              <div className="mt-3 flex flex-wrap justify-center gap-3">
-                {dresses.map((d, i) => (
-                  <button
-                    key={d.src}
-                    type="button"
-                    onPointerDown={onDown(i)}
-                    onPointerMove={onMove}
-                    onPointerUp={onUp}
-                    onPointerCancel={() => setDrag(null)}
-                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), wear(i))}
-                    aria-label={`${d.name}: vestir na ${EVENT.childFirstName}`}
-                    className={`flex w-32 flex-col items-center rounded-2xl bg-white p-2 shadow-soft ring-2 ring-rosa/60 ${drag?.i === i ? 'opacity-40' : ''}`}
-                    style={{ touchAction: 'none' }}
-                  >
-                    <img src={d.src} alt="" draggable="false" className="pointer-events-none h-28 w-auto object-contain" />
-                    <span className="mt-1 font-sans text-xs font-bold text-ameixa">{d.name}</span>
-                  </button>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <button type="button" onClick={() => setSlide((v) => (v - 1 + dresses.length) % dresses.length)} aria-label="Vestido anterior" className="stepper-btn shrink-0 !h-12 !w-12 !bg-white shadow-soft">‹</button>
+                <div
+                  className="relative w-44 overflow-hidden"
+                  onTouchStart={(e) => (swipeRef.current = e.touches[0].clientX)}
+                  onTouchEnd={(e) => {
+                    const dx = e.changedTouches[0].clientX - (swipeRef.current ?? e.changedTouches[0].clientX)
+                    if (!drag?.moved && Math.abs(dx) > 50) setSlide((v) => (v + (dx < 0 ? 1 : -1) + dresses.length) % dresses.length)
+                  }}
+                >
+                  <AnimatePresence mode="wait" initial={false}>
+                    {(() => {
+                      const d = dresses[slide]
+                      return (
+                        <m.button
+                          key={slide}
+                          type="button"
+                          onPointerDown={onDown(slide)}
+                          onPointerMove={onMove}
+                          onPointerUp={onUp}
+                          onPointerCancel={() => setDrag(null)}
+                          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), wear(slide))}
+                          aria-label={`${d.name}: vestir na ${EVENT.childFirstName}`}
+                          className={`flex w-44 flex-col items-center rounded-2xl bg-white p-2 shadow-soft ring-2 ring-rosa/60 ${drag?.i === slide && drag?.moved ? 'opacity-40' : ''}`}
+                          style={{ touchAction: 'pan-y' }}
+                          initial={{ opacity: 0, x: 40 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -40 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <img src={d.src} alt="" draggable="false" className="pointer-events-none h-40 w-auto object-contain" />
+                          <span className="mt-1 font-sans text-xs font-bold text-ameixa">{d.name}</span>
+                        </m.button>
+                      )
+                    })()}
+                  </AnimatePresence>
+                </div>
+                <button type="button" onClick={() => setSlide((v) => (v + 1) % dresses.length)} aria-label="Próximo vestido" className="stepper-btn shrink-0 !h-12 !w-12 !bg-white shadow-soft">›</button>
+              </div>
+              <div className="mt-2 flex justify-center gap-1.5" aria-hidden="true">
+                {dresses.map((_, k) => (
+                  <span key={k} className={`h-2 rounded-full transition-all ${k === slide ? 'w-5 bg-rosaForte' : 'w-2 bg-rosa'}`} />
                 ))}
               </div>
+              <p className="mt-1 font-sans text-xs font-semibold text-ameixaSoft">{slide + 1} de {dresses.length} vestidos</p>
             </m.div>
           )}
         </AnimatePresence>
