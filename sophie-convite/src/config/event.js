@@ -105,11 +105,18 @@ export const CREDIT = {
   whatsapp: '', // ex.: '55 41 99999-9999'
 }
 
-/** Antes e depois do vestido encantado (seção "A transformação") */
-export const TRANSFORM = {
+/**
+ * Provador mágico: o convidado arrasta um vestido do guarda-roupa até a Sophie.
+ *  doll: foto da Sophie (sem fundo) · fit: onde o vestido encaixa, em frações da foto
+ *  dresses: vestidos (PNG/WebP sem fundo) — adicione mais itens à lista
+ *  reveal: foto real com o vestido, mostrada depois de vestir (opcional)
+ */
+export const DRESSUP = {
   enabled: true,
-  before: { src: '/img/sophie-fantasia.webp', w: 541, h: 1100, label: 'Antes do vestido encantado' },
-  after: { src: '/img/sophie-vestido-encantado.webp', w: 900, h: 1200, label: 'Com o vestido encantado' },
+  doll: { src: '/img/sophie-fantasia.webp', w: 541, h: 1100 },
+  fit: { top: 0.215, height: 0.55, centerX: 0.5 },
+  dresses: [{ src: '/img/vestido-1.webp', w: 600, h: 622, name: 'Vestido Encantado' }],
+  reveal: { src: '/img/sophie-vestido-encantado.webp', w: 900, h: 1200 },
 }
 
 /** Patterns de fundo (imagens em /public/img). '' = usa o pattern desenhado em código */

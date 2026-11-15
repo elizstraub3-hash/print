@@ -1,6 +1,6 @@
 import Invitation from './Invitation.jsx'
 import Gallery from './Gallery.jsx'
-import Transformation from './Transformation.jsx'
+import DressUp from './DressUp.jsx'
 import Details from './Details.jsx'
 import Actions from './Actions.jsx'
 import Finale from './Finale.jsx'
@@ -11,7 +11,7 @@ export default function InviteBody({ music }) {
   return (
     <>
       <Invitation music={music} />
-      <Transformation />
+      <DressUp />
       <Gallery />
       <Details />
       <Actions />
