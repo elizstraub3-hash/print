@@ -2,7 +2,6 @@ import { m, useReducedMotion } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { EVENT, TITLE_ART, BACKGROUNDS } from '../config/event.js'
 import { DriftCloud, Rainbow, Twinkles, Heart, CloudEdge } from './Decor.jsx'
-import Unicorn3D from './Unicorn3D.jsx'
 import Pattern, { PhotoPattern } from './Pattern.jsx'
 import { burstFrom } from '../lib/glitter.js'
 import { sparkle } from '../lib/sfx.js'
@@ -26,7 +25,7 @@ function TextTitle() {
 
 export default function Opening({ opened, onOpen }) {
   const reduce = useReducedMotion()
-  const unicornRef = useRef(null)
+  const [hop, setHop] = useState(0)
   const btnRef = useRef(null)
   const uniWrapRef = useRef(null)
   const [busy, setBusy] = useState(false)
@@ -36,20 +35,20 @@ export default function Opening({ opened, onOpen }) {
     if (busy) return
     setBusy(true)
     sparkle()
-    // o unicórnio levanta a patinha e "aperta" o botão junto com o convidado
-    await unicornRef.current?.play('tap', {
-      onHit: () => {
-        setPressed(true)
-        navigator.vibrate?.(20)
-        burstFrom(btnRef.current, { count: 120, speed: 11 })
-        setTimeout(() => setPressed(false), 160)
-      },
-    })
+    // a Layla dá um pulinho e "aperta" o botão junto com o convidado
+    setHop((h) => h + 1)
+    await new Promise((r) => setTimeout(r, reduce ? 0 : 420))
+    setPressed(true)
+    navigator.vibrate?.(20)
+    burstFrom(btnRef.current, { count: 120, speed: 11 })
+    setTimeout(() => setPressed(false), 160)
+    await new Promise((r) => setTimeout(r, reduce ? 0 : 600))
     onOpen()
     setBusy(false)
   }
 
   const petUnicorn = () => {
+    setHop((h) => h + 1)
     sparkle()
     burstFrom(uniWrapRef.current, { count: 40, speed: 7, angle: -Math.PI / 2, spread: 2 })
   }
@@ -104,7 +103,7 @@ export default function Opening({ opened, onOpen }) {
           )}
         </h1>
 
-        {/* unicórnio 3D em pé logo acima do botão */}
+        {/* Layla acenando logo acima do botão */}
         <m.div
           ref={uniWrapRef}
           className="relative z-10 -mb-5 mt-[-0.5rem] h-[clamp(9.5rem,24svh,13rem)] w-[clamp(9.5rem,24svh,13rem)]"
@@ -113,7 +112,18 @@ export default function Opening({ opened, onOpen }) {
           transition={{ duration: 0.8, delay: 0.45 }}
         >
           <div aria-hidden="true" className="absolute inset-x-[-12%] bottom-[2%] h-[38%] rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.95)_0%,rgba(255,255,255,.7)_45%,rgba(255,255,255,0)_70%)]" />
-          <Unicorn3D ref={unicornRef} eager className="h-full w-full" onPet={petUnicorn} label="Unicórnio da Sophie" />
+          <button type="button" onClick={petUnicorn} aria-label="Layla, a unicórnio da Sophie — toque para fazer carinho" className="relative block h-full w-full" style={{ touchAction: 'manipulation' }}>
+            <m.img
+              key={hop}
+              src="/img/layla/layla-acenando.webp"
+              alt=""
+              draggable="false"
+              className="pointer-events-none mx-auto h-full w-auto object-contain drop-shadow-[0_12px_14px_rgba(190,120,170,.35)]"
+              initial={false}
+              animate={reduce ? undefined : hop ? { y: [0, -34, 6, 0], rotate: [0, -6, 4, 0], scaleY: [1, 1.05, 0.92, 1] } : { y: [0, -6, 0] }}
+              transition={hop ? { duration: 0.75, ease: 'easeOut' } : { duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </button>
         </m.div>
 
         <div className="relative">
@@ -132,7 +142,7 @@ export default function Opening({ opened, onOpen }) {
             <span aria-hidden="true">✨</span> {opened ? 'Ver o convite de novo' : 'Abrir convite mágico'}
           </m.button>
         </div>
-        {!opened && <p className="mt-3 font-sans text-sm text-ameixaSoft">Toque no botão — o unicórnio te ajuda!</p>}
+        {!opened && <p className="mt-3 font-sans text-sm text-ameixaSoft">Toque no botão — a Layla te ajuda!</p>}
       </div>
 
       <CloudEdge fill="#F8CDE3" className="z-10" />

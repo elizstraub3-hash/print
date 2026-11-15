@@ -178,3 +178,26 @@
   animation: magicSpin 3s linear infinite; mix-blend-mode: screen;
 }
 @media (prefers-reduced-motion: reduce) { .story-star-ring, .story-star-bob, .story-magic::before { animation: none; } }
+
+/* legenda da historinha: Arial, roxo, contorno branco grosso */
+.story-caption {
+  font-family: Arial, Helvetica, 'Helvetica Neue', sans-serif;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #7b2e9e;
+  text-wrap: balance;
+  -webkit-text-stroke: 0;
+  text-shadow:
+    0 0 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff,
+    2px 2px 0 #fff, -2px 2px 0 #fff, 2px -2px 0 #fff, -2px -2px 0 #fff,
+    3px 0 0 #fff, -3px 0 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff,
+    0 5px 10px rgba(60, 20, 80, .45);
+}
+/* estrelinhas em volta da estrela tocável */
+@keyframes miniStar {
+  0% { transform: rotate(var(--a)) translateY(-44px) scale(.4); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: rotate(calc(var(--a) + 40deg)) translateY(-54px) scale(1); opacity: 0; }
+}
+.story-mini-star { color: #fff6c2; text-shadow: 0 0 6px #ffd36b; animation: miniStar 1.4s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .story-mini-star { animation: none; opacity: .9; } }

@@ -28,7 +28,7 @@ const font = (pkg, file) => `data:font/woff2;base64,${readFileSync(path.join(roo
 
 const bg = data(BACKGROUNDS.opening || BACKGROUNDS.finale || '')
 const title = data(TITLE_ART.src || '')
-const uni = data('/img/unicornio-3d.webp')
+const uni = data('/img/layla/layla-sentada.webp')
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Fredoka;font-weight:600;src:url(${font('fredoka', 'fredoka-latin-600-normal.woff2')})}
 body{margin:0} .c{width:1200px;height:630px;position:relative;overflow:hidden;font-family:Fredoka;
@@ -37,7 +37,7 @@ background:linear-gradient(160deg,#CDECF7,#E6E0FA 45%,#F8CDE3)}
 .veil{position:absolute;inset:0;background:rgba(255,250,252,.55)}
 .spot{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 40% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%)}
 .title{position:absolute;left:60px;top:12px;height:606px}
-.uni{position:absolute;right:40px;bottom:70px;height:360px}
+.uni{position:absolute;right:60px;bottom:80px;height:400px}
 .pill{position:absolute;right:46px;bottom:34px;background:rgba(255,255,255,.92);border-radius:999px;padding:12px 28px;
 font-size:30px;font-weight:600;color:#5E4466;box-shadow:0 10px 24px -12px rgba(150,100,160,.6)}
 </style></head><body><div class="c">${bg ? '<div class="bg"></div><div class="veil"></div>' : ''}<div class="spot"></div>

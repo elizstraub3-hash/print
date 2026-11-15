@@ -42,28 +42,39 @@ export const TITLE_ART = {
 }
 
 /**
- * Historinha de abertura — "O Reino Encantado da Sophie" (só para assistir).
- * 9 cenas com as ilustrações do storyboard e movimento de câmera de cinema.
- * (Opcional: vídeos 3D com `npm run historia`, ou vídeos de IA — coloque em `video`.)
- * Cada cena: video (MP4 9:16), poster (JPG), audio (narração MP3, opcional),
- * text (legenda — é também o texto da narração), stars (estrelas já reunidas).
- * A cena dura o tempo do vídeo ou da narração (o que for maior).
+ * Historinha de abertura — "O Reino Encantado da Sophie".
+ * Cada cena:
+ *   image   ilustração (vertical 9:16 = tela cheia; horizontal = quadro com fundo desfocado → bg)
+ *   cam     movimento de câmera [escala, x%, y%] início → fim
+ *   stars   estrelinhas que o convidado toca, em % da IMAGEM [x, y]
+ *   count   estrelas já reunidas ao entrar na cena (contador ⭐ x/5); null = esconder
+ *   audio   narração MP3 (opcional) · video: MP4 (opcional, substitui a imagem)
+ *   text    legenda (também é o texto da narração) · {nome} = nome da criança
+ * Se o convidado não tocar, a estrela se pega sozinha (nunca trava).
  */
-// image: ilustração do storyboard · bg: fundo desfocado · cam: [escala, x%, y%] início → fim
-// video: quando houver um vídeo (ex.: animado com IA a partir da ilustração), ele substitui a imagem
-const V = (n, cam) => ({ image: `/img/historia/cena-${n}.webp`, bg: `/img/historia/fundo-${n}.webp`, video: '', poster: `/img/historia/cena-${n}.webp`, cam })
+const H = (n) => `/img/historia/${n}.webp`
 export const STORY = {
   enabled: true,
+  starTimeout: 10,
   scenes: [
-    { ...V(1, [[1.0,0,0],[1.22,0,6]]), seconds: 6, audio: '', stars: null, title: 'O Reino Encantado', text: 'Era uma vez, lá no alto das nuvens, um reino encantado cheio de arco-íris.' },
-    { ...V(2, [[1.05,0,4],[1.28,0,-3]]), seconds: 6, audio: '', stars: null, title: 'A Princesinha', text: 'Nele morava uma princesinha muito especial: a {nome}!' },
-    { ...V(3, [[1.12,-4,0],[1.12,4,0]]), seconds: 6, audio: '', stars: null, title: 'A Melhor Amiga', text: 'E a sua melhor amiga, a unicórnio Layla, estava sempre ao seu lado.' },
-    { ...V(4, [[1.28,16,4],[1.1,-2,0]]), seconds: 7, audio: '', stars: 0, title: 'O Vestido Mágico', text: 'Para o aniversário, havia um vestido mágico… que só brilharia com cinco estrelas douradas.' },
-    { ...V(5, [[1.3,-4,-8],[1.05,0,0]]), seconds: 6, audio: '', stars: 1, title: 'A Primeira Estrela', text: 'A primeira estrelinha estava escondida dentro de uma flor!' },
-    { ...V(6, [[1.15,4,-6],[1.03,0,0]]), seconds: 7, audio: '', stars: 3, title: 'O Lago dos Sonhos', text: 'No lago dos sonhos, mais duas estrelas surgiram das águas.' },
-    { ...V(7, [[1.05,0,6],[1.25,0,12]]), seconds: 6, audio: '', stars: 4, title: 'A Quarta Estrela', text: 'A quarta estrela brilhava lá no alto da árvore encantada.' },
-    { ...V(8, [[1.0,0,0],[1.25,0,4]]), seconds: 9, audio: '', stars: 5, title: 'A Magia das Cinco Estrelas', text: 'Com as cinco estrelas reunidas… a magia aconteceu! O vestido dos sonhos ficou pronto!' },
-    { ...V(9, [[1.0,6,0],[1.2,8,3]]), seconds: 8, audio: '', stars: 5, title: 'O Convite Real', text: 'Agora a festa vai começar… e a princesa {nome} convida você para comemorar os seus cinco aninhos!' },
+    { image: H('v1-castelo'), seconds: 6, cam: [[1.0, 0, 3], [1.1, 0, -2]], count: null,
+      text: 'Era uma vez, lá no alto das nuvens, um reino encantado cheio de arco-íris.' },
+    { image: H('v2-princesa'), seconds: 6, cam: [[1.0, 0, 0], [1.1, 0, 2]], count: null,
+      text: 'Nele morava uma princesinha muito especial: a {nome}!' },
+    { image: H('v3-abraco'), seconds: 6, cam: [[1.08, 0, 0], [1.0, 0, 0]], count: null,
+      text: 'E a sua melhor amiga, a unicórnio Layla, estava sempre ao seu lado.' },
+    { image: H('v4-vestido'), seconds: 7, cam: [[1.0, 0, 0], [1.12, 2, 4]], count: 0,
+      text: 'Para o aniversário, existe um vestido mágico… mas ele só brilha com 5 estrelinhas douradas. Ajude a {nome} a encontrá-las!' },
+    { image: H('v5-flor'), seconds: 5, cam: [[1.06, 0, 0], [1.0, 0, 0]], count: 0, stars: [[53, 60]],
+      text: 'A primeira estrelinha está escondida na flor. Toque nela! ⭐' },
+    { image: H('v6-lago'), seconds: 5, cam: [[1.06, 0, 0], [1.0, 0, 0]], count: 1, stars: [[49, 61], [81, 59]],
+      text: 'No lago dos sonhos tem mais duas! Toque nas estrelinhas! ⭐⭐' },
+    { image: '/img/historia/cena-7.webp', bg: '/img/historia/fundo-7.webp', seconds: 5, cam: [[1.05, 0, 4], [1.15, 0, 8]], count: 3, stars: [[52, 19]],
+      text: 'A quarta estrelinha brilha lá no alto da árvore. Alcance ela! ⭐' },
+    { image: '/img/historia/cena-8.webp', bg: '/img/historia/fundo-8.webp', seconds: 5, cam: [[1.0, 0, 0], [1.1, 0, 3]], count: 4, stars: [[50, 12]], magic: true,
+      text: 'Falta só uma! Toque na última estrelinha para a magia acontecer! ⭐' },
+    { image: '/img/historia/cena-9.webp', bg: '/img/historia/fundo-9.webp', seconds: 7, cam: [[1.0, 6, 0], [1.15, 8, 3]], count: 5, celebrate: true,
+      text: 'Parabéns! Você ajudou a {nome} a ganhar o vestido dos sonhos! Venha ver como ela ficou linda na festa… 💖' },
   ],
 }
 

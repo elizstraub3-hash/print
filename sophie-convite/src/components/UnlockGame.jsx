@@ -5,6 +5,7 @@ import { chime, fanfare, sparkle } from '../lib/sfx.js'
 import { burst, burstFrom, rain } from '../lib/glitter.js'
 import { DriftCloud } from './Decor.jsx'
 import Pattern from './Pattern.jsx'
+import { PrizeArt, drawPrize } from './Prize.jsx'
 
 const GOAL = 5
 const TINTS = ['#D9B8FF', '#A9DCF2', '#FFE58F', '#B9EBD2', '#FFC9A8']
@@ -135,6 +136,10 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
   const [best, setBest] = useState(readRec)
   const [phase, setPhase] = useState('ready') // ready | playing | won
   const [failed, setFailed] = useState(false)
+  const [prize, setPrize] = useState(null)
+  const [toast, setToast] = useState(null)
+  const playerRef = useRef(PLAYERS[0])
+  const prizeKind = () => (playerRef.current.id === 'layla' ? 'crown' : 'dress')
   const phaseRef = useRef(phase)
   phaseRef.current = phase
   const unlockedRef = useRef(unlocked)
@@ -167,11 +172,13 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
             if (n > GOAL && n % 5 === 0) {
               fanfare()
               burstFrom(lockRef.current, { count: 70, speed: 9 })
+              setToast((t) => drawPrize(prizeKind(), t?.name))
+              setTimeout(() => setToast(null), 3200)
             }
           },
           onGoal: () => {
-            if (unlockedRef.current) return
             gameRef.current?.pause()
+            setPrize(drawPrize(prizeKind()))
             fanfare()
             burstFrom(lockRef.current, { count: 140, speed: 13 })
             rain({ count: 260 })
@@ -203,6 +210,7 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
 
   const choose = (pl) => {
     setPlayer(pl)
+    playerRef.current = pl
     gameRef.current?.setHead(pl.img)
     sparkle()
   }
@@ -327,10 +335,34 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
                   animate={reduce ? undefined : { y: [0, -18, 0] }}
                   transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
                 />
-                <button type="button" onClick={play} disabled={failed} className="btn-magic mt-4 min-h-[60px] px-9 text-xl">
-                  ▶ Jogar com {player.name}
+                <p className="mt-3 max-w-[24ch] font-sans text-lg font-bold leading-snug text-ameixa [text-shadow:0_1px_0_#fff,0_0_8px_#fff]">
+                  Quer conseguir as 5 estrelinhas e ganhar {player.id === 'layla' ? 'a sua coroa' : 'o seu vestido'} mágico? {player.id === 'layla' ? '👑' : '👗'}
+                </p>
+                <button type="button" onClick={play} disabled={failed} className="btn-magic mt-3 min-h-[58px] px-9 text-xl">
+                  ▶ Jogar agora
+                </button>
+                <button type="button" onClick={onSkip} className="mt-2 min-h-[44px] rounded-full bg-white/80 px-5 font-sans text-sm font-bold text-ameixa ring-1 ring-white">
+                  Jogar depois
                 </button>
                 {failed && <p className="mt-2 text-sm text-ameixa">Não foi possível carregar o jogo. Use “Pular o jogo” abaixo.</p>}
+              </m.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {toast && phase === 'playing' && (
+              <m.div
+                className="pointer-events-none absolute inset-x-3 top-3 z-20 flex items-center gap-3 rounded-2xl bg-white/95 p-2 pr-4 shadow-soft ring-2 ring-dourado"
+                initial={{ y: -40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -40, opacity: 0 }}
+                role="status"
+              >
+                <PrizeArt prize={toast} className="h-14 w-14 shrink-0" />
+                <div className="text-left">
+                  <p className="font-sans text-xs font-bold uppercase tracking-wider text-ameixaSoft">Novo look desbloqueado!</p>
+                  <p className="font-bubble bubble-purple text-sm leading-tight">{toast.name}</p>
+                </div>
               </m.div>
             )}
           </AnimatePresence>
@@ -345,22 +377,24 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
                 role="alert"
                 onPointerDown={(e) => e.stopPropagation()}
               >
-                <m.img
-                  src={player.img}
-                  alt=""
-                  aria-hidden="true"
-                  className="h-28 w-auto drop-shadow-[0_8px_10px_rgba(150,100,160,.35)]"
-                  initial={{ y: 30, scale: 0.6 }}
-                  animate={reduce ? { y: 0, scale: 1 } : { y: [30, -20, 0], scale: [0.6, 1.1, 1], rotate: [0, -8, 8, 0] }}
-                  transition={{ duration: 0.9, delay: 0.3 }}
-                />
-                <p className="mt-1 font-bubble bubble-pink text-[2.1rem] leading-none">Parabéns!</p>
-                <p className="mt-1 font-sans text-xl font-semibold text-ameixa">Você desbloqueou o convite!</p>
+                <p className="font-bubble bubble-pink text-[1.9rem] leading-none">Parabéns!</p>
+                <p className="mt-1 font-sans text-base font-bold text-ameixa">{prize?.kind === 'crown' ? 'Esta é a sua coroa:' : 'Este é o seu vestido:'}</p>
+                <m.div
+                  className="relative mt-1 h-32 w-32"
+                  initial={{ scale: 0.2, rotate: -20, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 160, damping: 11, delay: 0.4 }}
+                >
+                  <span className="story-star-ring absolute inset-2 rounded-full" aria-hidden="true" />
+                  <PrizeArt prize={prize} className="relative h-full w-full drop-shadow-[0_8px_10px_rgba(150,100,160,.35)]" />
+                </m.div>
+                <p className="mt-1 font-bubble bubble-purple text-lg leading-tight">{prize?.name}</p>
+                {<p className="mt-1 font-sans text-sm font-semibold text-ameixaSoft">E você desbloqueou o convite! 🔓</p>}
                 <button type="button" onClick={onContinue} className="btn-magic mt-4 min-h-[56px] px-8 text-lg">
                   Ver o convite <span aria-hidden="true">✨</span>
                 </button>
                 <button type="button" onClick={keepPlaying} className="mt-2 min-h-[44px] px-4 font-sans text-sm font-semibold text-ameixaSoft underline underline-offset-4">
-                  Continuar jogando e bater o recorde
+                  Continuar jogando (a cada 5 estrelas, um look novo!)
                 </button>
               </m.div>
             )}
@@ -373,9 +407,9 @@ export default function UnlockGame({ unlocked, onUnlock, onSkip, onContinue }) {
           </button>
         )}
         <p className="mt-2 font-sans text-sm font-semibold text-ameixa">Desafie a {EVENT.childFirstName} na festa: quem pega mais estrelas? ⭐</p>
-        {!unlocked && (
+        {!unlocked && phase === 'playing' && (
           <button type="button" onClick={onSkip} className="mt-3 min-h-[44px] px-4 font-sans text-sm font-medium text-ameixaSoft underline decoration-rosaForte/60 underline-offset-4">
-            Prefiro pular o jogo
+            Jogar depois e ver o convite
           </button>
         )}
       </div>
