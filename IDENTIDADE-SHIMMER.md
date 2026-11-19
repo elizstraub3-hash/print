@@ -54,3 +54,7 @@ Implementado em `shimmer_style.py`.
 - Brilhos, faíscas e reflexos animados ou aplicados.
 - Degradês fortes por cima da foto. Uma sombra suave só atrás de um bloco de texto é aceitável quando o fundo for claro demais para ler.
 - Dados inventados em material para publicar.
+
+## Regra: texto dourado (definida pela Eliz em 19/11/2026)
+- Todo título em script (Parisienne) usa SEMPRE o dourado texturizado da marca (`gold_text`: textura de ouro recortada dentro da letra, com reflexo claro e escuro). Nunca trocar por dourado chapado ou marrom sólido.
+- Em fundo muito claro (cetim branco, parede), manter o `gold_text` e acrescentar só uma sombra suave por baixo para dar leitura.
