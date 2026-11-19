@@ -5,7 +5,7 @@ sys.path.insert(0, '/tmp/claude-0/-home-user-print/081c4020-c9a3-5394-8b04-d630e
 from shimmer_style import *
 from story_nativo_lib import emoji
 
-SRC = '/tmp/claude-0/-home-user/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/gp/full/'
+SRC = '/tmp/claude-0/-home-user/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/gp/edit/'  # photos after the Shimmer Clean preset
 D = '/home/user/print/look/'
 IV = (247, 243, 236); INK = (58, 45, 34); BR = (132, 101, 46); SOFT = (112, 103, 93)
 
