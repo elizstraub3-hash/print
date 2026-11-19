@@ -8,7 +8,14 @@ from shimmer_style import *
 D = '/home/user/print/solitario-retoque/'
 W, H, FPS = 1080, 1920, 30
 INK = (58, 45, 34); BR = (110, 82, 34); DG = (146, 104, 38)
-def gt(text, f): return solid_text(text, f, DG)
+def gt(text, f):
+    """Brand gold-texture lettering (PowerClip), with a faint soft shadow so it holds on the white satin."""
+    from PIL import ImageFilter
+    lay, bb = gold_text(text, f)
+    a = lay.getchannel('A')
+    sh = Image.new('RGBA', lay.size, (60, 40, 15, 0)); sh.putalpha(a.filter(ImageFilter.GaussianBlur(6)).point(lambda v: int(v * 0.35)))
+    out = Image.new('RGBA', lay.size, (0, 0, 0, 0)); out.alpha_composite(sh, (0, 3)); out.alpha_composite(lay)
+    return out, bb
 # (photo, ring centre in the photo, scene seconds)
 SC = [('2382', (666, 1116)), ('2385', (753, 1167)), ('2387', (727, 1198))]
 SEG, XF = 3.2, 0.5
