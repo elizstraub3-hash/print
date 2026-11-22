@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Play TV</title>
-  <meta name="description" content="Player de IPTV: assista canais, filmes e séries a partir das suas listas M3U ou links.">
-  <meta name="theme-color" content="#0b0d12">
+  <meta name="description" content="Player de IPTV: canais ao vivo, filmes e séries a partir das suas playlists M3U ou login Xtream.">
+  <meta name="theme-color" content="#0d0b14">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -14,87 +14,60 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><img src="icon.svg" alt="" width="28" height="28"><span>Play TV</span></div>
-    <nav class="tabs" role="tablist">
-      <button class="tab active" data-tab="live">Ao vivo</button>
-      <button class="tab" data-tab="movie">Filmes</button>
-      <button class="tab" data-tab="series">Séries</button>
-      <button class="tab" data-tab="fav">★ Favoritos</button>
-    </nav>
-    <div class="actions">
-      <input id="search" type="search" placeholder="Buscar canal ou filme…" autocomplete="off">
-      <button id="btnLists" class="btn">Minhas listas</button>
+  <!-- Splash -->
+  <div id="splash" class="splash">
+    <div class="splash-logo">
+      <img src="icon.svg" alt="" width="96" height="96">
+      <div class="splash-name">Play<span>TV</span></div>
     </div>
-  </header>
+    <div class="spinner" aria-label="Carregando"></div>
+    <div class="splash-ver" id="splashVer"></div>
+  </div>
 
-  <main class="layout">
-    <aside class="groups" id="groups" aria-label="Categorias"></aside>
-    <section class="content">
-      <div id="empty" class="empty hidden">
-        <h2>Nenhuma lista adicionada</h2>
-        <p>Adicione uma lista M3U, um login Xtream ou o link de um canal para começar.</p>
-        <button class="btn primary" id="btnEmptyAdd">Adicionar lista</button>
-      </div>
-      <div id="grid" class="grid"></div>
-      <button id="more" class="btn more hidden">Carregar mais</button>
-    </section>
-  </main>
+  <!-- Conteúdo -->
+  <div id="view" class="view"></div>
+
+  <!-- Menu lateral -->
+  <div id="scrim" class="scrim"></div>
+  <aside id="drawer" class="drawer" aria-label="Menu">
+    <div class="drawer-brand"><img src="icon.svg" alt="" width="40" height="40"><span>Play<b>TV</b></span></div>
+    <button class="drawer-profile" id="drawerProfile">
+      <span class="avatar" id="drawerAvatar"></span>
+      <span><b id="drawerName">Meu perfil</b><small>Trocar de perfil</small></span>
+    </button>
+    <nav class="drawer-nav" id="drawerNav"></nav>
+    <div class="drawer-foot">
+      <small>ID DO APARELHO</small>
+      <code id="deviceId"></code>
+      <small id="appVer"></small>
+    </div>
+  </aside>
+
+  <!-- Barra inferior -->
+  <nav id="bottomNav" class="bottom-nav" aria-label="Navegação"></nav>
 
   <!-- Player -->
   <div id="player" class="player hidden" role="dialog" aria-label="Player">
     <video id="video" playsinline controls autoplay></video>
-    <div class="player-bar">
-      <button id="btnClose" class="btn">← Voltar</button>
-      <div class="now"><img id="nowLogo" alt=""><span id="nowTitle"></span></div>
-      <button id="btnFav" class="btn" title="Favoritar">☆</button>
-      <button id="btnPrev" class="btn" title="Canal anterior">▲</button>
-      <button id="btnNext" class="btn" title="Próximo canal">▼</button>
+    <div class="p-top" id="pTop">
+      <button class="icon-btn" id="pBack" aria-label="Voltar"></button>
+      <div class="p-title"><img id="pLogo" alt=""><div><b id="pName"></b><small id="pSub"></small></div></div>
+      <div class="p-actions" id="pActions"></div>
     </div>
-    <div id="playerMsg" class="player-msg hidden"></div>
+    <div id="pMsg" class="p-msg hidden"></div>
+    <div id="pToast" class="p-toast hidden"></div>
   </div>
 
-  <!-- Gerenciar listas -->
-  <dialog id="dlgLists">
-    <form method="dialog" class="dlg">
-      <div class="dlg-head">
-        <h2>Minhas listas</h2>
-        <button class="btn" value="close">Fechar</button>
-      </div>
-      <ul id="listItems" class="list-items"></ul>
-
-      <h3>Adicionar</h3>
-      <div class="seg" role="tablist">
-        <button type="button" class="seg-btn active" data-mode="url">Link M3U</button>
-        <button type="button" class="seg-btn" data-mode="file">Arquivo</button>
-        <button type="button" class="seg-btn" data-mode="xtream">Login Xtream</button>
-        <button type="button" class="seg-btn" data-mode="single">Um canal</button>
-      </div>
-
-      <div class="mode" data-mode="url">
-        <label>Nome da lista<input name="urlName" placeholder="Ex.: Minha lista"></label>
-        <label>URL da lista (.m3u / .m3u8)<input name="urlValue" type="url" placeholder="https://…"></label>
-      </div>
-      <div class="mode hidden" data-mode="file">
-        <label>Nome da lista<input name="fileName" placeholder="Ex.: Lista do computador"></label>
-        <label>Arquivo .m3u<input name="fileValue" type="file" accept=".m3u,.m3u8,audio/x-mpegurl,application/x-mpegurl,text/plain"></label>
-      </div>
-      <div class="mode hidden" data-mode="xtream">
-        <label>Nome<input name="xName" placeholder="Ex.: Meu provedor"></label>
-        <label>Servidor<input name="xServer" placeholder="https://servidor.com:8080"></label>
-        <label>Usuário<input name="xUser" autocomplete="off"></label>
-        <label>Senha<input name="xPass" type="password" autocomplete="off"></label>
-      </div>
-      <div class="mode hidden" data-mode="single">
-        <label>Nome do canal<input name="sName" placeholder="Ex.: Canal da cidade"></label>
-        <label>URL do vídeo (.m3u8, .mp4, .ts)<input name="sUrl" type="url" placeholder="https://…"></label>
-        <label>Logo (opcional)<input name="sLogo" type="url" placeholder="https://…/logo.png"></label>
-      </div>
-
-      <p id="addMsg" class="add-msg"></p>
-      <button type="button" id="btnAdd" class="btn primary">Adicionar</button>
-      <p class="note">As listas ficam salvas só neste aparelho. Este app não fornece canais: use apenas listas e links que você tem direito de assistir.</p>
-    </form>
+  <!-- Perfis -->
+  <dialog id="dlgProfiles">
+    <div class="dlg">
+      <div class="dlg-head"><h2>Quem está assistindo?</h2><button class="btn" data-close>Fechar</button></div>
+      <div class="profiles" id="profileList"></div>
+      <form class="row-form" id="profileForm">
+        <input name="pname" placeholder="Nome do novo perfil" maxlength="20" required>
+        <button class="btn primary">Criar</button>
+      </form>
+    </div>
   </dialog>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>

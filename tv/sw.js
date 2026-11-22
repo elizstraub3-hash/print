@@ -1,6 +1,6 @@
 // Service worker: guarda a "casca" do app para abrir rápido e funcionar como app instalado.
 // Streams de vídeo e listas nunca são cacheados.
-const CACHE = 'playtv-v1';
+const CACHE = 'playtv-v2';
 const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
