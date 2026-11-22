@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Play TV</title>
+  <meta name="description" content="Player de IPTV: assista canais, filmes e séries a partir das suas listas M3U ou links.">
+  <meta name="theme-color" content="#0b0d12">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="icon.svg" alt="" width="28" height="28"><span>Play TV</span></div>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="live">Ao vivo</button>
+      <button class="tab" data-tab="movie">Filmes</button>
+      <button class="tab" data-tab="series">Séries</button>
+      <button class="tab" data-tab="fav">★ Favoritos</button>
+    </nav>
+    <div class="actions">
+      <input id="search" type="search" placeholder="Buscar canal ou filme…" autocomplete="off">
+      <button id="btnLists" class="btn">Minhas listas</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="groups" id="groups" aria-label="Categorias"></aside>
+    <section class="content">
+      <div id="empty" class="empty hidden">
+        <h2>Nenhuma lista adicionada</h2>
+        <p>Adicione uma lista M3U, um login Xtream ou o link de um canal para começar.</p>
+        <button class="btn primary" id="btnEmptyAdd">Adicionar lista</button>
+      </div>
+      <div id="grid" class="grid"></div>
+      <button id="more" class="btn more hidden">Carregar mais</button>
+    </section>
+  </main>
+
+  <!-- Player -->
+  <div id="player" class="player hidden" role="dialog" aria-label="Player">
+    <video id="video" playsinline controls autoplay></video>
+    <div class="player-bar">
+      <button id="btnClose" class="btn">← Voltar</button>
+      <div class="now"><img id="nowLogo" alt=""><span id="nowTitle"></span></div>
+      <button id="btnFav" class="btn" title="Favoritar">☆</button>
+      <button id="btnPrev" class="btn" title="Canal anterior">▲</button>
+      <button id="btnNext" class="btn" title="Próximo canal">▼</button>
+    </div>
+    <div id="playerMsg" class="player-msg hidden"></div>
+  </div>
+
+  <!-- Gerenciar listas -->
+  <dialog id="dlgLists">
+    <form method="dialog" class="dlg">
+      <div class="dlg-head">
+        <h2>Minhas listas</h2>
+        <button class="btn" value="close">Fechar</button>
+      </div>
+      <ul id="listItems" class="list-items"></ul>
+
+      <h3>Adicionar</h3>
+      <div class="seg" role="tablist">
+        <button type="button" class="seg-btn active" data-mode="url">Link M3U</button>
+        <button type="button" class="seg-btn" data-mode="file">Arquivo</button>
+        <button type="button" class="seg-btn" data-mode="xtream">Login Xtream</button>
+        <button type="button" class="seg-btn" data-mode="single">Um canal</button>
+      </div>
+
+      <div class="mode" data-mode="url">
+        <label>Nome da lista<input name="urlName" placeholder="Ex.: Minha lista"></label>
+        <label>URL da lista (.m3u / .m3u8)<input name="urlValue" type="url" placeholder="https://…"></label>
+      </div>
+      <div class="mode hidden" data-mode="file">
+        <label>Nome da lista<input name="fileName" placeholder="Ex.: Lista do computador"></label>
+        <label>Arquivo .m3u<input name="fileValue" type="file" accept=".m3u,.m3u8,audio/x-mpegurl,application/x-mpegurl,text/plain"></label>
+      </div>
+      <div class="mode hidden" data-mode="xtream">
+        <label>Nome<input name="xName" placeholder="Ex.: Meu provedor"></label>
+        <label>Servidor<input name="xServer" placeholder="https://servidor.com:8080"></label>
+        <label>Usuário<input name="xUser" autocomplete="off"></label>
+        <label>Senha<input name="xPass" type="password" autocomplete="off"></label>
+      </div>
+      <div class="mode hidden" data-mode="single">
+        <label>Nome do canal<input name="sName" placeholder="Ex.: Canal da cidade"></label>
+        <label>URL do vídeo (.m3u8, .mp4, .ts)<input name="sUrl" type="url" placeholder="https://…"></label>
+        <label>Logo (opcional)<input name="sLogo" type="url" placeholder="https://…/logo.png"></label>
+      </div>
+
+      <p id="addMsg" class="add-msg"></p>
+      <button type="button" id="btnAdd" class="btn primary">Adicionar</button>
+      <p class="note">As listas ficam salvas só neste aparelho. Este app não fornece canais: use apenas listas e links que você tem direito de assistir.</p>
+    </form>
+  </dialog>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mpegts.js/1.7.3/mpegts.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
