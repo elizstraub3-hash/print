@@ -17,6 +17,10 @@ S = os.path.join(_HERE, 'assets') + '/'                    # fonts live in asset
 GOLD_TEXTURES = {'escovado': 'ouro-3-escovado.jpg', 'folha': 'ouro-2-folha.jpg', 'liquido': 'ouro-1-liquido.jpg'}
 GOLD_TEX_PATH = os.path.join(_HERE, 'assets', 'texturas', GOLD_TEXTURES[os.environ.get('SHIMMER_OURO', 'escovado')])
 GOLD_TEX = Image.open(GOLD_TEX_PATH).convert('RGB') if os.path.exists(GOLD_TEX_PATH) else None
+if GOLD_TEX is not None:
+    # use the bright central part of the texture: its outer edges are dark and made the letter tips look black
+    _w, _h = GOLD_TEX.size
+    GOLD_TEX = GOLD_TEX.crop((int(_w * 0.14), 0, int(_w * 0.86), _h))
 WHITE = (255, 253, 248)
 CHAMPAGNE = np.array([212, 178, 108], np.float32)
 

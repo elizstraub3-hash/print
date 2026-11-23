@@ -52,17 +52,18 @@ def photo_slide(name, caps, script, phrase, size=210):
 
 
 def editorial():
-    """'Something different': magazine layout, photo inset in an ivory passe-partout, title below."""
-    im = Image.new('RGBA', (W, H), IV + (255,))
+    """Full-bleed photo (crop only) with the approved light ivory fade rising from the base, dark text on it."""
+    import numpy as np
     src = Image.open(D + 'menina-brinco.png').convert('RGB')
-    pw, ph = 960, 1010
-    s = src.crop((70, 20, 70 + pw, 20 + ph))                   # native pixels: crop only, no resize
-    x0, y0 = (W - pw) // 2, 60
-    fr = Image.new('L', (W, H), 0); ImageDraw.Draw(fr).rectangle([x0 - 10, y0 - 10, x0 + pw + 9, y0 + ph + 9], outline=255, width=2); im.alpha_composite(gold_fill(fr))
-    im.paste(s, (x0, y0))
-    y = C(im, solid_text('TENDÊNCIAS PASSAM.', caps_font(30, 700), BR, 10), y0 + ph + 34)
-    y = C(im, shadowed(gold_text('Joias ficam.', script_font(124))), y + 4)
-    C(im, solid_text('USE JOIAS QUE DUREM · GARANTIA VITALÍCIA', caps_font(22, 600), SOFT, 3), y + 10)
+    im = src.crop((2, 0, 2 + W, H))                            # native pixels, crop only
+    a = np.asarray(im, np.float32)
+    yy = np.arange(H, dtype=np.float32)[:, None, None] / H
+    x = np.clip((yy - 0.64) / (0.83 - 0.64), 0, 1); f = x * x * (3 - 2 * x) * 0.95
+    a = a * (1 - f) + np.array([250, 247, 241], np.float32) * f
+    im = Image.fromarray(a.astype('uint8')).convert('RGBA')
+    y = C(im, solid_text('TENDÊNCIAS PASSAM.', caps_font(32, 700), BR, 10), 1105)
+    y = C(im, shadowed(gold_text('Joias ficam.', script_font(150))), y + 4)
+    C(im, solid_text('USE JOIAS QUE DUREM · GARANTIA VITALÍCIA', caps_font(22, 600), BR, 3), y + 14)
     return im
 
 
