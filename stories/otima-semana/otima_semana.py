@@ -8,7 +8,7 @@ from story_nativo_lib import emoji
 
 D = '/home/user/print/stories/otima-semana/'
 IVT = (255, 251, 243)
-FPS, DUR = 30, 9.0
+FPS, DUR = 30, 10.0
 src = Image.open(D + 'fundo-6.png').convert('RGB')
 W, H = src.width + src.width % 2, src.height
 src = src.resize((W, H), Image.LANCZOS) if W != src.width else src
@@ -61,6 +61,17 @@ paste(d, t, W / 2 - (e.width + 10) / 2, y + 18 * k, anchor='center')
 d.alpha_composite(e, (int(W / 2 + tw / 2 - (e.width + 10) / 2 + 10), int(y + 16 * k))); layers.append((d, 2.2))
 LA = [(np.asarray(l, np.float32), t0) for l, t0 in layers]
 
+end = []
+e1 = L(); y2 = C(e1, shadowed(gold_text('Escolha bem', script_font(int(150 * k)))), 170); end.append((e1, 5.6))
+e2 = L(); y2 = C(e2, shadowed(solid_text('a sua próxima joia', sans(int(44 * k), 600), IVT)), y2 + 18 * k); end.append((e2, 6.1))
+e3 = L(); m2 = Image.new('L', (W, H), 0); ImageDraw.Draw(m2).line([(W / 2 - 50 * k, y2 + 30 * k), (W / 2 + 50 * k, y2 + 30 * k)], fill=255, width=3); e3.alpha_composite(gold_fill(m2))
+C(e3, shadowed(solid_text('AGENDE SUA VISITA · LINK NA BIO', caps_font(int(26 * k), 600), IVT, int(4 * k))), y2 + 56 * k); end.append((e3, 6.7))
+LB = [(np.asarray(l, np.float32), t0) for l, t0 in end]
+_yy = np.arange(H, dtype=np.float32)[:, None, None]
+_x = np.clip((_yy - 330) / (560 - 330), 0, 1)
+TOPV = (0.78 * (1 - _x * _x * (3 - 2 * _x)))                 # screen-space cocoa veil behind the closing titles
+COCOA = np.array([46, 31, 22], np.float32)
+
 
 def ease(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
 
@@ -81,9 +92,18 @@ def frame(t):
         if kk <= 0: continue
         lay = np.roll(arr, int(round((1 - ease((t - t0) / 0.6)) * 18)), axis=0); al = lay[..., 3:4] / 255 * kk
         f = f * (1 - al) + lay[..., :3] * al
+    kv = smooth((t - 5.3) / 0.8)
+    if kv > 0:
+        v = TOPV * kv; f = f * (1 - v) + COCOA * v
+    for arr, t0 in LB:
+        kk = ease((t - t0) / 0.6)
+        if kk <= 0: continue
+        lay = np.roll(arr, int(round((1 - kk) * 18)), axis=0); al = lay[..., 3:4] / 255 * kk
+        f = f * (1 - al) + lay[..., :3] * al
     return np.clip(f, 0, 255).astype(np.uint8)
 
 
+Image.fromarray(frame(9.5)).save(D + 'story-otima-semana-final.jpg', quality=92)
 Image.fromarray(frame(2.9)).save(D + 'story-otima-semana.jpg', quality=95, subsampling=0)
 enc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
                         '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo', '-shortest', '-c:v', 'libx264', '-preset', 'slow', '-crf', '15',
