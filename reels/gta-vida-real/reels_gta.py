@@ -45,10 +45,24 @@ def stack(*lines, y=260, gap=14):
     return np.asarray(out, np.float32)
 
 
+def outline(lines, size=64, y=300, em=None):
+    """Reels-native caption: bold white letters with a black outline, centred."""
+    out = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(out); fnt = sans(size, 800)
+    for i, ln in enumerate(lines):
+        w = fnt.getlength(ln); ew = 0
+        e = emoji(em, int(size * 1.05)) if (em and i == len(lines) - 1) else None
+        if e: ew = e.width + 12
+        x = (W - w - ew) / 2
+        d.text((x, y), ln, font=fnt, fill=(255, 255, 255, 255), stroke_width=max(4, size // 12), stroke_fill=(0, 0, 0, 255))
+        if e: out.alpha_composite(e, (int(x + w + 12), int(y + size * 0.05)))
+        y += int(size * 1.22)
+    return np.asarray(out, np.float32)
+
+
 CAP = {
-    0: [(stack(label('NO GTA:', 52, em='🎮')), 0.15), (stack(label('UM CLIQUE E A JOIA É DELA', 40), y=380), 0.6)],
-    1: [(stack(label('NA VIDA REAL:', 52)), 0.0), (stack(label('ALGUÉM FAZ ELA À MÃO,', 40), label('COM CARINHO', 40), y=380), 0.7)],
-    2: [(stack(gold_label('Feita pra ela.', 170), y=250), 0.2), (stack(label('OURO 18K · GARANTIA VITALÍCIA', 34), y=520), 0.9)],
+    0: [(outline(['No GTA você compra', 'a melhor joia', 'pra Lucia'], em='🎮'), 0.15)],
+    1: [(outline(['Na vida real', 'também pode ser assim'], em='💍'), 0.1)],
+    2: [(outline(['Feita à mão,', 'do jeitinho que ela merece'], size=58, em='🤍'), 0.2)],
 }
 # end card: logo pattern + official logo
 P = Image.open('/home/user/print/assets/pattern-logo.jpg').convert('RGB')
