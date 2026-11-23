@@ -38,7 +38,7 @@ def block(lines, t0, t1, y=270, gap=16, stagger=0.35):
         elif kind == 'sub': lay = solid_text(txt, caps_font(sz, 600), BR, 3)
         elif kind == 'script': lay = fit_script(txt, sz)
         TEXT.append((lay, y, t0 + i * stagger, t1))
-        if i == 0: WHOOSH.append((t0, 0.6))
+        pass
         y += ink_size(lay)[1] + gap
     return y
 
@@ -54,7 +54,7 @@ block([('sub', 'MANDE NO DIRECT', 28), ('sub', 'OU PELO LINK NA BIO', 28)], 48.6
 
 # ---------- product cards ----------
 def card(path, w=380, h=480, ang=0):
-    im = Image.open(P + path).convert('RGB')
+    im = Image.open(path if path.startswith('/') else P + path).convert('RGB')
     iw, ih = im.size; r = w / h
     cw, ch = (iw, int(iw / r)) if iw / ih < r else (int(ih * r), ih)
     im = im.crop(((iw - cw) // 2, (ih - ch) // 2, (iw - cw) // 2 + cw, (ih - ch) // 2 + ch)).resize((w, h), Image.LANCZOS)  # downscale only
@@ -78,13 +78,13 @@ def fan(paths, t0, t1, cy=1100):
     order = [0, 2, 1] if len(paths) == 3 else [0, 1]          # middle card lands last, on top
     for k, i in enumerate(order):
         CARDS.append((card(paths[i]), xs[i], cy + (0 if angs[i] == 0 else 30), angs[i], t0 + 0.45 * k, t1))
-        WHOOSH.append((t0 + 0.45 * k, 1.0))
-    WHOOSH.append((t1, 0.7))
+        if k == 0: WHOOSH.append((t0, 0.6))
 
 
-fan(['aliancas-revestidas/fotos/51.webp', 'black-friday-kit/fotos/64_orig.jpg', 'aliancas-revestidas/fotos/55.webp'], 1.6, 8.6)
-fan(['solitario-helena/fotos/57.webp', 'solitario-retoque/2382.png', 'solitario-7-5mm/fotos/45.webp'], 10.4, 17.6)
-fan(['anel-classico/classico-1.png', 'anel-classico/classico-2.png'], 19.4, 25.6)
+SITE = '/home/user/shimmer-joias-/images/'      # edited product photos from the Shimmer website
+fan([SITE + 'SH-1052.jpg', SITE + 'SH-1087.jpg', SITE + 'SH-1058.jpg'], 1.6, 8.6)
+fan([SITE + 'SH-1018.jpg', SITE + 'SH-1061.jpg', SITE + 'SH-1014.jpg'], 10.4, 17.6)
+fan([SITE + 'SH-1046.jpg', SITE + 'SH-1045b.jpg'], 19.4, 25.6)
 
 # ---------- 'como funciona' steps on an ivory panel ----------
 STEPS = []
@@ -98,8 +98,8 @@ for i, (a, b) in enumerate([('AGENDE O SEU HORÁRIO', 'pelo direct ou link na bi
     n = gold_text(str(i + 1), script_font(120)); paste(lay, n, 160, yb)
     paste(lay, solid_text(a, caps_font(32, 700), INK, 4), 280, yb + 18)
     paste(lay, solid_text(b, sans(28, 500), PARCEL_COLOR), 282, yb + 78)
-    STEPS.append((np.asarray(lay, np.float32), 38.0 + i * 1.6)); WHOOSH.append((38.0 + i * 1.6, 0.8))
-PANELA = np.asarray(PANEL, np.float32); WHOOSH.append((37.4, 0.6))
+    STEPS.append((np.asarray(lay, np.float32), 38.0 + i * 1.6))
+PANELA = np.asarray(PANEL, np.float32)
 
 # ---------- end card ----------
 END0 = 54.0
@@ -120,7 +120,7 @@ y += 96
 for txt, f, col in [('AGENDE SUA VISITA · LINK NA BIO', caps_font(32, 600), BR), ('Al. Dr. Muricy, 650 · 8º andar · Centro · Curitiba', sans(28, 500), PARCEL_COLOR),
                     ('Ouro 18k · garantia vitalícia · 10x sem juros', sans(28, 500), PARCEL_COLOR)]:
     t = solid_text(txt, f, col, 4 if col == BR else 0); paste(e, t, W / 2, y, anchor='center'); y += ink_size(t)[1] + 24
-END.append((np.asarray(e, np.float32), END0 + 1.1)); WHOOSH.append((END0, 0.9))
+END.append((np.asarray(e, np.float32), END0 + 1.1))
 
 # white fade from the top (requested) + light overall veil
 IVA = np.array(IV, np.float32)
@@ -132,6 +132,9 @@ shd = Image.new('RGBA', (W, H), (0, 0, 0, 0)); shd.putalpha(pm.filter(ImageFilte
 pw = Image.new('RGBA', (W, H), IV + (0,)); pw.putalpha(pm.point(lambda v: int(v * 0.97))); WP.alpha_composite(pw)
 om = Image.new('L', (W, H), 0); ImageDraw.Draw(om).rounded_rectangle([PX0 + 18, PY0 + 18, PX1 - 18, PY1 - 18], 30, outline=255, width=2); WP.alpha_composite(gold_fill(om))
 WPA = np.asarray(WP, np.float32)
+_yy = np.arange(H, dtype=np.float32)[:, None, None]
+_x = np.clip((_yy - 420) / (1150 - 420), 0, 1)
+GRAD = 0.30 + 0.58 * (1 - _x * _x * (3 - 2 * _x))          # 0.88 at the top -> 0.30 from the middle down
 WX0, WY0, WX1, WY1 = 130, 740, W - 130, 1340
 _wm = Image.new('L', (WX1 - WX0, WY1 - WY0), 0); ImageDraw.Draw(_wm).rounded_rectangle([0, 0, WX1 - WX0 - 1, WY1 - WY0 - 1], 26, fill=255)
 WMASK = (np.asarray(_wm, np.float32) / 255)[..., None]
@@ -150,8 +153,8 @@ for lay, y0, t0, t1 in TEXT:
 
 def frame(bgf, t):
     f = bgf.astype(np.float32)
-    f = ((f - 128) * 0.72 + 128) * 0.42                      # low contrast + dark: the footage reads as a moody backdrop
-    f = comp_layer(f, WPA, smooth(t / 0.6), (1 - smooth(t / 0.6)) * 40)
+    f = ((f - 128) * 0.75 + 128) * 0.62                      # lower contrast, darker backdrop
+    f = f * (1 - GRAD) + IVA * GRAD                          # translucent ivory gradient: the attendance shows through
     for arr, t0, t1 in TEXTA:
         kin = ease_out((t - t0) / 0.7); kout = 1 - smooth((t - t1) / 0.45)
         k = kin * kout
@@ -159,11 +162,12 @@ def frame(bgf, t):
     # panel + steps
     kp = smooth((t - 37.4) / 0.6) * (1 - smooth((t - 46.6) / 0.45))
     if kp > 0:
+        f = comp_layer(f, PANELA, kp * 0.85, (1 - kp) * 30)
         for arr, t0 in STEPS:
             k = ease_out((t - t0) / 0.6) * (1 - smooth((t - 46.6) / 0.45))
             if k > 0: f = comp_layer(f, arr, k, 0) if False else _slide(f, arr, k, t, t0)
     # bright 'window' with the attendance footage inside the white panel (scenes without cards)
-    for w0, w1 in ((26.8, 35.6), (47.8, 53.6)):
+    for w0, w1 in ():
         kw = smooth((t - w0) / 0.6) * (1 - smooth((t - w1) / 0.45))
         if kw > 0:
             src = bgf.astype(np.float32)
@@ -209,7 +213,7 @@ def audio(path):
         for j in range(L):
             fq = 2 * math.sin(math.pi * fc[j] / sr)
             hp = noise[j] - lp - q * bp; bp += fq * hp; lp += fq * bp; y[j] = bp
-        out[i0:i0 + L] += y * env * 0.16 * s
+        out[i0:i0 + L] += y * env * 0.045 * s
     t = np.arange(n) / sr                                     # soft pad: Cmaj9 / Am9 / Fmaj9 / G6, 3.75 s each
     chords = [[261.6, 329.6, 392.0, 493.9, 587.3], [220.0, 261.6, 329.6, 392.0, 493.9], [174.6, 220.0, 261.6, 329.6, 392.0], [196.0, 246.9, 293.7, 329.6, 392.0]]
     pad = np.zeros(n, np.float32); seg = 3.75
@@ -221,7 +225,7 @@ def audio(path):
         for fr in chords[k % 4]:
             pad[a0:a1] += (np.sin(2 * np.pi * fr * tt) + 0.3 * np.sin(2 * np.pi * fr * 2.003 * tt)) * env * 0.018
         # gentle pluck on the chord root an octave up
-        pl = np.sin(2 * np.pi * chords[k % 4][0] * 2 * tt) * np.exp(-3.5 * tt) * 0.05
+        pl = np.sin(2 * np.pi * chords[k % 4][0] * 2 * tt) * np.exp(-2.5 * tt) * 0.022
         pad[a0:a1] += pl
     out += pad * np.clip(t / 2, 0, 1) * np.clip((DUR - t) / 2.5, 0, 1)
     out = np.tanh(out * 1.2) * 0.8
