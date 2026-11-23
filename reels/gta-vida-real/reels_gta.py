@@ -14,7 +14,15 @@ SRC = D + 'original-WA0014.mp4'
 W, H, FPS = 1080, 1920, 30
 INK = (58, 45, 34); BR = (118, 88, 38); IV = (250, 247, 241)
 PREV = [float(x) for x in sys.argv[1:]]
-TL = [('clip', 0.3, 3.6), ('clip', 5.0, 4.4), ('clip', 28.4, 3.8), ('end', None, 3.8)]
+import os
+VARIANT = os.environ.get('VARIANT', 'junior')
+if VARIANT == 'junior':
+    TL = [('clip', 0.3, 3.6), ('clip', 5.0, 4.4), ('clip', 28.4, 3.8), ('mission', None, 2.6), ('end', None, 3.8)]
+    OUTNAME = 'reels-gta-vida-real.mp4'
+else:   # meia aliança no cetim (IMG_2358, 1920x1440 landscape)
+    SRC = '/home/user/print/videos-drive/IMG_2358.MOV'
+    TL = [('clip', 1.0, 4.2), ('clip', 5.4, 5.0), ('mission', None, 2.6), ('end', None, 3.8)]
+    OUTNAME = 'reels-gta-meia-alianca.mp4'
 
 
 def label(text, size=44, pad=(32, 18), em=None):
@@ -64,6 +72,9 @@ CAP = {
     1: [(outline(['Na vida real', 'também pode ser assim'], em='💍'), 0.1)],
     2: [(outline(['Feita à mão,', 'do jeitinho que ela merece'], size=58, em='🤍'), 0.2)],
 }
+if VARIANT != 'junior':
+    CAP = {0: [(outline(['No GTA você compra', 'a melhor joia', 'pra Lucia'], em='🎮'), 0.15)],
+           1: [(outline(['Na vida real', 'também pode ser assim'], em='💍'), 0.1)]}
 # end card: logo pattern + official logo
 P = Image.open('/home/user/print/assets/pattern-logo.jpg').convert('RGB')
 sc = H / P.height; P = P.resize((round(P.width * sc), H), Image.LANCZOS); P = P.crop(((P.width - W) // 2, 0, (P.width - W) // 2 + W, H))
@@ -95,12 +106,27 @@ def over(f, arr, k, dy=0):
 
 def clip_frames(s, d):
     dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-ss', str(s), '-t', str(d), '-i', SRC, '-vf',
-                            'fps=30,scale=1080:1920:flags=lanczos,hqdn3d=1.5:1:4:3,eq=contrast=1.04:saturation=1.05:gamma=1.03',
+                            ('fps=30,scale=1080:1920:flags=lanczos,hqdn3d=1.5:1:4:3,eq=contrast=1.04:saturation=1.05:gamma=1.03' if VARIANT == 'junior' else
+                             'fps=30,crop=810:1440:640:0,scale=1080:1920:flags=lanczos,eq=contrast=1.03:saturation=1.04'),
                             '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
     while True:
         b = dec.stdout.read(W * H * 3)
         if len(b) < W * H * 3: break
         yield np.frombuffer(b, np.uint8).reshape(H, W, 3)
+
+
+def _scaled(arr, sc_):
+    im = Image.fromarray(arr.astype(np.uint8), 'RGBA'); w2, h2 = int(W * sc_), int(H * sc_)
+    im = im.resize((w2, h2), Image.BICUBIC).crop(((w2 - W) // 2, (h2 - H) // 2, (w2 - W) // 2 + W, (h2 - H) // 2 + H))
+    return np.asarray(im, np.float32)
+
+
+def mission_text():
+    a = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(a); fnt = sans(112, 900)
+    for i, ln in enumerate(['MISSÃO', 'CUMPRIDA']):
+        w = fnt.getlength(ln); d.text(((W - w) / 2, 330 + i * 132), ln, font=fnt, fill=(247, 196, 22, 255), stroke_width=10, stroke_fill=(0, 0, 0, 255))
+    b = outline(['+ ela disse sim'], size=64, y=612, em='💍')
+    return np.asarray(a, np.float32), b
 
 
 def zoom(fr, z, cx=W / 2, cy=H / 2):
@@ -109,6 +135,7 @@ def zoom(fr, z, cx=W / 2, cy=H / 2):
     return np.asarray(Image.fromarray(fr).crop((x0, y0, x0 + cw, y0 + ch)).resize((W, H), Image.LANCZOS), np.float32)
 
 
+MISSION, MSUB = mission_text()
 enc = None
 if not PREV:
     enc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
@@ -117,23 +144,32 @@ T = 0.0; AUD = []; EV = []
 for i, (kind, s, d) in enumerate(TL):
     n = int(round(d * FPS))
     if kind == 'clip': AUD.append((T, s, d)); gen = clip_frames(s, d); last = None
+    if kind == 'mission': MT = T
     EV.append(T)
     for j in range(n):
         t = j / FPS; tg = T + t
         if kind == 'clip':
             fr = next(gen, None); last = fr if fr is not None else last
-            if PREV and not any(abs(tg - p) < 0.5 / FPS for p in PREV): continue
-            if i == 1: f = zoom(last, 1.0 + 0.45 * ease(t / 0.25), W * 0.56, H * 0.47)
+            if PREV and not any(abs(tg - p) < 0.5 / FPS for p in PREV) and j != n - 1: continue
+            if i == 1 and VARIANT != 'junior': f = zoom(last, 1.0 + 0.30 * ease(t / 0.6), W * 0.5, H * 0.52)
+            elif i == 1: f = zoom(last, 1.0 + 0.45 * ease(t / 0.25), W * 0.56, H * 0.47)
             elif i == 2: f = zoom(last, 1.0 + 0.10 * t / d, W * 0.5, H * 0.55)
             else: f = zoom(last, 1.0 + 0.04 * t / d)
+            if j == n - 1: FREEZE = f.copy()        # freeze without the caption
             for arr, t0 in CAP.get(i, []):
                 k = ease((t - t0) / 0.35)
                 if k > 0: f = over(f, arr, k, (1 - k) * 20)
+        elif kind == 'mission':
+            if PREV and not any(abs(tg - p) < 0.5 / FPS for p in PREV): continue
+            g = FREEZE.mean(2, keepdims=True); f = (FREEZE * 0.55 + g * 0.45) * (1 - 0.30 * smooth(t / 0.3))   # freeze, a little desaturated and darker
+            kp = min(1.0, t / 0.18); sc_ = 1.25 - 0.25 * ease(t / 0.25)
+            m1 = MISSION if sc_ <= 1.001 else _scaled(MISSION, sc_)
+            f = over(f, m1, kp); f = over(f, MSUB, ease((t - 0.45) / 0.35))
         else:
             if PREV and not any(abs(tg - p) < 0.5 / FPS for p in PREV): continue
             f = ENDA
         out = np.clip(f, 0, 255).astype(np.uint8)
-        if PREV: Image.fromarray(out).save(f'/tmp/claude-0/-home-user/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/gt_{tg:05.2f}.jpg', quality=85)
+        if PREV: Image.fromarray(out).save(f'/tmp/claude-0/-home-user/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/gt_{VARIANT}_{tg:05.2f}.jpg', quality=85)
         else: enc.stdin.write(out.tobytes())
     if kind == 'clip':
         for _ in gen: pass
@@ -146,8 +182,13 @@ for t0, s, d in AUD:                     # bench sound, low, so the trending aud
     a = np.frombuffer(raw, np.float32).reshape(-1, 2) * 0.35; i0 = int(t0 * sr); L = min(len(a), n - i0)
     fd = np.ones(L, np.float32); fl = int(0.03 * sr); fd[:fl] = np.linspace(0, 1, fl); fd[-fl:] = np.linspace(1, 0, fl)
     mix[i0:i0 + L] += a[:L] * fd[:, None]
+tt = np.arange(int(1.4 * sr)) / sr                                   # short 'mission' chime (soft major arpeggio)
+ch = np.zeros_like(tt)
+for k_, fq in enumerate((523.3, 659.3, 784.0, 1046.5)):
+    tk = np.clip(tt - k_ * 0.09, 0, None); ch += np.sin(2 * np.pi * fq * tk) * np.exp(-3.2 * tk) * (tt >= k_ * 0.09)
+i0 = int(MT * sr); L = min(len(ch), n - i0); mix[i0:i0 + L] += (ch[:L] * 0.09)[:, None].astype(np.float32)
 with wave.open(D + '_som.wav', 'wb') as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(sr); w.writeframes((np.clip(mix, -1, 1) * 32767).astype(np.int16).tobytes())
 subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', D + '_video.mp4', '-i', D + '_som.wav', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
-                '-shortest', '-movflags', '+faststart', D + 'reels-gta-vida-real.mp4'], check=True)
+                '-shortest', '-movflags', '+faststart', D + OUTNAME], check=True)
 print('ok', T)
