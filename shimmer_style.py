@@ -10,9 +10,11 @@ Rules from the brand owner:
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-S = '/tmp/claude-0/-home-user-print/081c4020-c9a3-5394-8b04-d630e012eb6b/scratchpad/'
-IMG = '/tmp/claude-0/-home-user-print/081c4020-c9a3-5394-8b04-d630e012eb6b/images/'
-GOLD_TEX = Image.open(IMG + '12.webp').convert('RGB')
+import os
+_HERE = os.path.dirname(os.path.abspath(__file__))
+S = os.path.join(_HERE, 'assets') + '/'                    # fonts live in assets/fonts (durable, in the repo)
+GOLD_TEX_PATH = os.path.join(_HERE, 'assets', 'textura-dourada.webp')   # brand gold texture (original images/12.webp)
+GOLD_TEX = Image.open(GOLD_TEX_PATH).convert('RGB') if os.path.exists(GOLD_TEX_PATH) else None
 WHITE = (255, 253, 248)
 CHAMPAGNE = np.array([212, 178, 108], np.float32)
 
