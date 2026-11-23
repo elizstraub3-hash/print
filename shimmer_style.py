@@ -13,7 +13,9 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
 _HERE = os.path.dirname(os.path.abspath(__file__))
 S = os.path.join(_HERE, 'assets') + '/'                    # fonts live in assets/fonts (durable, in the repo)
-GOLD_TEX_PATH = os.path.join(_HERE, 'assets', 'textura-dourada.webp')   # brand gold texture (original images/12.webp)
+# Brand gold textures chosen by Eliz (23/11/2026): always one of these three. Default: brushed gold (no watermark).
+GOLD_TEXTURES = {'escovado': 'ouro-3-escovado.jpg', 'folha': 'ouro-2-folha.jpg', 'liquido': 'ouro-1-liquido.jpg'}
+GOLD_TEX_PATH = os.path.join(_HERE, 'assets', 'texturas', GOLD_TEXTURES[os.environ.get('SHIMMER_OURO', 'escovado')])
 GOLD_TEX = Image.open(GOLD_TEX_PATH).convert('RGB') if os.path.exists(GOLD_TEX_PATH) else None
 WHITE = (255, 253, 248)
 CHAMPAGNE = np.array([212, 178, 108], np.float32)

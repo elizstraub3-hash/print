@@ -25,7 +25,10 @@ Implementado em `shimmer_style.py`.
 - **Números:** sempre retos (algarismos alinhados).
 
 ## Textura dourada
-- Usar a textura original (`images/12.webp`) **pura**, sem misturar com outras cores.
+- Usar SEMPRE uma das 3 texturas escolhidas pela Eliz em 23/11/2026, **pura**, sem misturar com outras cores (ficam em `assets/texturas/`):
+  - **ouro-3-escovado** (padrão: mais contraste e sem marca d'água)
+  - ouro-2-folha (folha de ouro, mais clara)
+  - ouro-1-liquido (tem marca d'água Vecteezy visível; usar só se houver versão licenciada)
 - A textura cobre **o texto inteiro**, como um PowerClip do Corel: cada parte das letras pega uma região diferente da textura (faixa clara, dourado médio, amarelo, tons escuros).
 - Sombra discreta embaixo e à direita.
 
