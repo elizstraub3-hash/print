@@ -124,6 +124,14 @@ END.append((np.asarray(e, np.float32), END0 + 1.1))
 
 # white fade from the top (requested) + light overall veil
 IVA = np.array(IV, np.float32)
+# end card background: the Shimmer logo pattern (from the website), tiled at 260 px like on the site
+_pt = Image.open(P + 'assets/pattern-logo.jpg').convert('RGB')        # one tile covers the frame (tiling showed seams)
+_sc = H / _pt.height; _pt = _pt.resize((round(_pt.width * _sc), H), Image.LANCZOS)
+_bg = _pt.crop(((_pt.width - W) // 2, 0, (_pt.width - W) // 2 + W, H))
+_bga = np.asarray(_bg, np.float32)
+_yy2 = np.arange(H, dtype=np.float32)[:, None, None]; _xx2 = np.arange(W, dtype=np.float32)[None, :, None]
+_glow = np.exp(-(((_xx2 - W / 2) / 520) ** 2 + ((_yy2 - 820) / 460) ** 2)) * 0.75     # soft ivory glow behind the text for legibility
+ENDBG = _bga * (1 - _glow) + IVA * _glow
 # white panel present through the whole video; footage behind it darkened (lower contrast, deeper blacks)
 PX0, PY0, PX1, PY1 = 60, 200, W - 60, 1410
 WP = Image.new('RGBA', (W, H), (0, 0, 0, 0))
@@ -185,7 +193,7 @@ def frame(bgf, t):
     f = np.asarray(img.convert('RGB'), np.float32)
     ke = smooth((t - END0) / 0.7)
     if ke > 0:
-        f = f * (1 - ke) + IVA * ke
+        f = f * (1 - ke) + ENDBG * ke
         for arr, t0 in END:
             k = ease_out((t - t0) / 0.7)
             if k > 0: f = comp_layer(f, arr, k, (1 - k) * 22)
