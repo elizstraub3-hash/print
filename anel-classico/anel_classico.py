@@ -58,10 +58,10 @@ def editorial():
     im = src.crop((2, 0, 2 + W, H))                            # native pixels, crop only
     a = np.asarray(im, np.float32)
     yy = np.arange(H, dtype=np.float32)[:, None, None] / H
-    x = np.clip((yy - 0.64) / (0.83 - 0.64), 0, 1); f = x * x * (3 - 2 * x) * 0.95
+    x = np.clip((yy - 0.58) / (0.77 - 0.58), 0, 1); f = x * x * (3 - 2 * x) * 0.95
     a = a * (1 - f) + np.array([250, 247, 241], np.float32) * f
     im = Image.fromarray(a.astype('uint8')).convert('RGBA')
-    y = C(im, solid_text('TENDÊNCIAS PASSAM.', caps_font(32, 700), BR, 10), 1105)
+    y = C(im, solid_text('TENDÊNCIAS PASSAM.', caps_font(32, 700), BR, 10), 1020)
     y = C(im, shadowed(gold_text('Joias ficam.', script_font(150))), y + 4)
     C(im, solid_text('USE JOIAS QUE DUREM · GARANTIA VITALÍCIA', caps_font(22, 600), BR, 3), y + 14)
     return im
