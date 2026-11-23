@@ -29,10 +29,10 @@ def C(im, lay, y): paste(im, lay, W / 2, y, anchor='center'); return y + ink_siz
 
 
 layers = []
-a = L(); y = C(a, shadowed(solid_text('SEGUNDA-FEIRA', caps_font(int(32 * k), 600), IVT, int(12 * k))), 250)
+a = L(); y = C(a, shadowed(solid_text('SEGUNDA-FEIRA', caps_font(int(32 * k), 600), IVT, int(12 * k))), 150)
 m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).line([(W / 2 - 50 * k, y + 22 * k), (W / 2 + 50 * k, y + 22 * k)], fill=255, width=3); a.alpha_composite(gold_fill(m))
 layers.append((a, 0.2))
-b = L(); y = C(b, shadowed(gold_text('Ótima semana', script_font(int(150 * k)))), y + 44 * k); layers.append((b, 0.6))
+b = L(); y = C(b, shadowed(gold_text('Ótima semana', script_font(int(132 * k)))), y + 44 * k); layers.append((b, 0.6))
 c = L(); y = C(c, shadowed(solid_text('que ela brilhe tanto quanto as nossas joias', sans(int(36 * k), 600), IVT)), y + 22 * k); layers.append((c, 1.4))
 d = L(); t = shadowed(solid_text('e fique de olho: sexta tem Black Friday', sans(int(32 * k), 500), IVT))
 tw = ink_size(t)[0]; e = emoji('🖤', int(38 * k))
@@ -45,9 +45,9 @@ def ease(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
 
 
 def frame(t):
-    z = 1.0 + 0.035 * t / DUR                                  # slow push-in toward the hand (bottom)
+    z = 1.0 + 0.035 * t / DUR                                  # slow push-in
     cw, ch = W / z, H / z
-    f = np.asarray(src.crop(((W - cw) / 2, H - ch, (W + cw) / 2, H)).resize((W, H), Image.LANCZOS), np.float32)
+    f = np.asarray(src.crop(((W - cw) / 2, 0, (W + cw) / 2, ch)).resize((W, H), Image.LANCZOS), np.float32)   # anchored at the top: the jewellery drifts away from the text
     for arr, t0 in LA:
         kk = ease((t - t0) / 0.6)
         if kk <= 0: continue
