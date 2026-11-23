@@ -1,8 +1,9 @@
 """Background plate (60 s): attendance clips from the Drive, slowed 1.3x, upscaled + softly blurred, crossfaded."""
 import subprocess
 V = '/home/user/print/videos-drive/'
-SEG = [('IMG_2564.MOV', 10.8, 18.5), ('IMG_0250.MOV', 0, 10.1), ('IMG_0255.MOV', 0, 5.7), ('IMG_0258.MOV', 0, 4.4),
-       ('IMG_0259.MOV', 0, 10.1), ('IMG_0248.MOV', 12, 18), ('IMG_0250.MOV', 2, 8)]
+# opens with the door + the store, no repeated clips, ends with both sitting at the desk
+SEG = [('IMG_2564.MOV', 0, 10.8), ('IMG_0250.MOV', 0, 10.1), ('IMG_0255.MOV', 0, 5.7), ('IMG_0258.MOV', 0, 4.4),
+       ('IMG_0259.MOV', 0, 10.1), ('IMG_2564.MOV', 10.8, 18.5)]
 SL, XF = 1.3, 0.6
 ins, fl, durs = [], [], []
 for i, (f, a, b) in enumerate(SEG):

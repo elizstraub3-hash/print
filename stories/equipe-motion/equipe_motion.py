@@ -13,6 +13,7 @@ W, H, FPS, DUR = 1080, 1920, 30, 60.0
 INK = (58, 45, 34); BR = (118, 88, 38); IV = (250, 247, 241)
 PREV = [float(x) for x in sys.argv[1:]]
 WHOOSH = []                                     # (time, strength)
+CLICKS = []                                     # tap on the middle card
 
 
 def ease_out(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
@@ -47,10 +48,10 @@ block([('caps', 'TÁ PROCURANDO ONDE COMPRAR', 40), ('script', 'a sua aliança?'
 block([('caps', 'OU UM SOLITÁRIO PARA', 46), ('script', 'pedir ela em casamento?', 160)], 9.2, 17.6)
 block([('caps', 'OU UM PRESENTE ESPECIAL,', 46), ('script', 'anel de formatura?', 170)], 18.2, 25.6)
 y = block([('caps', 'AQUI A GENTE', 46), ('script', 'faz pra você', 180)], 26.2, 35.6)
-block([('sub', 'ATENDIMENTO ESPECIALIZADO', 40), ('sub', 'NOSSA EQUIPE ESTÁ PRONTA', 36), ('sub', 'PARA TE ATENDER COM CALMA', 36)], 28.2, 35.6, y=y + 30, gap=14, stagger=0.5)
+block([('sub', 'ATENDIMENTO ESPECIALIZADO', 40), ('sub', 'NA LOJA OU ONLINE', 36), ('sub', 'NOSSA EQUIPE TE ATENDE COM CALMA', 34)], 28.2, 35.6, y=y + 30, gap=14, stagger=0.5)
 block([('caps', 'É SIMPLES ASSIM', 46), ('script', 'como funciona', 170)], 36.2, 46.6)
-y = block([('caps', 'GOSTOU DE ALGUMA?', 46), ('script', 'é só chamar', 180)], 47.2, 53.6)
-block([('sub', 'MANDE NO DIRECT', 38), ('sub', 'OU PELO LINK NA BIO', 38)], 48.6, 53.6, y=y + 30, gap=14, stagger=0.4)
+y = block([('caps', 'GOSTOU DE ALGUMA PEÇA?', 42), ('script', 'é só chamar', 180)], 47.0, 53.6)
+block([('sub', 'VEJA NO INSTAGRAM E NO SITE', 34), ('sub', 'GRAVAMOS UM VÍDEO DA PEÇA', 34), ('sub', 'OU FAZEMOS VIDEOCHAMADA', 34), ('sub', 'CHAME NO DIRECT · LINK NA BIO', 34)], 48.0, 53.6, y=y + 30, gap=22, stagger=0.45)
 
 # ---------- product cards ----------
 def card(path, w=380, h=480, ang=0):
@@ -77,7 +78,12 @@ def fan(paths, t0, t1, cy=1100):
     angs = [-7, 0, 7] if len(paths) == 3 else [-5, 5]
     order = [0, 2, 1] if len(paths) == 3 else [0, 1]          # middle card lands last, on top
     for k, i in enumerate(order):
-        CARDS.append((card(paths[i]), xs[i], cy + (0 if angs[i] == 0 else 30), angs[i], t0 + 0.45 * k, t1))
+        hero = (angs[i] == 0)
+        c = card(paths[i])
+        if not hero: c = c.resize((int(c.width * 0.8), int(c.height * 0.8)), Image.LANCZOS)   # side cards stay small
+        xx = xs[i] if hero else (W / 2 + (xs[i] - W / 2) * 0.95)
+        CARDS.append((c, xx, cy + (0 if hero else 20), angs[i], t0 + 0.45 * k, t1, hero))
+        if hero: CLICKS.append(t0 + 0.45 * k + 1.3)
         if k == 0: WHOOSH.append((t0, 0.6))
 
 
@@ -92,7 +98,7 @@ PANEL = Image.new('RGBA', (W, H), (0, 0, 0, 0))
 pm = Image.new('L', (W, H), 0); ImageDraw.Draw(pm).rounded_rectangle([90, 700, W - 90, 1330], 36, fill=255)
 pl = Image.new('RGBA', (W, H), IV + (0,)); pl.putalpha(pm.point(lambda v: int(v * 0.93))); PANEL.alpha_composite(pl)
 fm = Image.new('L', (W, H), 0); ImageDraw.Draw(fm).rounded_rectangle([90, 700, W - 90, 1330], 36, outline=255, width=3); PANEL.alpha_composite(gold_fill(fm))
-for i, (a, b) in enumerate([('AGENDE O SEU HORÁRIO', 'pelo direct ou link na bio'), ('VENHA ATÉ A LOJA', 'Al. Dr. Muricy, 650 · 8º andar · Centro'),
+for i, (a, b) in enumerate([('AGENDE O SEU HORÁRIO', 'pelo direct ou link na bio'), ('NA LOJA OU ONLINE', 'visita no 8º andar ou videochamada'),
                             ('ESCOLHA COM CALMA', 'entre as diversas opções que temos')]):
     lay = Image.new('RGBA', (W, H), (0, 0, 0, 0)); yb = 760 + i * 190
     n = gold_text(str(i + 1), script_font(120)); paste(lay, n, 160, yb)
@@ -183,13 +189,24 @@ def frame(bgf, t):
             a = WMASK * kw
             f[WY0:WY1, WX0:WX1] = f[WY0:WY1, WX0:WX1] * (1 - a) + win * a
     img = Image.fromarray(np.clip(f, 0, 255).astype(np.uint8)).convert('RGBA')
-    for c, cx, cy, ang, t0, t1 in CARDS:
+    for c, cx, cy, ang, t0, t1, hero in CARDS:
         if t < t0 or t > t1 + 0.6: continue
         kin = back((t - t0) / 0.75); kout = smooth((t - t1) / 0.5)
         a = ang + (1 - kin) * 14 - kout * 10
         px = cx + (1 - kin) * 760 - kout * 900
-        r = c.rotate(a, resample=Image.BICUBIC, expand=True)
+        cc = c
+        if hero:                                   # tap: tiny press, then the middle card grows a little
+            tc = t0 + 1.3
+            sc = 1 - 0.04 * math.sin(math.pi * min(max((t - tc) / 0.22, 0), 1)) + 0.16 * ease_out((t - tc - 0.15) / 0.45)
+            if abs(sc - 1) > 0.002: cc = c.resize((int(c.width * sc), int(c.height * sc)), Image.LANCZOS)
+        r = cc.rotate(a, resample=Image.BICUBIC, expand=True)
         img.alpha_composite(r, (int(px - r.width / 2), int(cy - r.height / 2)))
+        if hero and tc - 0.1 < t < tc + 0.7:       # tap ripple
+            kk = (t - tc + 0.1) / 0.8; rad = 26 + 70 * ease_out(kk); al = int(150 * (1 - kk))
+            rip = Image.new('RGBA', (W, H), (0, 0, 0, 0)); dd = ImageDraw.Draw(rip)
+            dd.ellipse([px - rad, cy + 60 - rad, px + rad, cy + 60 + rad], outline=(255, 255, 255, al), width=5)
+            if kk < 0.45: dd.ellipse([px - 24, cy + 36, px + 24, cy + 84], fill=(255, 255, 255, int(120 * (1 - kk / 0.45))))
+            img.alpha_composite(rip)
     f = np.asarray(img.convert('RGB'), np.float32)
     ke = smooth((t - END0) / 0.7)
     if ke > 0:
@@ -236,6 +253,9 @@ def audio(path):
         pl = np.sin(2 * np.pi * chords[k % 4][0] * 2 * tt) * np.exp(-2.5 * tt) * 0.022
         pad[a0:a1] += pl
     out += pad * np.clip(t / 2, 0, 1) * np.clip((DUR - t) / 2.5, 0, 1)
+    for tc in CLICKS:                                     # soft 'tap' click
+        i0 = int(tc * sr); L = int(0.06 * sr); tt = np.arange(L) / sr
+        out[i0:i0 + L] += (np.sin(2 * np.pi * 1800 * tt) * np.exp(-90 * tt) * 0.06).astype(np.float32)
     out = np.tanh(out * 1.2) * 0.8
     st = (np.stack([out, out], 1) * 32767).astype(np.int16)
     with wave.open(path, 'wb') as w: w.setnchannels(2); w.setsampwidth(2); w.setframerate(sr); w.writeframes(st.tobytes())

@@ -18,11 +18,12 @@ Ou um solitário… para pedir ela em casamento?
 Ou um presente especial… como um anel de formatura?
 <break time="1.5s" />
 Aqui, a gente faz pra você.
-Com atendimento especializado… e uma equipe pronta para te atender com calma.
+Com atendimento especializado, na loja ou online… e uma equipe pronta para te atender com calma.
 <break time="1.5s" />
-É simples: você agenda o seu horário… vem até a loja… e escolhe, com tranquilidade, entre as diversas opções que temos.
+É simples: você agenda o seu horário… vem até a loja, ou faz uma videochamada… e escolhe, com tranquilidade, entre as diversas opções que temos.
 <break time="1.2s" />
-Gostou de alguma?
+Gostou de alguma peça?
+Veja no nosso Instagram e no nosso site… a gente grava um vídeo da peça pra você, ou faz uma videochamada.
 É só chamar no direct… ou pelo link na bio.
 <break time="1.0s" />
 Shimmer Joias. A sua próxima joia te espera aqui.
@@ -36,7 +37,7 @@ Shimmer Joias. A sua próxima joia te espera aqui.
 | Formatura | 18–26 s | "Ou um presente especial… como um anel de formatura?" |
 | Equipe | 26–36 s | "Aqui, a gente faz pra você…" |
 | Como funciona | 36–47 s | "É simples: você agenda…" |
-| Direct | 47–54 s | "Gostou de alguma? É só chamar…" |
+| Direct | 47–54 s | "Gostou de alguma peça? Veja no Instagram… a gente grava um vídeo…" |
 | Final | 54–60 s | "Shimmer Joias. A sua próxima joia te espera aqui." |
 
 Se a narração ficar mais longa ou mais curta, eu ajusto o tempo das cenas ao áudio.
