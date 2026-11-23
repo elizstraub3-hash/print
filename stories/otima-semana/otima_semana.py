@@ -8,11 +8,32 @@ from story_nativo_lib import emoji
 
 D = '/home/user/print/stories/otima-semana/'
 IVT = (255, 251, 243)
-FPS, DUR = 30, 7.0
+FPS, DUR = 30, 9.0
 src = Image.open(D + 'fundo-6.png').convert('RGB')
 W, H = src.width + src.width % 2, src.height
 src = src.resize((W, H), Image.LANCZOS) if W != src.width else src
 k = W / 1080
+SEAM = 488                      # straight line where the photo was extended upward (tray top cut flat)
+RING = (362, 1206)              # green-stone ring on her hand
+
+
+def plate(img):
+    a = np.asarray(img, np.float32)
+    # soften the hard seam: feathered blend with a vertically blurred copy, only around the line
+    bl = np.asarray(img.filter(ImageFilter.GaussianBlur(18)), np.float32)
+    yy = np.arange(img.height, dtype=np.float32)[:, None, None]
+    m = np.exp(-((yy - SEAM) / 34) ** 2)
+    a = a * (1 - m) + bl * m
+    # warm cocoa gradient from the top, melting away below the tray edge (smoothstep)
+    x = np.clip((yy - 440) / (800 - 440), 0, 1); sm = x * x * (3 - 2 * x)
+    alpha = 0.86 * (1 - sm)
+    cocoa = np.array([46, 31, 22], np.float32)
+    a = a * (1 - alpha) + cocoa * alpha
+    # a hair-thin gold rule where the gradient ends, like a frame edge
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+
+
+src = plate(src)
 
 
 def shadowed(lay_bb, blur=7, alpha=0.55, dy=3):
@@ -44,19 +65,26 @@ LA = [(np.asarray(l, np.float32), t0) for l, t0 in layers]
 def ease(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
 
 
+def smooth(x): x = min(max(x, 0), 1); return x * x * (3 - 2 * x)
+
+
 def frame(t):
-    z = 1.0 + 0.035 * t / DUR                                  # slow push-in
+    zk = smooth((t - 3.0) / 4.3)                               # 3.0 s -> 7.3 s: travel to the ring
+    z = 1.0 + 0.02 * min(t, 3.0) / 3.0 + 0.98 * zk
+    cx = W / 2 + (RING[0] - W / 2) * zk; cy = H / 2 + (RING[1] - H / 2) * zk
     cw, ch = W / z, H / z
-    f = np.asarray(src.crop(((W - cw) / 2, 0, (W + cw) / 2, ch)).resize((W, H), Image.LANCZOS), np.float32)   # anchored at the top: the jewellery drifts away from the text
+    x0 = min(max(cx - cw / 2, 0), W - cw); y0 = min(max(cy - ch / 2, 0), H - ch)
+    f = np.asarray(src.crop((x0, y0, x0 + cw, y0 + ch)).resize((W, H), Image.LANCZOS), np.float32)
+    fade = 1 - smooth((t - 3.0) / 0.7)                          # titles leave as the camera moves in
     for arr, t0 in LA:
-        kk = ease((t - t0) / 0.6)
+        kk = ease((t - t0) / 0.6) * fade
         if kk <= 0: continue
-        lay = np.roll(arr, int(round((1 - kk) * 18)), axis=0); al = lay[..., 3:4] / 255 * kk
+        lay = np.roll(arr, int(round((1 - ease((t - t0) / 0.6)) * 18)), axis=0); al = lay[..., 3:4] / 255 * kk
         f = f * (1 - al) + lay[..., :3] * al
     return np.clip(f, 0, 255).astype(np.uint8)
 
 
-Image.fromarray(frame(6.9)).save(D + 'story-otima-semana.jpg', quality=95, subsampling=0)
+Image.fromarray(frame(2.9)).save(D + 'story-otima-semana.jpg', quality=95, subsampling=0)
 enc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
                         '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo', '-shortest', '-c:v', 'libx264', '-preset', 'slow', '-crf', '15',
                         '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-c:a', 'aac', D + 'story-otima-semana.mp4'], stdin=subprocess.PIPE)
