@@ -21,7 +21,7 @@ def back(x):
     x = min(max(x, 0), 1); c = 1.4; return 1 + (c + 1) * (x - 1) ** 3 + c * (x - 1) ** 2
 
 
-def fit_script(text, size, maxw=840):
+def fit_script(text, size, maxw=900):
     while True:
         lay = gold_text(text, script_font(size))
         if ink_size(lay)[0] <= maxw or size < 60: return lay
@@ -43,14 +43,14 @@ def block(lines, t0, t1, y=270, gap=16, stagger=0.35):
     return y
 
 
-block([('caps', 'TÁ PROCURANDO ONDE COMPRAR', 34), ('script', 'a sua aliança?', 140)], 0.4, 8.6)
-block([('caps', 'OU UM SOLITÁRIO PARA', 34), ('script', 'pedir ela em casamento?', 120)], 9.2, 17.6)
-block([('caps', 'OU UM PRESENTE ESPECIAL,', 34), ('script', 'anel de formatura?', 130)], 18.2, 25.6)
-y = block([('caps', 'AQUI A GENTE', 34), ('script', 'faz pra você', 140)], 26.2, 35.6)
-block([('sub', 'ATENDIMENTO ESPECIALIZADO', 30), ('sub', 'NOSSA EQUIPE ESTÁ PRONTA', 26), ('sub', 'PARA TE ATENDER COM CALMA', 26)], 28.2, 35.6, y=y + 30, gap=14, stagger=0.5)
-block([('caps', 'É SIMPLES ASSIM', 34), ('script', 'como funciona', 130)], 36.2, 46.6)
-y = block([('caps', 'GOSTOU DE ALGUMA?', 34), ('script', 'é só chamar', 140)], 47.2, 53.6)
-block([('sub', 'MANDE NO DIRECT', 28), ('sub', 'OU PELO LINK NA BIO', 28)], 48.6, 53.6, y=y + 30, gap=14, stagger=0.4)
+block([('caps', 'TÁ PROCURANDO ONDE COMPRAR', 40), ('script', 'a sua aliança?', 180)], 0.4, 8.6)
+block([('caps', 'OU UM SOLITÁRIO PARA', 46), ('script', 'pedir ela em casamento?', 160)], 9.2, 17.6)
+block([('caps', 'OU UM PRESENTE ESPECIAL,', 46), ('script', 'anel de formatura?', 170)], 18.2, 25.6)
+y = block([('caps', 'AQUI A GENTE', 46), ('script', 'faz pra você', 180)], 26.2, 35.6)
+block([('sub', 'ATENDIMENTO ESPECIALIZADO', 40), ('sub', 'NOSSA EQUIPE ESTÁ PRONTA', 36), ('sub', 'PARA TE ATENDER COM CALMA', 36)], 28.2, 35.6, y=y + 30, gap=14, stagger=0.5)
+block([('caps', 'É SIMPLES ASSIM', 46), ('script', 'como funciona', 170)], 36.2, 46.6)
+y = block([('caps', 'GOSTOU DE ALGUMA?', 46), ('script', 'é só chamar', 180)], 47.2, 53.6)
+block([('sub', 'MANDE NO DIRECT', 38), ('sub', 'OU PELO LINK NA BIO', 38)], 48.6, 53.6, y=y + 30, gap=14, stagger=0.4)
 
 # ---------- product cards ----------
 def card(path, w=380, h=480, ang=0):
@@ -84,7 +84,7 @@ def fan(paths, t0, t1, cy=1100):
 SITE = '/home/user/shimmer-joias-/images/'      # edited product photos from the Shimmer website
 fan([SITE + 'SH-1052.jpg', SITE + 'SH-1087.jpg', SITE + 'SH-1058.jpg'], 1.6, 8.6)
 fan([SITE + 'SH-1018.jpg', SITE + 'SH-1061.jpg', SITE + 'SH-1014.jpg'], 10.4, 17.6)
-fan([SITE + 'SH-1046.jpg', SITE + 'SH-1045b.jpg'], 19.4, 25.6)
+fan([SITE + 'SH-1019.jpg', SITE + 'SH-1082.jpg', SITE + 'SH-1050.jpg'], 19.4, 25.6)   # anéis de formatura do site
 
 # ---------- 'como funciona' steps on an ivory panel ----------
 STEPS = []
@@ -96,8 +96,8 @@ for i, (a, b) in enumerate([('AGENDE O SEU HORÁRIO', 'pelo direct ou link na bi
                             ('ESCOLHA COM CALMA', 'entre as diversas opções que temos')]):
     lay = Image.new('RGBA', (W, H), (0, 0, 0, 0)); yb = 760 + i * 190
     n = gold_text(str(i + 1), script_font(120)); paste(lay, n, 160, yb)
-    paste(lay, solid_text(a, caps_font(32, 700), INK, 4), 280, yb + 18)
-    paste(lay, solid_text(b, sans(28, 500), PARCEL_COLOR), 282, yb + 78)
+    paste(lay, solid_text(a, caps_font(40, 700), INK, 3), 270, yb + 14)
+    paste(lay, solid_text(b, sans(33, 500), PARCEL_COLOR), 272, yb + 80)
     STEPS.append((np.asarray(lay, np.float32), 38.0 + i * 1.6))
 PANELA = np.asarray(PANEL, np.float32)
 
@@ -111,14 +111,14 @@ sh = Image.new('RGBA', (W, H), (60, 45, 25, 0)); a = Image.new('L', (W, H), 0); 
 sh.putalpha(a.filter(ImageFilter.GaussianBlur(4)).point(lambda v: int(v * 0.35))); lg.alpha_composite(sh); lg.alpha_composite(LOGO, (lx, ly))
 END.append((np.asarray(lg, np.float32), END0 + 0.2))
 e = Image.new('RGBA', (W, H), (0, 0, 0, 0)); y = 640
-y = 640; t = solid_text('A SUA PRÓXIMA JOIA', caps_font(36, 600), INK, 6); paste(e, t, W / 2, y, anchor='center'); y += ink_size(t)[1] + 18
-t = gold_text('te espera aqui', script_font(150)); paste(e, t, W / 2, y, anchor='center'); y += ink_size(t)[1]
+y = 640; t = solid_text('A SUA PRÓXIMA JOIA', caps_font(46, 600), INK, 6); paste(e, t, W / 2, y, anchor='center'); y += ink_size(t)[1] + 18
+t = gold_text('te espera aqui', script_font(180)); paste(e, t, W / 2, y, anchor='center'); y += ink_size(t)[1]
 END.append((np.asarray(e, np.float32), END0 + 0.4))
 e = Image.new('RGBA', (W, H), (0, 0, 0, 0))
 m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).line([(W / 2 - 60, y + 50), (W / 2 + 60, y + 50)], fill=255, width=3); e.alpha_composite(gold_fill(m))
 y += 96
-for txt, f, col in [('AGENDE SUA VISITA · LINK NA BIO', caps_font(32, 600), BR), ('Al. Dr. Muricy, 650 · 8º andar · Centro · Curitiba', sans(28, 500), PARCEL_COLOR),
-                    ('Ouro 18k · garantia vitalícia · 10x sem juros', sans(28, 500), PARCEL_COLOR)]:
+for txt, f, col in [('AGENDE SUA VISITA · LINK NA BIO', caps_font(40, 600), BR), ('Al. Dr. Muricy, 650 · 8º andar · Centro · Curitiba', sans(34, 500), PARCEL_COLOR),
+                    ('Ouro 18k · garantia vitalícia · 10x sem juros', sans(34, 500), PARCEL_COLOR)]:
     t = solid_text(txt, f, col, 4 if col == BR else 0); paste(e, t, W / 2, y, anchor='center'); y += ink_size(t)[1] + 24
 END.append((np.asarray(e, np.float32), END0 + 1.1))
 
