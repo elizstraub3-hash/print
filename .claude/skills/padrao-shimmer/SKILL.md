@@ -34,7 +34,11 @@ Regras completas e histórico: `IDENTIDADE-SHIMMER.md` na raiz do repositório. 
 
 ## Formatos
 - Feed 1080×1350 · Story/Reels 1080×1920 (zona segura: texto entre y≈250 e y≈1600).
-- Story em vídeo: textos entram subindo suave (ease 0,6 s), fecho em fundo marfim com CTA.
+- Story em vídeo: textos entram subindo suave (ease 0,6 s), fecho com CTA.
+- **Quadro final de vídeo:** fundo com o **pattern da logo** (`assets/pattern-logo.jpg`, o mesmo do site) + logo original + CTA.
+- **Sons:** discretos (um swoosh suave por cena, no máximo). Nada exagerado.
+- **Fotos de produto:** só as editadas (site: `shimmer-joias-/images/SH-*.jpg`, ou as editadas do Drive). Formatura = SH-1019, SH-1047, SH-1050, SH-1082 (SH-1045/1046 são anéis personalizados).
+- **Letras em Story:** caps ≥ 40 px, script ≥ 160 px (em 1080×1920).
 - Vídeo de baixa resolução (ex.: 320p do Drive/WhatsApp): serve para Story, **não** para Reels. Pedir o original ("Todos os dados das fotos" no iPhone).
 
 ## Antes de entregar (checklist)
