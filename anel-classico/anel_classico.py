@@ -67,7 +67,34 @@ def editorial():
     return im
 
 
+def delicado_slide():
+    """Slide 1: ANEL CLÁSSICO over 'Delicado'; 'NO DEDO,' beside it, 'ETERNO NA HISTÓRIA' below. Swipe hint."""
+    src = Image.open(D + 'classico-2.png').convert('RGB')
+    im = src.crop((3, 0, 3 + W, H)).convert('RGBA')
+    band_top(im, a1=0.32)
+    y = 58
+    c = solid_text('ANEL CLÁSSICO', caps_font(40, 500), INK, 3); paste(im, c, M + 6, y)
+    ys = y + ink_size(c)[1] + 4
+    sc = shadowed(gold_text('Delicado', script_font(210))); paste(im, sc, M - 4, ys)
+    sw, sh = ink_size(sc)
+    nd = solid_text('NO DEDO,', caps_font(34, 600), BR, 4)
+    paste(im, nd, M - 4 + sw + 26, ys + sh * 0.52 - ink_size(nd)[1] / 2)      # beside the script word
+    et = solid_text('ETERNO NA HISTÓRIA', caps_font(34, 600), BR, 4)
+    paste(im, et, M + 6, ys + sh + 16)                                         # right below
+    hint = solid_text('ARRASTE PARA O LADO  →', sans(18, 700), LABEL_COLOR, 2)
+    paste(im, hint, W - M - ink_size(hint)[0], H - 66)
+    return im
+
+
+def clean_slide():
+    """Slide 2: the other photo, clean (no text), native crop."""
+    src = Image.open(D + 'classico-1.png').convert('RGB')
+    return src.crop((3, 0, 3 + W, H))
+
+
 if __name__ == '__main__':
+    delicado_slide().convert('RGB').save(D + 'carrossel-01-delicado.jpg', quality=100, subsampling=0)
+    clean_slide().save(D + 'carrossel-02-foto.jpg', quality=100, subsampling=0)
     photo_slide('classico-1.png', 'ANEL CLÁSSICO', 'Para sempre', ['ALGUMAS ESCOLHAS', 'A GENTE FAZ UMA VEZ SÓ']).convert('RGB').save(D + '01-anel-classico.jpg', quality=100, subsampling=0)
     photo_slide('classico-2.png', 'ANEL CLÁSSICO', 'Delicado', ['NO DEDO,', 'ETERNO NA HISTÓRIA']).convert('RGB').save(D + '02-anel-classico.jpg', quality=100, subsampling=0)
     editorial().convert('RGB').save(D + 'joias-que-ficam.jpg', quality=100, subsampling=0)
