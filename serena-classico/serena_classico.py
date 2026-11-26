@@ -196,11 +196,11 @@ def story_plate(name, W0, oy_canvas, scale=1.0):
 def L(): return Image.new('RGBA', (SW, SH), (0, 0, 0, 0))
 
 
-def cta_layers(y0, pix, parc):
+def cta_layers(y0, pix, parc, cta='CHAME NO DIRECT'):
     a = L(); y = C(a, solid_text(pix, sans(52, 600), PRICE_COLOR), y0)
     y = C(a, solid_text(parc, sans(30, 500), PARCEL_COLOR), y + 14)
     y = C(a, solid_text('OURO 18K · GARANTIA VITALÍCIA', caps_font(28, 600), BR, 4), y + 18)
-    b = L(); t = solid_text('CHAME NO DIRECT', caps_font(34, 700), BR, 5); w, h = ink_size(t)
+    b = L(); t = solid_text(cta, caps_font(34, 700), BR, 5); w, h = ink_size(t)
     box = [SW / 2 - w / 2 - 50, y + 34, SW / 2 + w / 2 + 50, y + 34 + h + 46]
     mk = Image.new('L', (SW, SH), 0); ImageDraw.Draw(mk).rounded_rectangle(box, radius=(h + 46) // 2, fill=255)
     pl = Image.new('RGBA', (SW, SH), (255, 253, 249, 0)); pl.putalpha(mk.point(lambda v: int(v * 0.95))); b.alpha_composite(pl)
@@ -239,6 +239,15 @@ def story_classico():
     story(plate, [(a, 0.3), (b, 0.8), (c, 1.6)], cta_layers(1440, CL_PIX_STORY, CL_PARC), 'story-classico')
 
 
+def story_classico_ads():
+    # versão anúncio: CTA WhatsApp e bloco acima da faixa do botão da Meta (y < ~1580)
+    plate = story_plate('classico-cetim-2.png', 1080, 236)
+    a = L(); y = C(a, solid_text('ANEL SOLITÁRIO', caps_font(46, 500), INK, 6), 300)
+    b = L(); y = C(b, shadowed(gold_text('Clássico', script_font(230))), y + 8)
+    c = L(); C(c, solid_text('DELICADO E ATEMPORAL', caps_font(32, 600), BR, 5), y + 24)
+    story(plate, [(a, 0.3), (b, 0.8), (c, 1.6)], cta_layers(1262, CL_PIX_STORY, CL_PARC, 'CHAME NO WHATSAPP'), 'story-classico-anuncio')
+
+
 def story_serena():
     plate = story_plate('serena-editada.png', 1080, 360, scale=0.84)  # stone ~y 655, band ends ~y 1440
     a = L(); y = C(a, solid_text('ANEL SOLITÁRIO', caps_font(46, 500), INK, 6), 262)
@@ -253,4 +262,6 @@ if __name__ == '__main__':
         c1(); c2(); c3(); c4(); r1(); r2(); r3(); r4()
     if what in ('all', 'stories'):
         story_classico(); story_serena()
+    if what == 'ads':
+        story_classico_ads()
     print('ok')
