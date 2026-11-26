@@ -50,7 +50,11 @@ TX = [
     (27.6, 33.3, bubble(['E esse aqui vai virar', 'pedido de casamento'], '💍'), 300),
     (29.6, 33.3, bubble(['Quer o seu? Chama no direct'], '📩', size=46), 1470),
 ]
-STK = sticker('SHIMMER JOIAS', '📍')
+LOGO = Image.open('/home/user/print/marca/logo-oficial.png').convert('RGBA')
+LOGO = LOGO.resize((300, round(LOGO.height * 300 / LOGO.width)), Image.LANCZOS)   # só reduz, logo original
+STK = Image.new('RGBA', (LOGO.width + 56, LOGO.height + 36), (0, 0, 0, 0))
+ImageDraw.Draw(STK).rounded_rectangle([0, 0, STK.width - 1, STK.height - 1], 22, fill=(255, 255, 255, 230))
+STK.alpha_composite(LOGO, (28, 18))
 
 
 def ease(x): x = min(max(x, 0), 1); return 1 - (1 - x) ** 3
@@ -72,7 +76,7 @@ for n, fr in enumerate(frames()):
     t = n / FPS
     if PREV and not any(abs(t - p) < 0.5 / FPS for p in PREV): continue
     img = Image.fromarray(fr).convert('RGBA')
-    img.alpha_composite(STK, (60, 190))
+    img.alpha_composite(STK, ((W - STK.width) // 2, 140))
     for t0, t1, L, y in TX:
         if not (t0 <= t < t1 + 0.25): continue
         k = ease((t - t0) / 0.35) * (1 - ease((t - t1) / 0.25))
