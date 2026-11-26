@@ -25,7 +25,7 @@ def sh(lay_bb, blur=6, alpha=0.28):
 layers = []
 a = L(); y = C(a, solid_text('BLACK FRIDAY SHIMMER', caps_font(int(40 * k), 600), INK, int(7 * k)), int(235 * k)); layers.append((a, 0.3))
 b = L(); y = C(b, sh(gold_text('Pulseira Trevo', script_font(int(180 * k)))), y + int(14 * k)); layers.append((b, 0.8))
-c = L(); y = C(c, solid_text('GARANTIA VITALÍCIA', caps_font(int(30 * k), 600), BR, int(5 * k)), y + int(30 * k)); layers.append((c, 1.5))
+c = L(); y = C(c, solid_text('OURO 18K · GARANTIA VITALÍCIA', caps_font(int(30 * k), 600), BR, int(5 * k)), y + int(30 * k)); layers.append((c, 1.5))
 m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).line([(W / 2 - 55 * k, y + 34 * k), (W / 2 + 55 * k, y + 34 * k)], fill=255, width=3); c.alpha_composite(gold_fill(m))
 d = L(); y2 = C(d, solid_text('10% OFF À VISTA', sans(int(54 * k), 700), PRICE_COLOR), y + int(70 * k))
 y2 = C(d, solid_text('ou até 10x sem juros', sans(int(36 * k), 500), PARCEL_COLOR), y2 + int(14 * k)); layers.append((d, 2.4))
