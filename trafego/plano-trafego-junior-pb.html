@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Plano de Tráfego Shimmer PB</title>
+<style>
+@font-face{font-family:Cinzel;src:url(../assets/fonts/Cinzel.ttf)}
+@font-face{font-family:Parisienne;src:url(../assets/fonts/Parisienne.ttf)}
+@font-face{font-family:Montserrat;src:url(../assets/fonts/Montserrat.ttf)}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Montserrat,sans-serif;color:#3a2d22;background:#faf7f1;font-size:10.5pt;line-height:1.45}
+.page{width:210mm;height:297mm;padding:16mm 16mm 14mm;position:relative;overflow:hidden;page-break-after:always;background:#faf7f1}
+.page:last-child{page-break-after:auto}
+.ouro{background:url(../assets/texturas/ouro-3-escovado.jpg) center/cover;-webkit-background-clip:text;background-clip:text;color:transparent}
+.caps{font-family:Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.script{font-family:Parisienne,cursive;font-weight:400}
+h1.script{font-size:58pt;line-height:1.05}
+h2{font-family:Cinzel,serif;font-size:15pt;letter-spacing:.1em;text-transform:uppercase;color:#3a2d22;margin:0 0 3mm}
+h2 small{display:block;font-family:Montserrat;font-size:8.5pt;letter-spacing:.04em;text-transform:none;color:#76582a;font-weight:500;margin-top:1mm}
+.rule{width:28mm;height:2px;background:url(../assets/texturas/ouro-3-escovado.jpg) center/cover;margin:4mm 0}
+.kicker{font-size:9pt;color:#76582a}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin:5mm 0}
+.num{background:#fff;border:1px solid #e8dcc6;border-radius:4mm;padding:5mm 4mm;text-align:center}
+.num b{display:block;font-family:Cinzel,serif;font-size:22pt;color:#84652e}
+.num span{font-size:8.5pt;color:#6b5d50}
+.box{background:#fff;border:1px solid #e8dcc6;border-radius:4mm;padding:5mm 6mm;margin:4mm 0}
+.box.gold{border:2px solid #c9a35a;background:#fffdf8}
+.box h3{font-family:Cinzel,serif;font-size:11pt;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2mm;color:#3a2d22}
+ul{padding-left:5mm}li{margin:1.2mm 0}
+table{width:100%;border-collapse:collapse;font-size:9.5pt;margin-top:2mm}
+th{font-family:Cinzel,serif;font-size:8.5pt;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:#76582a;border-bottom:1.5px solid #c9a35a;padding:2mm 1.5mm}
+td{padding:2mm 1.5mm;border-bottom:1px solid #eee3d0;vertical-align:top}
+td.r,th.r{text-align:right}
+.tag{display:inline-block;font-size:7.5pt;font-weight:700;letter-spacing:.05em;padding:.6mm 2mm;border-radius:2mm;background:#f3ead8;color:#76582a}
+.tag.f{background:#e8f1e3;color:#3d6b2c}.tag.h{background:#f5ece0;color:#8a6a3a}
+.big{font-family:Cinzel,serif;font-size:26pt;color:#84652e}
+.foot{position:absolute;left:16mm;right:16mm;bottom:9mm;font-size:7.5pt;color:#9a8b7c;display:flex;justify-content:space-between;border-top:1px solid #e8dcc6;padding-top:2mm}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.step{display:flex;gap:4mm;margin:2.4mm 0}
+.step i{font-style:normal;flex:0 0 7mm;height:7mm;border-radius:50%;background:#84652e;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:9pt}
+.warn{background:#fff6ec;border-left:3px solid #c98a3a;padding:3mm 4mm;font-size:9.5pt;margin:3mm 0;border-radius:0 3mm 3mm 0}
+.quote{font-style:italic;background:#f7f1e6;padding:2.5mm 4mm;border-radius:3mm;margin:1.5mm 0;font-size:9.5pt}
+.p3{font-size:9.4pt;line-height:1.38}.p3 .box{padding:3.6mm 5mm;margin:3mm 0}.p3 li{margin:.8mm 0}.p3 .step{margin:1.6mm 0}.p3 .rule{margin:3mm 0}
+
+/* versão preto e branco: cor só para destacar */
+body,.page{background:#fff !important;color:#111 !important}
+.ouro{background:none !important;-webkit-background-clip:initial !important;background-clip:initial !important;color:#111 !important}
+.rule{background:#111 !important}
+h2,.box h3{color:#111 !important}
+h2 small,.kicker{color:#555 !important}
+.num{background:#fff;border:1.5px solid #111 !important}
+.num b{color:#111 !important}
+.num span{color:#444 !important}
+.box{background:#fff !important;border:1px solid #bbb !important}
+.box.gold{border:2px solid #111 !important;background:#fff !important}
+th{color:#111 !important;border-bottom:1.5px solid #111 !important}
+td{border-bottom:1px solid #ddd !important}
+.big{color:#0a7d3b !important}
+.step i{background:#111 !important}
+.quote{background:#f2f2f2 !important}
+.tag{background:#eee !important;color:#333 !important}
+.tag.f{background:#e3f4e8 !important;color:#0a7d3b !important}
+.tag.h{background:#fff3d6 !important;color:#9a6a00 !important}
+.warn{background:#fff !important;border-left:4px solid #d32f2f !important}
+.warn b{color:#d32f2f}
+.foot{color:#777 !important;border-top:1px solid #ccc !important}
+.destaque{color:#0a7d3b;font-weight:700}
+</style></head><body>
+
+<!-- PÁGINA 1 -->
+<section class="page">
+  <img src="../marca/logo-oficial.png" style="width:62mm;display:block;margin:0 auto 6mm">
+  <div class="caps" style="text-align:center;font-size:11pt">Plano de tráfego</div>
+  <h1 class="script ouro" style="text-align:center">Black Friday & Natal</h1>
+  <div class="kicker" style="text-align:center">Preparado para o Júnior · 26/11/2026 · dados reais do Instagram (01 a 25/11)</div>
+
+  <div class="grid3">
+    <div class="num"><b>69</b><span>novos seguidores em novembro</span></div>
+    <div class="num"><b>62 mil</b><span>visualizações em novembro</span></div>
+    <div class="num"><b>17</b><span>cliques no link do perfil</span></div>
+  </div>
+
+  <div class="box gold">
+    <h3>💰 Quanto colocar amanhã (sexta, 27/11, Black Friday)</h3>
+    <div style="display:flex;align-items:baseline;gap:4mm;margin:2mm 0 3mm"><span class="big">R$ 50</span><span>por dia, de sexta a domingo (27 a 29/11)</span></div>
+    <table>
+      <tr><th>Campanha</th><th>O que mostra</th><th class="r">Por dia</th></tr>
+      <tr><td><b>A · Mensagens no WhatsApp</b><br><span class="kicker">gente nova de Curitiba e região</span></td><td>Kit Black Friday (par de alianças + solitário de brinde) e os Stories do Serena e do Clássico com preço</td><td class="r"><b>R$ 35</b></td></tr>
+      <tr><td><b>B · Remarketing</b><br><span class="kicker">quem já interagiu com a Shimmer</span></td><td>Mesmas ofertas, com preço e prazo: "válido até 18/12"</td><td class="r"><b>R$ 15</b></td></tr>
+    </table>
+    <p style="margin-top:3mm"><b>De segunda (30/11) em diante:</b> baixar para <b>R$ 30/dia</b> (R$ 20 na campanha A + R$ 10 na B) por 7 dias de teste. Depois disso, fica só o anúncio com o <b>menor custo por conversa</b>.</p>
+    <p class="kicker" style="margin-top:2mm">Total previsto: R$ 150 no fim de semana da Black Friday + R$ 210 na semana de teste = <b>R$ 360</b>. É uma proposta: o valor final é decisão da Eliz.</p>
+  </div>
+
+  <div class="warn"><b>⚠️ Antes de tudo:</b> o portfólio de anúncios da Shimmer está <b>restrito desde 12/11</b>. Enquanto o Meta não liberar, nenhuma campanha roda. Mande o recurso pelo Gerenciador de Negócios e <b>não crie um portfólio novo</b> (isso piora a situação).</div>
+
+  <div class="foot"><span>Shimmer Joias · Plano de tráfego</span><span>1 / 3</span></div>
+</section>
+
+<!-- PÁGINA 2 -->
+<section class="page">
+  <h2>O que os números mostram<small>Instagram da Shimmer · posts dos últimos 90 dias e perfil de 01 a 25/11</small></h2>
+  <div class="rule"></div>
+
+  <div class="box">
+    <h3>Conteúdo que funciona <span class="tag f">FATO</span></h3>
+    <table>
+      <tr><th>Post</th><th class="r">Alcance</th><th class="r">Compart.</th><th class="r">Pulam em 3 s</th></tr>
+      <tr><td><b>Reels "É a meta 🤩"</b> (humor, 30/09)</td><td class="r"><b>2.988</b></td><td class="r"><b>62</b></td><td class="r"><b>32%</b></td></tr>
+      <tr><td>Reels pedido de casamento (humor, 28/10)</td><td class="r">609</td><td class="r">3</td><td class="r">73%</td></tr>
+      <tr><td>Reels "ele lembrou" (25/09)</td><td class="r">476</td><td class="r">1</td><td class="r">54%</td></tr>
+      <tr><td>Reels "Missão GTA" (trend, 23/11)</td><td class="r">431</td><td class="r">1</td><td class="r">67%</td></tr>
+      <tr><td>Carrosséis com preço (Helena, alianças, BF)</td><td class="r">110 a 200</td><td class="r">0 a 2</td><td class="r">–</td></tr>
+    </table>
+    <ul style="margin-top:3mm">
+      <li><b>Humor e trend</b> alcançam até 15x mais que post de produto.</li>
+      <li><b>Post com preço</b> alcança pouco, mas é ele que convence quem já conhece a loja: ideal para <b>remarketing</b>.</li>
+      <li>Na maioria dos Reels, <b>55 a 73% pulam nos 3 primeiros segundos</b>: o começo precisa prender mais.</li>
+    </ul>
+  </div>
+
+  <div class="two">
+    <div class="box">
+      <h3>Quem segue <span class="tag f">FATO</span></h3>
+      <ul>
+        <li>Mulheres: <b>1.410</b></li>
+        <li>Homens: <b>1.098</b></li>
+        <li>Não informado: 1.294</li>
+        <li>Faixa mais forte: <b>25 a 34 anos</b>, nos dois gêneros</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Onde estão <span class="tag f">FATO</span></h3>
+      <ul>
+        <li>Curitiba <b>391</b> · Colombo <b>126</b></li>
+        <li>Almirante Tamandaré <b>119</b> · São José dos Pinhais 43</li>
+        <li>Pinhais 29 · Fazenda Rio Grande 21 · Araucária 20</li>
+        <li>Há seguidores de outros países (Nova York 74, Ásia, África): <b>não compram</b>. Por isso o anúncio deve mirar só Curitiba e região.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>Picos de alcance <span class="tag h">HIPÓTESE</span></h3>
+    <p>De 04 a 06/11 o alcance foi de 4.600 a 6.500 por dia, e em 24/11 chegou a 3.720, mas os posts desses dias alcançaram pouco. Provavelmente foi <b>impulsionamento</b>. Só o Gerenciador de Anúncios confirma quanto foi gasto.</p>
+  </div>
+
+  <div class="foot"><span>Shimmer Joias · Plano de tráfego</span><span>2 / 3</span></div>
+</section>
+
+<!-- PÁGINA 3 -->
+<section class="page p3">
+  <h2>Como montar as campanhas<small>Gerenciador de Anúncios do Meta · objetivo "Engajamento → Mensagens" (WhatsApp)</small></h2>
+  <div class="rule"></div>
+
+  <div class="two">
+    <div class="box">
+      <h3>Campanha A · gente nova</h3>
+      <ul>
+        <li><b>Onde:</b> Curitiba + 25 km</li>
+        <li><b>Idade:</b> 23 a 45 anos</li>
+        <li><b>Interesses:</b> noivado, casamento, joias, aniversário de namoro em breve</li>
+        <li><b>Anúncios:</b> Stories do Serena e do Clássico com preço; Reels de humor (estilo "É a meta")</li>
+        <li><b>Botão:</b> "Enviar mensagem" → WhatsApp</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Campanha B · remarketing</h3>
+      <ul>
+        <li><b>Público:</b> quem interagiu com o Instagram ou assistiu 50% de um Reels nos últimos 60 dias</li>
+        <li><b>Anúncios:</b> kit Black Friday (R$ 3.199 ou 10% off à vista, até 18/12), Serena e Clássico com preço</li>
+        <li><b>Por quê:</b> é o público mais barato e que mais compra</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>Dezembro · Natal</h3>
+    <ul>
+      <li><b>Homens de 25 a 44 anos:</b> "o presente dela": solitários, anel coração, argolas.</li>
+      <li><b>Mulheres de 35 a 54 anos:</b> "se presenteie": argolas e joias para usar todo dia.</li>
+      <li>Divisão da verba: <b>60%</b> mensagens (gente nova) · <b>30%</b> remarketing · <b>10%</b> testar anúncios novos.</li>
+    </ul>
+  </div>
+
+  <div class="box gold">
+    <h3>✅ O papel do Júnior no WhatsApp</h3>
+    <div class="step"><i>1</i><div><b>Responder rápido</b> (até 5 minutos). Quem vem do anúncio esfria rápido.</div></div>
+    <div class="step"><i>2</i><div><b>Perguntar sempre a origem</b>, para sabermos qual anúncio vende:<div class="quote">"Que bom te ver aqui! Como você conheceu a Shimmer: pelo Instagram, por anúncio ou indicação?"</div></div></div>
+    <div class="step"><i>3</i><div><b>Mandar foto e vídeo da peça</b> e oferecer videochamada para quem não pode vir à loja.</div></div>
+    <div class="step"><i>4</i><div><b>Anotar</b> nome, peça de interesse, origem e se comprou. Toda semana a gente compara com o gasto.</div></div>
+  </div>
+
+  <div class="box">
+    <h3>Como saber se está dando certo</h3>
+    <ul>
+      <li><b>Custo por conversa:</b> quanto o anúncio gastou para cada pessoa que chamou no WhatsApp. Quanto menor, melhor.</li>
+      <li>A cada 3 dias, pausar o anúncio com o custo por conversa mais alto e deixar o dinheiro no melhor.</li>
+      <li>O número que importa no fim: <b>vendas</b> vindas de anúncio (por isso a pergunta do passo 2).</li>
+    </ul>
+  </div>
+
+  <div class="foot"><span>Shimmer Joias · Plano de tráfego · Ouro 18k · garantia vitalícia · 10x sem juros</span><span>3 / 3</span></div>
+</section>
+</body></html>
