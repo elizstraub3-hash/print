@@ -58,7 +58,8 @@ SC_SE = scene_bg('/home/user/print/serena-classico/fotos/serena-editada.png', 43
 INTRO = []
 a = L(); C(a, glow(gold_text('BLACK', caps_font(170, 700), 18)), 560); INTRO.append((a, 0 * B))
 b = L(); C(b, glow(gold_text('FRIDAY', caps_font(170, 700), 18)), 760); INTRO.append((b, 2 * B))
-c = L(); C(c, glow(gold_text('Shimmer', script_font(210))), 950); INTRO.append((c, 4 * B))
+LOGO = Image.open('/home/user/print/marca/logo-oficial.png').convert('RGBA')   # logo oficial, tamanho nativo
+c = L(); c.alpha_composite(LOGO, ((W - LOGO.width) // 2, 930)); INTRO.append((c, 4 * B))
 d = L(); y = C(d, solid_text('10% OFF NO PIX', caps_font(52, 700), IVORY, 8), 1250)
 C(d, solid_text('ou até 10x sem juros no cartão', sans(36, 500), SOFT), y + 22); INTRO.append((d, 6 * B))
 
@@ -128,6 +129,51 @@ def flash(f, t, t0, dur=0.18, amt=0.55):
     return f
 
 
+# ---------- fitas "BLACK FRIDAY" passando (embaixo) ----------
+def make_strip(fg_gold):
+    unit_txt = 'BLACK FRIDAY   •   '
+    f = caps_font(40, 700); uw = int(f.getlength(unit_txt)); HH = 84
+    n = int(np.ceil(1700 / uw)) + 2; Wd = uw * n
+    m = Image.new('L', (Wd, HH), 0); d = ImageDraw.Draw(m)
+    for i in range(n): d.text((i * uw, HH // 2), unit_txt, font=f, fill=255, anchor='lm')
+    band = Image.new('L', (Wd, HH), 255)
+    if fg_gold:   # faixa preta, letras douradas, filetes dourados
+        st = Image.new('RGBA', (Wd, HH), (12, 9, 7, 255))
+        gl = Image.new('L', (Wd, HH), 0); ImageDraw.Draw(gl).rectangle([0, 0, Wd, 3], fill=255); ImageDraw.Draw(gl).rectangle([0, HH - 4, Wd, HH], fill=255)
+        gm = Image.fromarray(np.maximum(np.asarray(m), np.asarray(gl)))
+        gtex = gold_fill(gm.resize((W, HH)) if False else gm) if Wd <= W else None
+        tex = Image.open(GOLD_TEX_PATH).convert('RGB').resize((Wd, HH))
+        gold = Image.new('RGBA', (Wd, HH)); gold.paste(tex); gold.putalpha(gm); st.alpha_composite(gold)
+    else:         # faixa dourada, letras pretas
+        tex = Image.open(GOLD_TEX_PATH).convert('RGB').resize((Wd, HH))
+        st = Image.new('RGBA', (Wd, HH)); st.paste(tex); st.putalpha(band)
+        ink = Image.new('RGBA', (Wd, HH), (14, 10, 8, 0)); ink.putalpha(m); st.alpha_composite(ink)
+    return st, uw
+STRIP_A, UW_A = make_strip(False)
+STRIP_B, UW_B = make_strip(True)
+
+
+def ribbons(t):
+    lay = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    for st, uw, ang, cy, sp in [(STRIP_B, UW_B, 4.0, 1770, -150), (STRIP_A, UW_A, -5.0, 1770, 150)]:
+        off = int((t * sp) % uw)
+        win = st.crop((off, 0, off + 1500, st.height))
+        sh = Image.new('RGBA', win.size, (0, 0, 0, 120)); sh.putalpha(win.getchannel('A').point(lambda v: int(v * 0.45)))
+        rot = win.rotate(ang, resample=Image.BICUBIC, expand=True); rsh = sh.rotate(ang, resample=Image.BICUBIC, expand=True).filter(ImageFilter.GaussianBlur(8))
+        x = (W - rot.width) // 2; y = int(cy - rot.height / 2)
+        lay.alpha_composite(rsh, (x, y + 8)); lay.alpha_composite(rot, (x, y))
+    return np.asarray(lay, np.float32)
+
+
+def add_ribbons(f, t):
+    k = ease((t - 4 * B) / 0.4)
+    if k <= 0: return f
+    r = ribbons(t); al = r[..., 3:4] / 255 * k
+    dy = int((1 - k) * 160)
+    if dy: r = np.roll(r, dy, axis=0); al = np.roll(al, dy, axis=0)
+    return f * (1 - al) + r[..., :3] * al
+
+
 def frame(t):
     if t < T_CL:
         f = put_layers(DARK.copy(), INTRO, t)
@@ -149,6 +195,7 @@ def frame(t):
         prev = zoom(SC_SE, 1.04)
         f = prev * (1 - k) + ENDA * k
         f = flash(f, t, T_END, amt=0.3)
+    f = add_ribbons(f, t)
     return np.clip(f, 0, 255).astype(np.uint8)
 
 
